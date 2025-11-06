@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulk Upload - VeriSource™</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-slate-950 font-bold text-xl">
+            V
+          </div>
+          <div>
+            <div class="text-lg font-semibold tracking-tight">
+              VeriSource<span class="align-top text-xs ml-0.5">™</span>
+            </div>
+            <p class="text-xs text-slate-400">Bulk Upload</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <a href="index.html" class="text-sm text-slate-400 hover:text-blue-400 transition">← Back to Home</a>
+          <a href="single-upload.html" class="text-sm px-4 py-2 rounded-lg border border-slate-700 hover:border-blue-500 hover:bg-slate-900 transition">
+            Try Single Upload
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-10">
+    
+    <div class="text-center mb-10 fade-in">
+      <h1 class="text-3xl md:text-4xl font-bold mb-3">Bulk File Verification</h1>
+      <p class="text-slate-400 max-w-2xl mx-auto">
+        Upload up to 100 images simultaneously for batch processing and get a comprehensive dashboard with all results
+      </p>
+    </div>
+
+    <div class="space-y-8">
+      
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-6 fade-in">
+        <div>
+          <h2 class="text-xl font-semibold mb-2">Select Multiple Files</h2>
+          <p class="text-sm text-slate-400">
+            Choose multiple images to verify in a single batch. Supported formats: JPG, PNG, GIF, WebP
+          </p>
+        </div>
+
+        <div class="border-2 border-dashed border-slate-700 rounded-xl p-12 text-center hover:border-blue-500/50 transition cursor-pointer bg-slate-900/30" id="dropzone">
+          <div class="space-y-4">
+            <div class="mx-auto h-20 w-20 rounded-full bg-blue-500/10 flex items-center justify-center">
+              <svg class="w-10 h-10 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-lg font-medium text-slate-200">Drop multiple images here or click to browse</p>
+              <p class="text-sm text-slate-500 mt-2">Maximum 100 files • 50MB per file</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" multiple class="hidden" onchange="handleFileSelect(this.files)">
+          </div>
+        </div>
+
+        <div id="filesList" class="hidden space-y-2">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-sm font-semibold text-slate-300">Selected Files (<span id="fileCount">0</span>)</h3>
+            <button onclick="clearFiles()" class="text-xs text-slate-400 hover:text-red-400 transition">Clear All</button>
+          </div>
+          <div id="filesContainer" class="max-h-60 overflow-y-auto space-y-2 bg-slate-800/30 rounded-lg p-3 border border-slate-700">
+          </div>
+        </div>
+
+        <button onclick="uploadFiles()" id="uploadBtn" disabled class="w-full py-3 px-6 rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-400 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500 flex items-center justify-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+          </svg>
+          Process Batch
+        </button>
+
+        <div id="loading" class="hidden text-center py-6">
+          <div class="inline-block h-10 w-10 animate-spin rounded-full border-4 border-solid border-blue-500 border-r-transparent mb-3"></div>
+          <p class="text-sm text-slate-400">Processing your batch...</p>
+          <p class="text-xs text-slate-500 mt-1">This may take a few moments</p>
+        </div>
+      </div>
+
+      <div id="resultsCard" class="hidden bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-6 fade-in">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-semibold">Batch Results</h2>
+          <span class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-medium">
+            ✓ Complete
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+            <div class="text-2xl font-bold text-blue-400" id="totalFiles">0</div>
+            <div class="text-xs text-slate-400 mt-1">Total Files</div>
+          </div>
+          <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+            <div class="text-2xl font-bold text-emerald-400" id="successFiles">0</div>
+            <div class="text-xs text-slate-400 mt-1">Successful</div>
+          </div>
+          <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+            <div class="text-2xl font-bold text-red-400" id="failedFiles">0</div>
+            <div class="text-xs text-slate-400 mt-1">Failed</div>
+          </div>
+          <div class="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+            <div class="text-2xl font-bold text-amber-400" id="duplicateFiles">0</div>
+            <div class="text-xs text-slate-400 mt-1">Duplicates</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-800/30 rounded-lg p-4 border border-slate-700">
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-slate-400">Processing Time:</span>
+            <span class="text-slate-200 font-medium" id="processingTime">-</span>
+          </div>
+          <div class="flex items-center justify-between text-sm mt-2">
+            <span class="text-slate-400">Avg. Time per File:</span>
+            <span class="text-slate-200 font-medium" id="avgTime">-</span>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-3">
+          <button onclick="openDashboard()" class="flex-1 py-3 px-6 rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-400 transition flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            View Full Dashboard
+          </button>
+          <button onclick="downloadCSV()" class="py-3 px-6 rounded-lg border border-slate-700 hover:border-blue-500 hover:bg-slate-900 transition flex items-center justify-center gap-2">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Download CSV
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    const API_URL = 'https://api.verisource.io';
+    let selectedFiles = [];
+    let batchData = null;
+
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('border-blue-500');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('border-blue-500');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('border-blue-500');
+      if (e.dataTransfer.files.length) {
+        handleFileSelect(e.dataTransfer.files);
+      }
+    });
+
+    function handleFileSelect(files) {
+      if (!files.length) return;
+      
+      selectedFiles = Array.from(files).slice(0, 100);
+      
+      document.getElementById('filesList').classList.remove('hidden');
+      document.getElementById('fileCount').textContent = selectedFiles.length;
+      document.getElementById('uploadBtn').disabled = false;
+
+      const container = document.getElementById('filesContainer');
+      container.innerHTML = selectedFiles.map((file, i) => `
+        <div class="flex items-center justify-between py-2 px-3 bg-slate-900/50 rounded border border-slate-700/50">
+          <div class="flex items-center gap-2 flex-1 min-w-0">
+            <svg class="w-4 h-4 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <span class="text-xs text-slate-300 truncate">${file.name}</span>
+          </div>
+          <span class="text-xs text-slate-500 ml-2">${formatFileSize(file.size)}</span>
+        </div>
+      `).join('');
+    }
+
+    function clearFiles() {
+      selectedFiles = [];
+      fileInput.value = '';
+      document.getElementById('filesList').classList.add('hidden');
+      document.getElementById('uploadBtn').disabled = true;
+      document.getElementById('resultsCard').classList.add('hidden');
+    }
+
+    async function uploadFiles() {
+      if (!selectedFiles.length) return;
+
+      const loading = document.getElementById('loading');
+      const uploadBtn = document.getElementById('uploadBtn');
+      const resultsCard = document.getElementById('resultsCard');
+
+      loading.classList.remove('hidden');
+      uploadBtn.disabled = true;
+      resultsCard.classList.add('hidden');
+
+      const formData = new FormData();
+      selectedFiles.forEach(file => formData.append('files', file));
+
+      try {
+        const res = await fetch(`${API_URL}/api/verify/batch`, {
+          method: 'POST',
+          body: formData
+        });
+
+        batchData = await res.json();
+        displayResults(batchData);
+      } catch (e) {
+        alert('Batch upload failed: ' + e.message);
+        uploadBtn.disabled = false;
+      } finally {
+        loading.classList.add('hidden');
+      }
+    }
+
+    function displayResults(data) {
+      const resultsCard = document.getElementById('resultsCard');
+      
+      document.getElementById('totalFiles').textContent = data.summary.total;
+      document.getElementById('successFiles').textContent = data.summary.successful;
+      document.getElementById('failedFiles').textContent = data.summary.failed;
+      document.getElementById('duplicateFiles').textContent = data.summary.duplicatesFound || 0;
+      document.getElementById('processingTime').textContent = (data.timing.processingTime / 1000).toFixed(2) + 's';
+      document.getElementById('avgTime').textContent = (data.timing.avgTimePerFile / 1000).toFixed(2) + 's';
+
+      resultsCard.classList.remove('hidden');
+      resultsCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function openDashboard() {
+      if (batchData && batchData.links && batchData.links.dashboard) {
+        window.open(`${API_URL}${batchData.links.dashboard}`, '_blank');
+      }
+    }
+
+    function downloadCSV() {
+      if (batchData && batchData.links && batchData.links.csv) {
+        window.open(`${API_URL}${batchData.links.csv}`, '_blank');
+      }
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+  </script>
+</body>
+</html>

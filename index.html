@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>VeriSource™ - Content Verification Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+    .fade-in-delay-1 { animation: fadeIn 0.6s ease-out 0.1s forwards; opacity: 0; }
+    .fade-in-delay-2 { animation: fadeIn 0.6s ease-out 0.2s forwards; opacity: 0; }
+    .fade-in-delay-3 { animation: fadeIn 0.6s ease-out 0.3s forwards; opacity: 0; }
+    .dropdown-menu {
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+    }
+    .dropdown:hover .dropdown-menu {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-slate-950 font-bold text-xl">
+            V
+          </div>
+          <div>
+            <div class="text-lg font-semibold tracking-tight">
+              VeriSource<span class="align-top text-xs ml-0.5">™</span>
+            </div>
+            <p class="text-xs text-slate-400">Content Verification Platform</p>
+          </div>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-6">
+          <a href="#home" class="text-sm hover:text-blue-400 transition">Home</a>
+          
+          <div class="relative dropdown">
+            <button class="text-sm hover:text-blue-400 transition flex items-center gap-1">
+              Verify Content
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div class="dropdown-menu absolute top-full left-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-lg shadow-xl">
+              <a href="single-upload.html" class="block px-4 py-2 text-sm hover:bg-slate-800 rounded-t-lg transition">Single Upload</a>
+              <a href="bulk-upload.html" class="block px-4 py-2 text-sm hover:bg-slate-800 rounded-b-lg transition">Bulk Upload</a>
+            </div>
+          </div>
+
+          <a href="#features" class="text-sm hover:text-blue-400 transition">Features</a>
+          <a href="#api" class="text-sm hover:text-blue-400 transition">API</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <span class="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-300 border border-blue-500/30">
+            <span class="h-2 w-2 rounded-full bg-blue-400 animate-pulse"></span>
+            API Online
+          </span>
+        </div>
+      </div>
+
+      <button id="mobile-menu-btn" class="md:hidden absolute right-4 top-5 text-slate-400">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden border-t border-slate-800 bg-slate-900">
+      <div class="px-4 py-2 space-y-1">
+        <a href="#home" class="block px-3 py-2 text-sm hover:bg-slate-800 rounded">Home</a>
+        <a href="single-upload.html" class="block px-3 py-2 text-sm hover:bg-slate-800 rounded">Single Upload</a>
+        <a href="bulk-upload.html" class="block px-3 py-2 text-sm hover:bg-slate-800 rounded">Bulk Upload</a>
+        <a href="#features" class="block px-3 py-2 text-sm hover:bg-slate-800 rounded">Features</a>
+        <a href="#api" class="block px-3 py-2 text-sm hover:bg-slate-800 rounded">API</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-10 space-y-16">
+    
+    <section id="home" class="grid md:grid-cols-2 gap-8 items-center py-12 fade-in">
+      <div class="space-y-6">
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
+          Verify content authenticity before you trust it.
+        </h1>
+        <p class="text-lg text-slate-300 leading-relaxed">
+          VeriSource™ generates cryptographic fingerprints for digital content and provides comprehensive verification reports. Built for platforms, fact-checkers, and security teams.
+        </p>
+
+        <ul class="text-sm text-slate-300 space-y-3">
+          <li class="flex gap-3 items-start">
+            <span class="mt-1 h-5 w-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+              <svg class="w-3 h-3 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </span>
+            <span>SHA-256 and perceptual hash fingerprinting for images and media</span>
+          </li>
+          <li class="flex gap-3 items-start">
+            <span class="mt-1 h-5 w-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+              <svg class="w-3 h-3 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </span>
+            <span>Duplicate detection and verification history tracking</span>
+          </li>
+          <li class="flex gap-3 items-start">
+            <span class="mt-1 h-5 w-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+              <svg class="w-3 h-3 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </span>
+            <span>RESTful API with batch processing capabilities</span>
+          </li>
+        </ul>
+
+        <div class="flex flex-wrap gap-4 pt-4">
+          <a href="single-upload.html" class="inline-flex items-center justify-center rounded-lg bg-blue-500 px-6 py-3 text-sm font-medium text-white shadow-lg hover:bg-blue-400 transition transform hover:scale-105">
+            Try Single Upload
+          </a>
+          <a href="bulk-upload.html" class="inline-flex items-center justify-center rounded-lg border border-slate-700 px-6 py-3 text-sm font-medium text-slate-100 hover:bg-slate-900 hover:border-slate-600 transition">
+            Try Bulk Upload
+          </a>
+        </div>
+
+        <p class="text-xs text-slate-500 pt-2">
+          Beta environment • For testing and integration purposes only
+        </p>
+      </div>
+
+      <div class="bg-slate-900/70 border border-slate-800 rounded-xl shadow-2xl overflow-hidden fade-in-delay-1">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800 bg-slate-900/80">
+          <div class="flex items-center gap-2">
+            <span class="h-3 w-3 rounded-full bg-red-500/80"></span>
+            <span class="h-3 w-3 rounded-full bg-amber-400/80"></span>
+            <span class="h-3 w-3 rounded-full bg-emerald-400/80"></span>
+          </div>
+          <span class="text-xs text-slate-400">sample request</span>
+        </div>
+        <div class="p-6 font-mono text-xs space-y-4">
+<pre class="text-slate-300 leading-relaxed">
+<span class="text-blue-400">curl</span> -X POST https://api.verisource.io/verify \
+  -H <span class="text-emerald-400">"X-API-Key: &lt;your_key&gt;"</span> \
+  -F <span class="text-amber-400">"file=@image.jpg"</span>
+</pre>
+
+<pre class="text-emerald-300 leading-relaxed text-xs">
+{
+  "fileId": "file_abc123...",
+  "fingerprint": {
+    "sha256": "8b66dc4151...",
+    "perceptualHash": "a3f2d1b5..."
+  },
+  "verification": {
+    "isOriginal": true,
+    "confidence": "high"
+  },
+  "metadata": {
+    "format": "jpeg",
+    "size": 2458624
+  }
+}
+</pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="py-12 fade-in-delay-2">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold mb-4">Platform Features</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto">
+          Comprehensive tools for content verification, from single uploads to enterprise batch processing
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 hover:border-blue-500/50 transition">
+          <div class="h-12 w-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Cryptographic Fingerprinting</h3>
+          <p class="text-sm text-slate-400">
+            Generate SHA-256 hashes and perceptual fingerprints for tamper detection and content tracking
+          </p>
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 hover:border-blue-500/50 transition">
+          <div class="h-12 w-12 rounded-lg bg-cyan-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Bulk Processing</h3>
+          <p class="text-sm text-slate-400">
+            Upload and verify up to 100 files simultaneously with parallel processing and batch dashboards
+          </p>
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 hover:border-blue-500/50 transition">
+          <div class="h-12 w-12 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Verification History</h3>
+          <p class="text-sm text-slate-400">
+            Track content across time with comprehensive verification logs and duplicate detection
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="api" class="grid md:grid-cols-2 gap-6 py-12">
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4">
+        <h2 class="text-xl font-bold">Core API Endpoints</h2>
+        <ul class="text-sm text-slate-300 space-y-3">
+          <li>
+            <span class="font-mono text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700 mr-2">POST /verify</span>
+            Single file verification with fingerprint generation
+          </li>
+          <li>
+            <span class="font-mono text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700 mr-2">POST /api/verify/batch</span>
+            Batch upload with parallel processing (up to 100 files)
+          </li>
+          <li>
+            <span class="font-mono text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700 mr-2">GET /api/batch/:id</span>
+            Retrieve batch verification results
+          </li>
+        </ul>
+      </div>
+
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4">
+        <h2 class="text-xl font-bold">Authentication</h2>
+        <p class="text-sm text-slate-300">
+          All API requests require an <span class="font-mono text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700">X-API-Key</span> header for authentication.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-slate-900 bg-slate-950/90 mt-16">
+    <div class="max-w-6xl mx-auto px-4 py-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-xs text-slate-500">
+          VeriSource™ Beta • For evaluation and integration testing only
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs text-slate-500">
+          <span>Build: <span class="font-mono">beta-0.2.0</span></span>
+          <span>Environment: <span class="font-mono">staging</span></span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href !== '#') {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>

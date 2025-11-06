@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Single Upload - VeriSource™</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-slate-950 font-bold text-xl">
+            V
+          </div>
+          <div>
+            <div class="text-lg font-semibold tracking-tight">
+              VeriSource<span class="align-top text-xs ml-0.5">™</span>
+            </div>
+            <p class="text-xs text-slate-400">Single Upload</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <a href="index.html" class="text-sm text-slate-400 hover:text-blue-400 transition">← Back to Home</a>
+          <a href="bulk-upload.html" class="text-sm px-4 py-2 rounded-lg border border-slate-700 hover:border-blue-500 hover:bg-slate-900 transition">
+            Try Bulk Upload
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-10">
+    
+    <div class="text-center mb-10 fade-in">
+      <h1 class="text-3xl md:text-4xl font-bold mb-3">Single File Verification</h1>
+      <p class="text-slate-400 max-w-2xl mx-auto">
+        Upload a single image to generate a cryptographic fingerprint and receive a comprehensive verification report
+      </p>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-8">
+      
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-6 fade-in">
+        <div>
+          <h2 class="text-xl font-semibold mb-2">Upload Image</h2>
+          <p class="text-sm text-slate-400">
+            Select an image file to verify. Supported formats: JPG, PNG, GIF, WebP
+          </p>
+        </div>
+
+        <div class="border-2 border-dashed border-slate-700 rounded-xl p-8 text-center hover:border-blue-500/50 transition cursor-pointer bg-slate-900/30" id="dropzone">
+          <div class="space-y-4">
+            <div class="mx-auto h-16 w-16 rounded-full bg-blue-500/10 flex items-center justify-center">
+              <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-slate-200">Drop your image here or click to browse</p>
+              <p class="text-xs text-slate-500 mt-1">Maximum file size: 50MB</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(this.files[0])">
+          </div>
+        </div>
+
+        <div id="fileInfo" class="hidden bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium" id="fileName"></p>
+                <p class="text-xs text-slate-400" id="fileSize"></p>
+              </div>
+            </div>
+            <button onclick="clearFile()" class="text-slate-400 hover:text-red-400 transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button onclick="uploadFile()" id="uploadBtn" disabled class="w-full py-3 px-6 rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-400 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500">
+          Verify File
+        </button>
+
+        <div id="loading" class="hidden text-center py-4">
+          <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-500 border-r-transparent"></div>
+          <p class="text-sm text-slate-400 mt-2">Processing your file...</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
+        <h2 class="text-xl font-semibold mb-4">Verification Results</h2>
+        
+        <div id="resultsPlaceholder" class="text-center py-12">
+          <div class="mx-auto h-16 w-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <p class="text-sm text-slate-500">Upload a file to see verification results</p>
+        </div>
+
+        <div id="results" class="hidden space-y-4">
+          <div id="statusCard" class="rounded-lg border p-4"></div>
+
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-3">
+            <h3 class="text-sm font-semibold text-slate-300">Fingerprint Details</h3>
+            <div class="space-y-2 text-xs font-mono">
+              <div>
+                <span class="text-slate-500">File ID:</span>
+                <p class="text-slate-300 break-all" id="fileId"></p>
+              </div>
+              <div>
+                <span class="text-slate-500">SHA-256:</span>
+                <p class="text-slate-300 break-all" id="sha256"></p>
+              </div>
+              <div>
+                <span class="text-slate-500">Format:</span>
+                <span class="text-slate-300" id="format"></span>
+              </div>
+              <div>
+                <span class="text-slate-500">Size:</span>
+                <span class="text-slate-300" id="size"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2">
+            <h3 class="text-sm font-semibold text-slate-300">Metadata</h3>
+            <div class="text-xs space-y-1" id="metadata"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const API_URL = 'https://api.verisource.io';
+    let selectedFile = null;
+
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('border-blue-500');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('border-blue-500');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('border-blue-500');
+      if (e.dataTransfer.files.length) {
+        handleFileSelect(e.dataTransfer.files[0]);
+      }
+    });
+
+    function handleFileSelect(file) {
+      if (!file) return;
+      selectedFile = file;
+      
+      document.getElementById('fileInfo').classList.remove('hidden');
+      document.getElementById('fileName').textContent = file.name;
+      document.getElementById('fileSize').textContent = formatFileSize(file.size);
+      document.getElementById('uploadBtn').disabled = false;
+    }
+
+    function clearFile() {
+      selectedFile = null;
+      fileInput.value = '';
+      document.getElementById('fileInfo').classList.add('hidden');
+      document.getElementById('uploadBtn').disabled = true;
+      document.getElementById('results').classList.add('hidden');
+      document.getElementById('resultsPlaceholder').classList.remove('hidden');
+    }
+
+    async function uploadFile() {
+      if (!selectedFile) return;
+
+      const loading = document.getElementById('loading');
+      const uploadBtn = document.getElementById('uploadBtn');
+      const results = document.getElementById('results');
+      const placeholder = document.getElementById('resultsPlaceholder');
+
+      loading.classList.remove('hidden');
+      uploadBtn.disabled = true;
+      results.classList.add('hidden');
+      placeholder.classList.add('hidden');
+
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      try {
+        const res = await fetch(`${API_URL}/verify`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await res.json();
+        displayResults(data);
+      } catch (e) {
+        alert('Upload failed: ' + e.message);
+      } finally {
+        loading.classList.add('hidden');
+        uploadBtn.disabled = false;
+      }
+    }
+
+    function displayResults(data) {
+      const results = document.getElementById('results');
+      const statusCard = document.getElementById('statusCard');
+
+      const isOriginal = data.verification?.isOriginal;
+      const confidence = data.verification?.confidence || 'unknown';
+      
+      let statusClass = 'bg-slate-800 border-slate-700';
+      let statusIcon = '⚠️';
+      let statusText = 'Verification Complete';
+      
+      if (confidence === 'high') {
+        statusClass = 'bg-emerald-500/10 border-emerald-500/30';
+        statusIcon = '✓';
+        statusText = 'Content Verified';
+      } else if (confidence === 'low') {
+        statusClass = 'bg-amber-500/10 border-amber-500/30';
+        statusIcon = '⚠️';
+        statusText = 'Low Confidence';
+      }
+
+      statusCard.className = `rounded-lg border p-4 ${statusClass}`;
+      statusCard.innerHTML = `
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">${statusIcon}</span>
+          <div>
+            <p class="font-semibold">${statusText}</p>
+            <p class="text-xs text-slate-400">Confidence: ${confidence}</p>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('fileId').textContent = data.fileId || 'N/A';
+      document.getElementById('sha256').textContent = data.canonical?.sha256 || data.fingerprint?.sha256 || 'N/A';
+      document.getElementById('format').textContent = (data.metadata?.format || 'unknown').toUpperCase();
+      document.getElementById('size').textContent = formatFileSize(data.metadata?.size || 0);
+
+      const metadataDiv = document.getElementById('metadata');
+      metadataDiv.innerHTML = `
+        <div class="flex justify-between"><span class="text-slate-500">Created:</span><span class="text-slate-300">${new Date(data.metadata?.created || Date.now()).toLocaleString()}</span></div>
+        ${data.metadata?.width ? `<div class="flex justify-between"><span class="text-slate-500">Dimensions:</span><span class="text-slate-300">${data.metadata.width}×${data.metadata.height}</span></div>` : ''}
+      `;
+
+      results.classList.remove('hidden');
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+  </script>
+</body>
+</html>
