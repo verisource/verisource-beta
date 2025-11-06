@@ -261,15 +261,17 @@
         </div>
       `;
 
-      document.getElementById('fileId').textContent = data.fileId || 'N/A';
-      document.getElementById('sha256').textContent = data.canonical?.sha256 || data.fingerprint?.sha256 || 'N/A';
-      document.getElementById('format').textContent = (data.metadata?.format || 'unknown').toUpperCase();
-      document.getElementById('size').textContent = formatFileSize(data.metadata?.size || 0);
+      document.getElementById('fileId').textContent = 'N/A';
+      document.getElementById('sha256').textContent = data.canonical?.fingerprint || 'N/A';
+      document.getElementById('format').textContent = (data.kind || 'unknown').toUpperCase();
+      document.getElementById('size').textContent = formatFileSize(data.size_bytes || 0);
 
       const metadataDiv = document.getElementById('metadata');
       metadataDiv.innerHTML = `
-        <div class="flex justify-between"><span class="text-slate-500">Created:</span><span class="text-slate-300">${new Date(data.metadata?.created || Date.now()).toLocaleString()}</span></div>
-        ${data.metadata?.width ? `<div class="flex justify-between"><span class="text-slate-500">Dimensions:</span><span class="text-slate-300">${data.metadata.width}×${data.metadata.height}</span></div>` : ''}
+        <div class="flex justify-between"><span class="text-slate-500">Filename:</span><span class="text-slate-300">${data.filename || 'N/A'}</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">pHash:</span><span class="text-slate-300 break-all font-mono text-[10px]">${data.phash || 'N/A'}</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">Algorithm:</span><span class="text-slate-300">${data.canonical?.algorithm || 'N/A'}</span></div>
+        ${data.confidence ? `<div class="flex justify-between"><span class="text-slate-500">Confidence:</span><span class="text-slate-300">${data.confidence.percentage}% (${data.confidence.level})</span></div>` : ''}
       `;
 
       results.classList.remove('hidden');
