@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verification Report - VeriSource™</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-slate-950 font-bold text-xl">
+            V
+          </div>
+          <div>
+            <div class="text-lg font-semibold tracking-tight">
+              VeriSource<span class="align-top text-xs ml-0.5">™</span>
+            </div>
+            <p class="text-xs text-slate-400">Verification Report</p>
+          </div>
+        </div>
+        <button onclick="window.print()" class="text-sm px-4 py-2 rounded-lg border border-slate-700 hover:border-blue-500 hover:bg-slate-900 transition">
+          🖨️ Print Report
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-10">
+    
+    <div id="reportContent" class="space-y-8">
+      <div class="text-center py-20">
+        <div class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-500 border-r-transparent"></div>
+        <p class="text-sm text-slate-400 mt-4">Loading report...</p>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const dataStr = params.get('data');
+    
+    if (!dataStr) {
+      document.getElementById('reportContent').innerHTML = `
+        <div class="text-center py-20">
+          <p class="text-red-400">No verification data found</p>
+        </div>
+      `;
+    } else {
+      try {
+        const data = JSON.parse(decodeURIComponent(dataStr));
+        displayReport(data);
+      } catch (e) {
+        document.getElementById('reportContent').innerHTML = `
+          <div class="text-center py-20">
+            <p class="text-red-400">Error loading report: ${e.message}</p>
+          </div>
+        `;
+      }
+    }
+
+    function displayReport(data) {
+      const conf = data.confidence || {};
+      
+      const html = `
+        <div class="bg-slate-900/60 border-2 rounded-xl p-8 fade-in" style="border-color: ${conf.color || '#F59E0B'}">
+          <div class="flex items-center gap-6">
+            <div class="flex-shrink-0 w-20 h-20 flex items-center justify-center">
+              ${conf.iconSvg || '<span class="text-5xl">⚠️</span>'}
+            </div>
+            <div class="flex-1">
+              <h1 class="text-3xl font-bold mb-2" style="color: ${conf.color || '#F59E0B'}">${conf.label || 'VERIFICATION COMPLETE'}</h1>
+              <p class="text-slate-300">${conf.message || 'Content has been analyzed'}</p>
+              <div class="mt-3 flex items-center gap-4">
+                <span class="text-sm text-slate-400">Confidence Score:</span>
+                <div class="flex items-center gap-2">
+                  <div class="w-32 h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full" style="width: ${conf.percentage || 50}%; background: ${conf.color || '#F59E0B'}"></div>
+                  </div>
+                  <span class="text-lg font-bold" style="color: ${conf.color || '#F59E0B'}">${conf.percentage || 50}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          ${conf.is_modified ? `
+            <div class="mt-6 bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
+              <div class="flex items-start gap-3">
+                <span class="text-2xl">📝</span>
+                <div>
+                  <p class="font-semibold text-amber-300 mb-1">Modified Content Detected</p>
+                  <p class="text-sm text-slate-300">${conf.modification_details?.similarity}% similarity to original content</p>
+                  ${conf.modification_details?.modifications ? `
+                    <ul class="text-xs text-slate-400 mt-2 space-y-1">
+                      ${conf.modification_details.modifications.map(m => `<li>• ${m}</li>`).join('')}
+                    </ul>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
+          <h2 class="text-xl font-bold mb-4">File Information</h2>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div><span class="text-slate-500">Filename:</span><p class="text-slate-200 font-medium">${data.filename || 'N/A'}</p></div>
+            <div><span class="text-slate-500">File Type:</span><p class="text-slate-200 font-medium">${(data.kind || 'unknown').toUpperCase()}</p></div>
+            <div><span class="text-slate-500">File Size:</span><p class="text-slate-200 font-medium">${formatFileSize(data.size_bytes || 0)}</p></div>
+            <div><span class="text-slate-500">Algorithm:</span><p class="text-slate-200 font-medium">${data.canonical?.algorithm?.toUpperCase() || 'SHA-256'}</p></div>
+          </div>
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
+          <h2 class="text-xl font-bold mb-4">Cryptographic Fingerprints</h2>
+          <div class="space-y-4 text-sm">
+            <div><span class="text-slate-500 text-xs">SHA-256:</span><p class="text-slate-200 font-mono text-xs break-all bg-slate-950/50 p-3 rounded mt-1">${data.canonical?.fingerprint || 'N/A'}</p></div>
+            ${data.phash ? `<div><span class="text-slate-500 text-xs">pHash:</span><p class="text-slate-200 font-mono text-xs break-all bg-slate-950/50 p-3 rounded mt-1">${data.phash}</p></div>` : ''}
+          </div>
+        </div>
+
+        ${conf.factors ? `
+          <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
+            <h2 class="text-xl font-bold mb-4">Confidence Analysis</h2>
+            <div class="space-y-4">
+              ${conf.factors.map(factor => `
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-semibold text-slate-300">${factor.name}</span>
+                    <span class="text-sm text-slate-400">${factor.score}/${factor.max} (${factor.percentage}%)</span>
+                  </div>
+                  <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full ${factor.percentage >= 75 ? 'bg-emerald-500' : factor.percentage >= 50 ? 'bg-amber-500' : 'bg-red-500'}" 
+                         style="width: ${factor.percentage}%"></div>
+                  </div>
+                  <ul class="mt-2 space-y-1 text-xs text-slate-400">
+                    ${factor.details.map(d => `<li>${d}</li>`).join('')}
+                  </ul>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        ${conf.warnings?.length || conf.recommendations?.length ? `
+          <div class="grid md:grid-cols-2 gap-6 fade-in">
+            ${conf.warnings?.length ? `
+              <div class="bg-slate-900/60 border border-amber-500/30 rounded-xl p-6">
+                <h3 class="text-lg font-bold mb-3 text-amber-300">⚠️ Warnings</h3>
+                <ul class="space-y-2 text-sm text-slate-300">${conf.warnings.map(w => `<li>• ${w}</li>`).join('')}</ul>
+              </div>
+            ` : ''}
+            ${conf.recommendations?.length ? `
+              <div class="bg-slate-900/60 border border-blue-500/30 rounded-xl p-6">
+                <h3 class="text-lg font-bold mb-3 text-blue-300">💡 Recommendations</h3>
+                <ul class="space-y-2 text-sm text-slate-300">${conf.recommendations.map(r => `<li>• ${r}</li>`).join('')}</ul>
+              </div>
+            ` : ''}
+          </div>
+        ` : ''}
+
+        <div class="text-center text-xs text-slate-500 border-t border-slate-800 pt-6">
+          <p>Generated by VeriSource™ on ${new Date().toLocaleString()}</p>
+          <p class="mt-1">Report ID: ${data.canonical?.fingerprint?.substring(0, 16) || 'N/A'}</p>
+        </div>
+      `;
+
+      document.getElementById('reportContent').innerHTML = html;
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+  </script>
+</body>
+</html>

@@ -233,32 +233,36 @@
       const results = document.getElementById('results');
       const statusCard = document.getElementById('statusCard');
 
-      const isOriginal = data.verification?.isOriginal;
-      const confidence = data.verification?.confidence || 'unknown';
+      const conf = data.confidence || {};
+      const isModified = conf.is_modified || false;
       
-      let statusClass = 'bg-slate-800 border-slate-700';
-      let statusIcon = '⚠️';
-      let statusText = 'Verification Complete';
-      
-      if (confidence === 'high') {
-        statusClass = 'bg-emerald-500/10 border-emerald-500/30';
-        statusIcon = '✓';
-        statusText = 'Content Verified';
-      } else if (confidence === 'low') {
-        statusClass = 'bg-amber-500/10 border-amber-500/30';
-        statusIcon = '⚠️';
-        statusText = 'Low Confidence';
-      }
+      // Use API confidence data if available
+      const statusColor = conf.color || '#F59E0B';
+      const statusIcon = conf.iconSvg || '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+      const statusLabel = conf.label || 'VERIFICATION COMPLETE';
 
-      statusCard.className = `rounded-lg border p-4 ${statusClass}`;
+      statusCard.className = `rounded-lg border p-4`;
+      statusCard.style.backgroundColor = statusColor + '10';
+      statusCard.style.borderColor = statusColor + '50';
+      
       statusCard.innerHTML = `
         <div class="flex items-center gap-3">
-          <span class="text-2xl">${statusIcon}</span>
-          <div>
-            <p class="font-semibold">${statusText}</p>
-            <p class="text-xs text-slate-400">Confidence: ${confidence}</p>
+          <div class="flex items-center justify-center w-12 h-12" style="color: ${statusColor}">
+            ${statusIcon}
+          </div>
+          <div class="flex-1">
+            <p class="font-semibold text-lg" style="color: ${statusColor}">${statusLabel}</p>
+            <a href="report.html?data=${encodeURIComponent(JSON.stringify(data))}" target="_blank" class="text-xs text-blue-400 hover:text-blue-300 underline">
+              View Report →
+            </a>
           </div>
         </div>
+        ${isModified ? `
+          <div class="mt-3 text-xs bg-amber-500/10 border border-amber-500/30 rounded-lg p-2">
+            <span class="text-amber-300">📝 Modified Content:</span>
+            <span class="text-slate-300"> ${conf.modification_details?.similarity || 'N/A'}% match to original</span>
+          </div>
+        ` : ''}
       `;
 
       document.getElementById('fileId').textContent = 'N/A';
@@ -271,7 +275,7 @@
         <div class="flex justify-between"><span class="text-slate-500">Filename:</span><span class="text-slate-300">${data.filename || 'N/A'}</span></div>
         <div class="flex justify-between"><span class="text-slate-500">pHash:</span><span class="text-slate-300 break-all font-mono text-[10px]">${data.phash || 'N/A'}</span></div>
         <div class="flex justify-between"><span class="text-slate-500">Algorithm:</span><span class="text-slate-300">${data.canonical?.algorithm || 'N/A'}</span></div>
-        ${data.confidence ? `<div class="flex justify-between"><span class="text-slate-500">Confidence:</span><span class="text-slate-300">${data.confidence.percentage}% (${data.confidence.level})</span></div>` : ''}
+        ${conf.percentage ? `<div class="flex justify-between"><span class="text-slate-500">Confidence:</span><span class="text-slate-300">${conf.percentage}% (${conf.level})</span></div>` : ''}
       `;
 
       results.classList.remove('hidden');
