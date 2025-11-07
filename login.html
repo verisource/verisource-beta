@@ -3,126 +3,302 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VeriSource Beta - Login</title>
+  <title>VeriSource - Access Beta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
+      position: relative;
+      overflow: hidden;
     }
-    .auth-container {
+    
+    /* Animated background elements */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      top: -250px;
+      right: -250px;
+      animation: float 20s infinite ease-in-out;
+    }
+    
+    body::after {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+      bottom: -200px;
+      left: -200px;
+      animation: float 15s infinite ease-in-out reverse;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) translateX(0px); }
+      50% { transform: translateY(-20px) translateX(20px); }
+    }
+    
+    .login-container {
       background: white;
-      border-radius: 16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      border-radius: 24px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
       padding: 48px;
-      max-width: 400px;
+      max-width: 480px;
       width: 100%;
+      position: relative;
+      z-index: 1;
+      animation: slideIn 0.5s ease-out;
     }
-    .logo {
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .logo-section {
       text-align: center;
-      margin-bottom: 32px;
+      margin-bottom: 40px;
     }
-    .logo h1 {
+    
+    .logo-icon {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
       font-size: 32px;
-      color: #667eea;
+      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+    }
+    
+    .logo-section h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1e293b;
       margin-bottom: 8px;
+      letter-spacing: -0.5px;
     }
-    .logo p {
-      color: #666;
+    
+    .logo-section p {
+      color: #64748b;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    
+    .beta-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-left: 8px;
+      letter-spacing: 0.5px;
+    }
+    
+    .error {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 16px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      display: none;
+      align-items: center;
       font-size: 14px;
+      font-weight: 500;
     }
+    
+    .error.show {
+      display: flex;
+    }
+    
+    .error-icon {
+      margin-right: 12px;
+      font-size: 18px;
+    }
+    
     .form-group {
       margin-bottom: 24px;
     }
+    
     label {
       display: block;
       margin-bottom: 8px;
-      color: #333;
-      font-weight: 500;
+      color: #334155;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.3px;
     }
+    
+    .input-wrapper {
+      position: relative;
+    }
+    
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 20px;
+    }
+    
     input[type="password"] {
       width: 100%;
-      padding: 12px 16px;
-      border: 2px solid #e0e0e0;
-      border-radius: 8px;
+      padding: 14px 16px 14px 48px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
       font-size: 16px;
-      transition: border-color 0.3s;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      background: #f8fafc;
     }
+    
     input[type="password"]:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: #3b82f6;
+      background: white;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
     }
+    
     button {
       width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 16px;
+      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+      letter-spacing: 0.3px;
     }
+    
     button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5);
     }
-    .error {
-      background: #fee;
-      color: #c33;
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
+    .info-text {
+      text-align: center;
+      margin-top: 24px;
+      color: #64748b;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    
+    .info-text a {
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .info-text a:hover {
+      text-decoration: underline;
+    }
+    
+    .security-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 20px;
       padding: 12px;
+      background: #f8fafc;
       border-radius: 8px;
-      margin-bottom: 20px;
-      border-left: 4px solid #c33;
-      display: none;
+      font-size: 12px;
+      color: #64748b;
     }
-    .error.show {
-      display: block;
+    
+    .security-icon {
+      margin-right: 8px;
+      color: #3b82f6;
     }
   </style>
 </head>
 <body>
-  <div class="auth-container">
-    <div class="logo">
-      <h1>🔒 VeriSource Beta</h1>
-      <p>Enter password to access</p>
+  <div class="login-container">
+    <div class="logo-section">
+      <div class="logo-icon">🔒</div>
+      <h1>
+        VeriSource
+        <span class="beta-badge">BETA</span>
+      </h1>
+      <p>Content Verification Platform</p>
     </div>
     
     <div class="error" id="error">
-      ❌ Incorrect password. Please try again.
+      <span class="error-icon">⚠️</span>
+      <span>Incorrect password. Please try again.</span>
     </div>
     
     <form id="authForm">
       <div class="form-group">
-        <label for="password">Password</label>
-        <input 
-          type="password" 
-          id="password" 
-          placeholder="Enter beta password"
-          required
-          autofocus
-        >
+        <label for="password">Beta Access Password</label>
+        <div class="input-wrapper">
+          <span class="input-icon">🔑</span>
+          <input 
+            type="password" 
+            id="password" 
+            placeholder="Enter your access password"
+            required
+            autofocus
+          >
+        </div>
       </div>
       
       <button type="submit">
-        🔓 Access Beta Site
+        Access Beta Platform →
       </button>
     </form>
+    
+    <div class="security-note">
+      <span class="security-icon">🛡️</span>
+      <span>Session expires after 24 hours</span>
+    </div>
+    
+    <div class="info-text">
+      This is a private beta test.<br>
+      Need access? Contact <a href="mailto:beta@verisource.io">beta@verisource.io</a>
+    </div>
   </div>
 
   <script>
-    // Password configuration
     const CORRECT_PASSWORD = 'verisource-beta-2024';
     const AUTH_KEY = 'verisource_auth';
-    const AUTH_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
+    const AUTH_EXPIRY = 24 * 60 * 60 * 1000;
 
-    // Check if already authenticated
     function isAuthenticated() {
       const auth = localStorage.getItem(AUTH_KEY);
       if (!auth) return false;
@@ -130,7 +306,6 @@
       const { timestamp } = JSON.parse(auth);
       const now = Date.now();
       
-      // Check if expired
       if (now - timestamp > AUTH_EXPIRY) {
         localStorage.removeItem(AUTH_KEY);
         return false;
@@ -139,12 +314,10 @@
       return true;
     }
 
-    // Redirect if already authenticated
     if (isAuthenticated()) {
-      window.location.href = '/verisource-beta/index.html'; // Change to your main page
+      window.location.href = '/verisource-beta/index.html';
     }
 
-    // Handle form submission
     document.getElementById('authForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
@@ -152,19 +325,15 @@
       const errorDiv = document.getElementById('error');
       
       if (password === CORRECT_PASSWORD) {
-        // Store authentication
         localStorage.setItem(AUTH_KEY, JSON.stringify({
           timestamp: Date.now()
         }));
-        
-        // Redirect to main site
-        window.location.href = '/verisource-beta/index.html'; // Change to your main page
+        window.location.href = '/verisource-beta/index.html';
       } else {
-        // Show error
         errorDiv.classList.add('show');
         document.getElementById('password').value = '';
+        document.getElementById('password').focus();
         
-        // Hide error after 3 seconds
         setTimeout(() => {
           errorDiv.classList.remove('show');
         }, 3000);
