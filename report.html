@@ -49,8 +49,8 @@
   </main>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const dataStr = params.get('data');
+    // Read data from sessionStorage instead of URL
+  const dataStr = sessionStorage.getItem('verificationData');
     
     if (!dataStr) {
       document.getElementById('reportContent').innerHTML = `
@@ -60,7 +60,7 @@
       `;
     } else {
       try {
-        const data = JSON.parse(decodeURIComponent(dataStr));
+        const data = JSON.parse(dataStr);
         displayReport(data);
       } catch (e) {
         document.getElementById('reportContent').innerHTML = `
