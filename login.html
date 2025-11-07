@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VeriSource Beta - Login</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .auth-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      padding: 48px;
+      max-width: 400px;
+      width: 100%;
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .logo h1 {
+      font-size: 32px;
+      color: #667eea;
+      margin-bottom: 8px;
+    }
+    .logo p {
+      color: #666;
+      font-size: 14px;
+    }
+    .form-group {
+      margin-bottom: 24px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+    input[type="password"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+    .error {
+      background: #fee;
+      color: #c33;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border-left: 4px solid #c33;
+      display: none;
+    }
+    .error.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="logo">
+      <h1>🔒 VeriSource Beta</h1>
+      <p>Enter password to access</p>
+    </div>
+    
+    <div class="error" id="error">
+      ❌ Incorrect password. Please try again.
+    </div>
+    
+    <form id="authForm">
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password" 
+          placeholder="Enter beta password"
+          required
+          autofocus
+        >
+      </div>
+      
+      <button type="submit">
+        🔓 Access Beta Site
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // Password configuration
+    const CORRECT_PASSWORD = 'verisource-beta-2024';
+    const AUTH_KEY = 'verisource_auth';
+    const AUTH_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
+
+    // Check if already authenticated
+    function isAuthenticated() {
+      const auth = localStorage.getItem(AUTH_KEY);
+      if (!auth) return false;
+      
+      const { timestamp } = JSON.parse(auth);
+      const now = Date.now();
+      
+      // Check if expired
+      if (now - timestamp > AUTH_EXPIRY) {
+        localStorage.removeItem(AUTH_KEY);
+        return false;
+      }
+      
+      return true;
+    }
+
+    // Redirect if already authenticated
+    if (isAuthenticated()) {
+      window.location.href = './index.html'; // Change to your main page
+    }
+
+    // Handle form submission
+    document.getElementById('authForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('error');
+      
+      if (password === CORRECT_PASSWORD) {
+        // Store authentication
+        localStorage.setItem(AUTH_KEY, JSON.stringify({
+          timestamp: Date.now()
+        }));
+        
+        // Redirect to main site
+        window.location.href = './index.html'; // Change to your main page
+      } else {
+        // Show error
+        errorDiv.classList.add('show');
+        document.getElementById('password').value = '';
+        
+        // Hide error after 3 seconds
+        setTimeout(() => {
+          errorDiv.classList.remove('show');
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>
