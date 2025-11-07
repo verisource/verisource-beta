@@ -4,293 +4,84 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VeriSource - Access Beta</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    /* Animated background elements */
-    body::before {
-      content: '';
-      position: absolute;
-      width: 500px;
-      height: 500px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      top: -250px;
-      right: -250px;
-      animation: float 20s infinite ease-in-out;
-    }
-    
-    body::after {
-      content: '';
-      position: absolute;
-      width: 400px;
-      height: 400px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 50%;
-      bottom: -200px;
-      left: -200px;
-      animation: float 15s infinite ease-in-out reverse;
-    }
-    
-    @keyframes float {
-      0%, 100% { transform: translateY(0px) translateX(0px); }
-      50% { transform: translateY(-20px) translateX(20px); }
-    }
-    
-    .login-container {
-      background: white;
-      border-radius: 24px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      padding: 48px;
-      max-width: 480px;
-      width: 100%;
-      position: relative;
-      z-index: 1;
-      animation: slideIn 0.5s ease-out;
-    }
-    
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    
-    .logo-section {
-      text-align: center;
-      margin-bottom: 40px;
-    }
-    
-    .logo-icon {
-      width: 64px;
-      height: 64px;
-      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-      border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 20px;
-      font-size: 32px;
-      box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
-    }
-    
-    .logo-section h1 {
-      font-size: 32px;
-      font-weight: 700;
-      color: #1e293b;
-      margin-bottom: 8px;
-      letter-spacing: -0.5px;
-    }
-    
-    .logo-section p {
-      color: #64748b;
-      font-size: 15px;
-      font-weight: 500;
-    }
-    
-    .beta-badge {
-      display: inline-block;
-      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-      color: white;
-      padding: 4px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-left: 8px;
-      letter-spacing: 0.5px;
-    }
-    
-    .error {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #991b1b;
-      padding: 16px;
-      border-radius: 12px;
-      margin-bottom: 24px;
-      display: none;
-      align-items: center;
-      font-size: 14px;
-      font-weight: 500;
-    }
-    
-    .error.show {
-      display: flex;
-    }
-    
-    .error-icon {
-      margin-right: 12px;
-      font-size: 18px;
-    }
-    
-    .form-group {
-      margin-bottom: 24px;
-    }
-    
-    label {
-      display: block;
-      margin-bottom: 8px;
-      color: #334155;
-      font-weight: 600;
-      font-size: 14px;
-      letter-spacing: 0.3px;
-    }
-    
-    .input-wrapper {
-      position: relative;
-    }
-    
-    .input-icon {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #94a3b8;
-      font-size: 20px;
-    }
-    
-    input[type="password"] {
-      width: 100%;
-      padding: 14px 16px 14px 48px;
-      border: 2px solid #e2e8f0;
-      border-radius: 12px;
-      font-size: 16px;
-      font-family: inherit;
-      transition: all 0.3s ease;
-      background: #f8fafc;
-    }
-    
-    input[type="password"]:focus {
-      outline: none;
-      border-color: #3b82f6;
-      background: white;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-    }
-    
-    button {
-      width: 100%;
-      padding: 16px;
-      background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-      letter-spacing: 0.3px;
-    }
-    
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.5);
-    }
-    
-    button:active {
-      transform: translateY(0);
-    }
-    
-    .info-text {
-      text-align: center;
-      margin-top: 24px;
-      color: #64748b;
-      font-size: 13px;
-      line-height: 1.6;
-    }
-    
-    .info-text a {
-      color: #3b82f6;
-      text-decoration: none;
-      font-weight: 600;
-    }
-    
-    .info-text a:hover {
-      text-decoration: underline;
-    }
-    
-    .security-note {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 20px;
-      padding: 12px;
-      background: #f8fafc;
-      border-radius: 8px;
-      font-size: 12px;
-      color: #64748b;
-    }
-    
-    .security-icon {
-      margin-right: 8px;
-      color: #3b82f6;
     }
   </style>
 </head>
-<body>
-  <div class="login-container">
-    <div class="logo-section">
-      <div class="logo-icon">🔒</div>
-      <h1>
-        VeriSource
-        <span class="beta-badge">BETA</span>
-      </h1>
-      <p>Content Verification Platform</p>
-    </div>
-    
-    <div class="error" id="error">
-      <span class="error-icon">⚠️</span>
-      <span>Incorrect password. Please try again.</span>
-    </div>
-    
-    <form id="authForm">
-      <div class="form-group">
-        <label for="password">Beta Access Password</label>
-        <div class="input-wrapper">
-          <span class="input-icon">🔑</span>
-          <input 
-            type="password" 
-            id="password" 
-            placeholder="Enter your access password"
-            required
-            autofocus
-          >
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-4">
+  
+  <div class="max-w-md w-full">
+    <!-- Logo Section -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 mb-4">
+        <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-slate-950 font-bold text-2xl">
+          V
         </div>
       </div>
-      
-      <button type="submit">
-        Access Beta Platform →
-      </button>
-    </form>
-    
-    <div class="security-note">
-      <span class="security-icon">🛡️</span>
-      <span>Session expires after 24 hours</span>
+      <h1 class="text-3xl font-bold mb-2">
+        VeriSource
+        <span class="inline-block ml-2 px-3 py-1 text-xs font-semibold bg-gradient-to-r from-blue-400 to-cyan-400 text-slate-950 rounded-full">BETA</span>
+      </h1>
+      <p class="text-slate-400">Content Verification Platform</p>
     </div>
-    
-    <div class="info-text">
-      This is a private beta test.<br>
-      Need access? Contact <a href="mailto:beta@verisource.io">beta@verisource.io</a>
+
+    <!-- Login Card -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-8 shadow-2xl">
+      
+      <!-- Error Message -->
+      <div id="error" class="hidden mb-6 p-4 bg-red-950 border border-red-800 rounded-lg text-red-200 text-sm flex items-center gap-2">
+        <span>⚠️</span>
+        <span>Incorrect password. Please try again.</span>
+      </div>
+
+      <!-- Form -->
+      <form id="authForm">
+        <div class="mb-6">
+          <label for="password" class="block text-sm font-semibold text-slate-200 mb-2">
+            Beta Access Password
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
+              🔑
+            </div>
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter your access password"
+              required
+              autofocus
+              class="w-full pl-12 pr-4 py-3 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+            >
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full py-3 px-4 bg-gradient-to-r from-blue-400 to-cyan-400 text-slate-950 font-semibold rounded-lg hover:from-blue-500 hover:to-cyan-500 transition transform hover:scale-[1.02] active:scale-100 shadow-lg"
+        >
+          Access Beta Platform →
+        </button>
+      </form>
+
+      <!-- Security Note -->
+      <div class="mt-6 pt-6 border-t border-slate-800">
+        <div class="flex items-center justify-center gap-2 text-xs text-slate-500">
+          <span>🛡️</span>
+          <span>Session expires after 24 hours</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="mt-6 text-center text-sm text-slate-400">
+      <p>This is a private beta test.</p>
+      <p class="mt-1">
+        Need access? Contact <a href="mailto:beta@verisource.io" class="text-blue-400 hover:text-cyan-400 transition">beta@verisource.io</a>
+      </p>
     </div>
   </div>
 
@@ -330,12 +121,12 @@
         }));
         window.location.href = '/verisource-beta/index.html';
       } else {
-        errorDiv.classList.add('show');
+        errorDiv.classList.remove('hidden');
         document.getElementById('password').value = '';
         document.getElementById('password').focus();
         
         setTimeout(() => {
-          errorDiv.classList.remove('show');
+          errorDiv.classList.add('hidden');
         }, 3000);
       }
     });
