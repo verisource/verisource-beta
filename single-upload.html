@@ -253,7 +253,7 @@
           </div>
           <div class="flex-1">
             <p class="font-semibold text-lg" style="color: ${statusColor}">${statusLabel}</p>
-            <a href="report.html?data=${encodeURIComponent(JSON.stringify(data))}" target="_blank" class="text-xs text-blue-400 hover:text-blue-300 underline">
+           <a href="#" onclick="sessionStorage.setItem('"'"'verificationData'"'"', JSON.stringify(data)); window.open('"'"'report.html'"'"', '"'"'_blank'"'"'); return false;" class="text-xs text-blue-400 hover:text-blue-300 underline">
               View Report →
             </a>
           </div>
