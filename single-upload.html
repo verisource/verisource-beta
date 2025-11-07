@@ -267,7 +267,7 @@
       `;
 
       document.getElementById('fileId').textContent = data.verification?.previous_uploads?.[0]?.verification_id || 'New Upload';
-      document.getElementById('sha256').textContent = data.canonical?.fingerprint || 'N/A';
+      document.getElementById('sha256').textContent = data.fingerprint?.hash || 'N/A';
       document.getElementById('format').textContent = (data.kind || 'unknown').toUpperCase();
       document.getElementById('size').textContent = formatFileSize(data.size_bytes || 0);
 
