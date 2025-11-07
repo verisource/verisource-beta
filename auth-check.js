@@ -20,6 +20,6 @@
   
   // Redirect to login if not authenticated
   if (!isAuthenticated() && !window.location.pathname.includes('login.html')) {
-    window.location.href = './login.html';
+    window.location.href = '/verisource-beta/login.html';
   }
 })();
