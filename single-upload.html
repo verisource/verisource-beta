@@ -143,7 +143,7 @@
             <div class="text-xs space-y-1" id="metadata"></div>
           </div>
 
-          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2" id="aiDetectionSection">
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="aiDetectionSection">
             <h3 class="text-sm font-semibold text-slate-300">AI Content Analysis</h3>
             <div class="text-xs space-y-1" id="aiDetection"></div>
           </div>
@@ -379,27 +379,34 @@
         <div class="flex justify-between"><span class="text-slate-500">Size:</span><span class="text-slate-300">${formatFileSize(data.size_bytes || 0)}</span></div>
       `;
 
-      // AI Content Analysis
+      // AI Content Analysis - only show if data exists
+      const aiDetectionSection = document.getElementById('aiDetectionSection');
       const aiDetectionDiv = document.getElementById('aiDetection');
       const aiData = data.ai_detection || data.google_vision || {};
-      const aiGenProb = aiData.ai_generated_probability || aiData.confidence || 0;
-      const aiVerdict = aiData.verdict || aiData.label || 'PENDING';
-      const aiMethod = aiData.detection_method || 'Google Vision API';
+      const aiVerdict = aiData.verdict || aiData.label;
       
-      aiDetectionDiv.innerHTML = `
-        <div class="flex justify-between">
-          <span class="text-slate-500">AI Generated Probability:</span>
-          <span class="text-slate-300 font-semibold">${Math.round(aiGenProb)}%</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-slate-500">Detection Method:</span>
-          <span class="text-slate-300">${aiMethod}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-slate-500">Verdict:</span>
-          <span class="text-slate-300 font-semibold ${aiVerdict === 'AUTHENTIC' ? 'text-green-400' : aiVerdict === 'SUSPICIOUS' ? 'text-yellow-400' : 'text-red-400'}">${aiVerdict}</span>
-        </div>
-      `;
+      if (aiVerdict && aiVerdict !== 'PENDING') {
+        const aiGenProb = aiData.ai_generated_probability || aiData.confidence || 0;
+        const aiMethod = aiData.detection_method || 'Google Vision API';
+        
+        aiDetectionSection.classList.remove('hidden');
+        aiDetectionDiv.innerHTML = `
+          <div class="flex justify-between">
+            <span class="text-slate-500">AI Generated Probability:</span>
+            <span class="text-slate-300 font-semibold">${Math.round(aiGenProb)}%</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Detection Method:</span>
+            <span class="text-slate-300">${aiMethod}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Verdict:</span>
+            <span class="text-slate-300 font-semibold ${aiVerdict === 'AUTHENTIC' ? 'text-green-400' : aiVerdict === 'SUSPICIOUS' ? 'text-yellow-400' : 'text-red-400'}">${aiVerdict}</span>
+          </div>
+        `;
+      } else {
+        aiDetectionSection.classList.add('hidden');
+      }
 
       // Duplicate Detection
       const duplicateDiv = document.getElementById('duplicateResults');
