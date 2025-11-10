@@ -296,25 +296,14 @@
           </div>
         ` : ''}
       `;
-      // Add click handler for View Report button to store data
+      // Add click handler for View Report button (data already stored above)
       setTimeout(() => {
         const viewReportBtn = document.getElementById('viewReportBtn');
         console.log('View Report Button:', viewReportBtn);
         if (viewReportBtn) {
           viewReportBtn.onclick = function(e) {
-            // Don't prevent default - let the link navigate normally
-            console.log('View Report clicked!');
-            console.log('Storing data:', data);
-            
-            try {
-              sessionStorage.setItem('verificationData', JSON.stringify(data));
-              console.log('Data stored successfully');
-              // Link will navigate to report.html automatically
-            } catch (err) {
-              console.error('Error storing data:', err);
-              e.preventDefault();
-              alert('Error storing data: ' + err.message);
-            }
+            console.log('View Report clicked! Data should already be in sessionStorage.');
+            // Data was already stored above, so just let the link work
           };
         } else {
           console.error('View Report button not found!');
@@ -488,6 +477,14 @@
       timestampDiv.textContent = `Verified on: ${verificationDate.toLocaleDateString()} at ${verificationDate.toLocaleTimeString()}`;
 
       results.classList.remove('hidden');
+      
+      // Store data immediately for report access
+      try {
+        sessionStorage.setItem('verificationData', JSON.stringify(data));
+        console.log('✅ Data stored in sessionStorage for report access');
+      } catch (err) {
+        console.error('❌ Error storing data:', err);
+      }
     }
 
     function formatFileSize(bytes) {
