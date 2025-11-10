@@ -284,7 +284,7 @@
           </div>
           <div class="flex-1">
             <p class="font-semibold text-lg" style="color: ${statusColor}">${statusLabel}</p>
-           <a href="#" id="viewReportBtn" class="text-xs text-blue-400 hover:text-blue-300 underline">
+           <a href="report.html" id="viewReportBtn" target="_blank" class="text-xs text-blue-400 hover:text-blue-300 underline">
               View Report →
             </a>
           </div>
@@ -296,20 +296,28 @@
           </div>
         ` : ''}
       `;
-      // Add click handler for View Report button
+      // Add click handler for View Report button to store data
       setTimeout(() => {
         const viewReportBtn = document.getElementById('viewReportBtn');
         console.log('View Report Button:', viewReportBtn);
         if (viewReportBtn) {
           viewReportBtn.onclick = function(e) {
-            e.preventDefault();
+            // Don't prevent default - let the link navigate normally
             console.log('View Report clicked!');
             console.log('Storing data:', data);
-            sessionStorage.setItem('verificationData', JSON.stringify(data));
-            console.log('Opening report.html...');
-            window.open('report.html', '_blank');
-            return false;
+            
+            try {
+              sessionStorage.setItem('verificationData', JSON.stringify(data));
+              console.log('Data stored successfully');
+              // Link will navigate to report.html automatically
+            } catch (err) {
+              console.error('Error storing data:', err);
+              e.preventDefault();
+              alert('Error storing data: ' + err.message);
+            }
           };
+        } else {
+          console.error('View Report button not found!');
         }
       }, 100);
       
