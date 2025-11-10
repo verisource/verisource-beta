@@ -133,12 +133,8 @@
                 <p class="text-slate-300 break-all" id="sha256"></p>
               </div>
               <div>
-                <span class="text-slate-500">Format:</span>
-                <span class="text-slate-300" id="format"></span>
-              </div>
-              <div>
-                <span class="text-slate-500">Size:</span>
-                <span class="text-slate-300" id="size"></span>
+                <span class="text-slate-500">pHash:</span>
+                <p class="text-slate-300 break-all" id="phash"></p>
               </div>
             </div>
           </div>
@@ -277,17 +273,18 @@
           };
         }
       }, 100);
+      
+      // Fingerprint Details - cryptographic identifiers only
       document.getElementById('fileId').textContent = data.verification?.previous_uploads?.[0]?.verification_id || 'New Upload';
       document.getElementById('sha256').textContent = data.fingerprint?.hash || 'N/A';
-      document.getElementById('format').textContent = (data.kind || 'unknown').toUpperCase();
-      document.getElementById('size').textContent = formatFileSize(data.size_bytes || 0);
+      document.getElementById('phash').textContent = data.phash || 'N/A';
 
+      // Metadata - file properties and attributes
       const metadataDiv = document.getElementById('metadata');
       metadataDiv.innerHTML = `
         <div class="flex justify-between"><span class="text-slate-500">Filename:</span><span class="text-slate-300">${data.filename || 'N/A'}</span></div>
-        <div class="flex justify-between"><span class="text-slate-500">pHash:</span><span class="text-slate-300 break-all font-mono text-[10px]">${data.phash || 'N/A'}</span></div>
-        <div class="flex justify-between"><span class="text-slate-500">Algorithm:</span><span class="text-slate-300">${data.canonical?.algorithm || 'N/A'}</span></div>
-        ${conf.percentage ? `<div class="flex justify-between"><span class="text-slate-500">Confidence:</span><span class="text-slate-300">${conf.percentage}% (${conf.level})</span></div>` : ''}
+        <div class="flex justify-between"><span class="text-slate-500">Format:</span><span class="text-slate-300">${(data.kind || 'unknown').toUpperCase()}</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">Size:</span><span class="text-slate-300">${formatFileSize(data.size_bytes || 0)}</span></div>
       `;
 
       results.classList.remove('hidden');
