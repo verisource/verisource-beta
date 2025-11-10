@@ -241,6 +241,17 @@
         });
 
         const data = await res.json();
+        
+        // DEBUG: Log what we're getting from the API
+        console.log('=== VeriSource API Response ===');
+        console.log('Full response:', data);
+        console.log('Google Vision:', data.google_vision);
+        console.log('Web Detection:', data.google_vision?.web_detection);
+        console.log('Matching Pages:', data.google_vision?.web_detection?.pages_with_matching_images);
+        console.log('VirusTotal:', data.virustotal);
+        console.log('AI Detection:', data.ai_detection);
+        console.log('==============================');
+        
         displayResults(data);
       } catch (e) {
         alert('Upload failed: ' + e.message);
