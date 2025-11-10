@@ -222,12 +222,23 @@
               <span class="text-slate-500">Similar Images:</span>
               <span class="text-slate-200 font-semibold">${similarImages.length > 0 ? similarImages.length + ' found' : 'None found'}</span>
             </div>
-            ${previousUploads.length > 0 || data.first_seen ? `
-            <div class="flex justify-between items-center">
-              <span class="text-slate-500">First Uploaded:</span>
-              <span class="text-slate-200">${new Date(previousUploads[0]?.upload_date || data.first_seen).toLocaleDateString()}</span>
-            </div>
-            ` : ''}
+            ${(() => {
+              const firstSeenDate = previousUploads[0]?.upload_date || data.first_seen;
+              if (!firstSeenDate) return '';
+              try {
+                const date = new Date(firstSeenDate);
+                if (isNaN(date.getTime())) return '';
+                const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                return `
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-500">First Uploaded:</span>
+                  <span class="text-slate-200">${formattedDate}</span>
+                </div>
+                `;
+              } catch (e) {
+                return '';
+              }
+            })()}
             ${previousUploads.length > 0 ? `
             <div class="mt-4 pt-4 border-t border-slate-700 bg-amber-500/10 rounded-lg p-3">
               <p class="text-amber-300 text-xs font-semibold">⚠️ Previously Verified Content</p>
@@ -251,7 +262,14 @@
             </div>
             <div class="flex justify-between items-center">
               <span class="text-slate-500">Web Matches:</span>
-              <span class="text-slate-200">${googleVision.web_detection?.pages_with_matching_images?.length || 0} similar images online</span>
+              ${(() => {
+                const matchCount = googleVision.web_detection?.pages_with_matching_images?.length || 0;
+                if (matchCount > 0) {
+                  return `<a href="#" onclick="openWebMatches(); return false;" class="text-blue-400 hover:text-blue-300 underline font-semibold">${matchCount} results found →</a>`;
+                } else {
+                  return `<span class="text-slate-200">None found</span>`;
+                }
+              })()}
             </div>
             ${googleVision.labels?.length > 0 ? `
             <div class="mt-4 pt-4 border-t border-slate-700">
@@ -432,6 +450,11 @@
       };
       
       html2pdf().set(opt).from(element).save();
+    }
+
+    function openWebMatches() {
+      // Data is already in sessionStorage from when report was loaded
+      window.open('web-matches.html', '_blank', 'width=1200,height=800');
     }
 
     function formatFileSize(bytes) {
