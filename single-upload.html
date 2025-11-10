@@ -299,10 +299,14 @@
       // Add click handler for View Report button
       setTimeout(() => {
         const viewReportBtn = document.getElementById('viewReportBtn');
+        console.log('View Report Button:', viewReportBtn);
         if (viewReportBtn) {
           viewReportBtn.onclick = function(e) {
             e.preventDefault();
+            console.log('View Report clicked!');
+            console.log('Storing data:', data);
             sessionStorage.setItem('verificationData', JSON.stringify(data));
+            console.log('Opening report.html...');
             window.open('report.html', '_blank');
             return false;
           };
