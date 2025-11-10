@@ -198,7 +198,8 @@
           </div>
         </div>
 
-        <!-- AI Content Analysis -->
+        <!-- AI Content Analysis (only if data exists) -->
+        ${aiData.verdict && aiData.verdict !== 'PENDING' ? `
         <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in print-section">
           <h2 class="text-xl font-bold mb-4">🤖 AI Content Analysis</h2>
           <div class="space-y-3 text-sm">
@@ -217,11 +218,12 @@
             <div class="flex justify-between items-center">
               <span class="text-slate-500">Verdict:</span>
               <span class="font-semibold ${aiData.verdict === 'AUTHENTIC' ? 'text-green-400' : aiData.verdict === 'SUSPICIOUS' ? 'text-yellow-400' : 'text-red-400'}">
-                ${aiData.verdict || aiData.label || 'PENDING'}
+                ${aiData.verdict || aiData.label}
               </span>
             </div>
           </div>
         </div>
+        ` : ''}
 
         <!-- Duplicate Detection -->
         <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in print-section">
