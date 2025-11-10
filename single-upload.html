@@ -405,7 +405,10 @@
         </div>
         <div class="flex justify-between">
           <span class="text-slate-500">Web Matches:</span>
-          <span class="text-slate-300">${webMatches > 0 ? webMatches + ' similar images found' : 'None found'}</span>
+          ${webMatches > 0 
+            ? `<a href="#" id="webMatchesBtn" class="text-blue-400 hover:text-blue-300 underline font-semibold">${webMatches} results found →</a>`
+            : `<span class="text-slate-300">None found</span>`
+          }
         </div>
         ${googleVision.labels ? `
         <div class="mt-2 pt-2 border-t border-slate-700">
@@ -418,6 +421,21 @@
         </div>
         ` : ''}
       `;
+      
+      // Add click handler for Web Matches button if it exists
+      if (webMatches > 0) {
+        setTimeout(() => {
+          const webMatchesBtn = document.getElementById('webMatchesBtn');
+          if (webMatchesBtn) {
+            webMatchesBtn.onclick = function(e) {
+              e.preventDefault();
+              sessionStorage.setItem('verificationData', JSON.stringify(data));
+              window.open('web-matches.html', '_blank');
+              return false;
+            };
+          }
+        }, 100);
+      }
 
       // Video Frame Analysis (only show if video)
       const videoSection = document.getElementById('videoSection');
