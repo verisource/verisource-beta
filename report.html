@@ -265,7 +265,7 @@
               ${(() => {
                 const matchCount = googleVision.web_detection?.pages_with_matching_images?.length || 0;
                 if (matchCount > 0) {
-                  return `<a href="#" onclick="openWebMatches(); return false;" class="text-blue-400 hover:text-blue-300 underline font-semibold">${matchCount} results found →</a>`;
+                  return `<a href="#" id="webMatchesLink" class="text-blue-400 hover:text-blue-300 underline font-semibold">${matchCount} results found →</a>`;
                 } else {
                   return `<span class="text-slate-200">None found</span>`;
                 }
@@ -410,6 +410,15 @@
       `;
 
       document.getElementById('reportContent').innerHTML = html;
+      
+      // Add event listener for web matches link
+      const webMatchesLink = document.getElementById('webMatchesLink');
+      if (webMatchesLink) {
+        webMatchesLink.addEventListener('click', function(e) {
+          e.preventDefault();
+          openWebMatches();
+        });
+      }
     }
 
     function toggleSection(sectionId) {
