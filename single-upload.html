@@ -284,9 +284,9 @@
           </div>
           <div class="flex-1">
             <p class="font-semibold text-lg" style="color: ${statusColor}">${statusLabel}</p>
-           <a href="report.html" id="viewReportBtn" target="_blank" class="text-xs text-blue-400 hover:text-blue-300 underline">
+            <button id="viewReportBtn" class="text-xs text-blue-400 hover:text-blue-300 underline bg-transparent border-0 cursor-pointer p-0">
               View Report →
-            </a>
+            </button>
           </div>
         </div>
         ${isModified ? `
@@ -299,16 +299,70 @@
       // Add click handler for View Report button (data already stored above)
       setTimeout(() => {
         const viewReportBtn = document.getElementById('viewReportBtn');
-        console.log('View Report Button:', viewReportBtn);
+        console.log('🔍 Looking for View Report Button...');
+        console.log('Button found:', viewReportBtn);
+        console.log('Button HTML:', viewReportBtn ? viewReportBtn.outerHTML : 'NOT FOUND');
+        
         if (viewReportBtn) {
-          viewReportBtn.onclick = function(e) {
-            console.log('View Report clicked! Data should already be in sessionStorage.');
-            // Data was already stored above, so just let the link work
-          };
+          console.log('✅ Attaching click handler to View Report button');
+          
+          viewReportBtn.addEventListener('click', function(e) {
+            console.log('🎯 VIEW REPORT CLICKED!!!');
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Verify data is in sessionStorage
+            const storedData = sessionStorage.getItem('verificationData');
+            console.log('Data in sessionStorage:', storedData ? 'YES ✅' : 'NO ❌');
+            
+            // Try multiple methods to open the report
+            console.log('Attempting to open report.html...');
+            
+            // Method 1: window.open with specific features
+            try {
+              const reportWindow = window.open('report.html', '_blank', 'noopener,noreferrer');
+              console.log('Method 1 (window.open) result:', reportWindow);
+              if (reportWindow) {
+                console.log('✅ Report opened in new window');
+                return;
+              }
+            } catch (err) {
+              console.error('Method 1 failed:', err);
+            }
+            
+            // Method 2: Create and click a temporary link
+            try {
+              console.log('Trying Method 2: temporary link...');
+              const tempLink = document.createElement('a');
+              tempLink.href = 'report.html';
+              tempLink.target = '_blank';
+              tempLink.rel = 'noopener noreferrer';
+              document.body.appendChild(tempLink);
+              tempLink.click();
+              document.body.removeChild(tempLink);
+              console.log('✅ Method 2 executed');
+              return;
+            } catch (err) {
+              console.error('Method 2 failed:', err);
+            }
+            
+            // Method 3: Open in same tab as last resort
+            try {
+              console.log('Trying Method 3: same tab navigation...');
+              window.location.href = 'report.html';
+              console.log('✅ Navigating in same tab');
+            } catch (err) {
+              console.error('Method 3 failed:', err);
+              alert('Unable to open report. Please check browser console for errors.');
+            }
+          });
+          
+          console.log('✅ Click handler attached successfully');
         } else {
-          console.error('View Report button not found!');
+          console.error('❌ View Report button NOT FOUND in DOM!');
+          console.log('Status card HTML:', document.getElementById('statusCard').innerHTML);
         }
-      }, 100);
+      }, 150);
       
       // Fingerprint Details - cryptographic identifiers only
       document.getElementById('fileId').textContent = data.verification?.previous_uploads?.[0]?.verification_id || 'New Upload';
