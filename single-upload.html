@@ -56,7 +56,7 @@
         <div>
           <h2 class="text-xl font-semibold mb-2">Upload Image</h2>
           <p class="text-sm text-slate-400">
-            Select an image file to verify. Supported formats: JPG, PNG, GIF, WebP
+            Select an image or video file to verify. Images: JPG, PNG, GIF, WebP | Videos: MP4, MOV, AVI, WEBM
           </p>
         </div>
 
@@ -68,10 +68,10 @@
               </svg>
             </div>
             <div>
-              <p class="text-sm font-medium text-slate-200">Drop your image here or click to browse</p>
-              <p class="text-xs text-slate-500 mt-1">Maximum file size: 50MB</p>
+              <p class="text-sm font-medium text-slate-200">Drop your image or video here or click to browse</p>
+              <p class="text-xs text-slate-500 mt-1">Maximum file size: 200MB</p>
             </div>
-            <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="handleFileSelect(this.files[0])">
+            <input type="file" id="fileInput" accept="image/*,video/*" class="hidden" onchange="handleFileSelect(this.files[0])">
           </div>
         </div>
 
@@ -142,6 +142,30 @@
           <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2">
             <h3 class="text-sm font-semibold text-slate-300">Metadata</h3>
             <div class="text-xs space-y-1" id="metadata"></div>
+          </div>
+
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2" id="aiDetectionSection">
+            <h3 class="text-sm font-semibold text-slate-300">AI Content Analysis</h3>
+            <div class="text-xs space-y-1" id="aiDetection"></div>
+          </div>
+
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2" id="duplicateSection">
+            <h3 class="text-sm font-semibold text-slate-300">Duplicate Detection</h3>
+            <div class="text-xs space-y-1" id="duplicateResults"></div>
+          </div>
+
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2" id="externalSection">
+            <h3 class="text-sm font-semibold text-slate-300">External Verification</h3>
+            <div class="text-xs space-y-1" id="externalVerification"></div>
+          </div>
+
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="videoSection">
+            <h3 class="text-sm font-semibold text-slate-300">Video Frame Analysis</h3>
+            <div class="text-xs space-y-1" id="videoAnalysis"></div>
+          </div>
+
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4">
+            <div class="text-xs text-slate-500 text-center" id="verificationTimestamp"></div>
           </div>
         </div>
       </div>
@@ -287,6 +311,126 @@
         <div class="flex justify-between"><span class="text-slate-500">Size:</span><span class="text-slate-300">${formatFileSize(data.size_bytes || 0)}</span></div>
       `;
 
+      // AI Content Analysis
+      const aiDetectionDiv = document.getElementById('aiDetection');
+      const aiData = data.ai_detection || data.google_vision || {};
+      const aiGenProb = aiData.ai_generated_probability || aiData.confidence || 0;
+      const aiVerdict = aiData.verdict || aiData.label || 'PENDING';
+      const aiMethod = aiData.detection_method || 'Google Vision API';
+      
+      aiDetectionDiv.innerHTML = `
+        <div class="flex justify-between">
+          <span class="text-slate-500">AI Generated Probability:</span>
+          <span class="text-slate-300 font-semibold">${Math.round(aiGenProb)}%</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Detection Method:</span>
+          <span class="text-slate-300">${aiMethod}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Verdict:</span>
+          <span class="text-slate-300 font-semibold ${aiVerdict === 'AUTHENTIC' ? 'text-green-400' : aiVerdict === 'SUSPICIOUS' ? 'text-yellow-400' : 'text-red-400'}">${aiVerdict}</span>
+        </div>
+      `;
+
+      // Duplicate Detection
+      const duplicateDiv = document.getElementById('duplicateResults');
+      const previousUploads = data.verification?.previous_uploads || [];
+      const similarImages = data.similar_images || [];
+      const firstSeen = previousUploads[0]?.upload_date || data.first_seen || null;
+      
+      duplicateDiv.innerHTML = `
+        <div class="flex justify-between">
+          <span class="text-slate-500">Exact Matches:</span>
+          <span class="text-slate-300 font-semibold">${previousUploads.length > 0 ? previousUploads.length + ' found' : 'None found'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Similar Images:</span>
+          <span class="text-slate-300 font-semibold">${similarImages.length > 0 ? similarImages.length + ' found' : 'None found'}</span>
+        </div>
+        ${firstSeen ? `
+        <div class="flex justify-between">
+          <span class="text-slate-500">First Uploaded:</span>
+          <span class="text-slate-300">${new Date(firstSeen).toLocaleDateString()}</span>
+        </div>
+        ` : ''}
+        ${previousUploads.length > 0 ? `
+        <div class="mt-2 pt-2 border-t border-slate-700">
+          <p class="text-amber-300 text-xs">⚠️ This file was previously verified</p>
+          <p class="text-slate-400 text-xs mt-1">Total verifications: ${previousUploads.length}</p>
+        </div>
+        ` : ''}
+      `;
+
+      // External Verification
+      const externalDiv = document.getElementById('externalVerification');
+      const virusTotal = data.virustotal || data.external_checks?.virustotal || {};
+      const googleVision = data.google_vision || data.external_checks?.google_vision || {};
+      const webMatches = googleVision.web_detection?.pages_with_matching_images?.length || 0;
+      
+      externalDiv.innerHTML = `
+        <div class="flex justify-between">
+          <span class="text-slate-500">VirusTotal:</span>
+          <span class="text-slate-300">${virusTotal.found ? `Found (${virusTotal.upload_count || 'multiple'} uploads)` : 'Not found'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Google Vision:</span>
+          <span class="text-slate-300">${googleVision.safe_search_detection ? 'Safe content' : 'Analyzed'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Web Matches:</span>
+          <span class="text-slate-300">${webMatches > 0 ? webMatches + ' similar images found' : 'None found'}</span>
+        </div>
+        ${googleVision.labels ? `
+        <div class="mt-2 pt-2 border-t border-slate-700">
+          <span class="text-slate-500">Detected Labels:</span>
+          <div class="flex flex-wrap gap-1 mt-1">
+            ${googleVision.labels.slice(0, 5).map(label => 
+              `<span class="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded">${label.description || label}</span>`
+            ).join('')}
+          </div>
+        </div>
+        ` : ''}
+      `;
+
+      // Video Frame Analysis (only show if video)
+      const videoSection = document.getElementById('videoSection');
+      const videoAnalysisDiv = document.getElementById('videoAnalysis');
+      
+      if (data.video_analysis || data.frames_analyzed) {
+        const videoData = data.video_analysis || {};
+        const framesAnalyzed = videoData.frames_analyzed || data.frames_analyzed || 0;
+        const suspiciousFrames = videoData.suspicious_frames_percentage || 0;
+        const aiGeneratedFrames = videoData.ai_generated_frames_percentage || 0;
+        
+        videoSection.classList.remove('hidden');
+        videoAnalysisDiv.innerHTML = `
+          <div class="flex justify-between">
+            <span class="text-slate-500">Frames Analyzed:</span>
+            <span class="text-slate-300 font-semibold">${framesAnalyzed}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Suspicious Frames:</span>
+            <span class="text-slate-300 ${suspiciousFrames > 10 ? 'text-red-400' : 'text-green-400'}">${suspiciousFrames.toFixed(1)}%</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">AI Generated Frames:</span>
+            <span class="text-slate-300 ${aiGeneratedFrames > 10 ? 'text-red-400' : 'text-green-400'}">${aiGeneratedFrames.toFixed(1)}%</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Overall Verdict:</span>
+            <span class="text-slate-300 font-semibold ${suspiciousFrames < 10 ? 'text-green-400' : 'text-amber-400'}">${suspiciousFrames < 10 ? 'AUTHENTIC' : 'SUSPICIOUS'}</span>
+          </div>
+        `;
+      } else {
+        videoSection.classList.add('hidden');
+      }
+
+      // Verification Timestamp
+      const timestampDiv = document.getElementById('verificationTimestamp');
+      const verificationDate = new Date();
+      timestampDiv.textContent = `Verified on: ${verificationDate.toLocaleDateString()} at ${verificationDate.toLocaleTimeString()}`;
+
       results.classList.remove('hidden');
     }
 
@@ -298,3 +442,4 @@
   </script>
 </body>
 </html>
+
