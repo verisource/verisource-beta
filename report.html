@@ -1,22 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="./auth-check.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Single Upload - VeriSource™</title>
+  <title>Verification Report - VeriSource™</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+    
+    .collapsible-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+    .collapsible-content.expanded {
+      max-height: 2000px;
+    }
+    
+    @media print {
+      body { background: white; color: black; }
+      .no-print { display: none !important; }
+      .print-section { page-break-inside: avoid; }
+      header { position: static !important; }
+      .bg-slate-950 { background: white !important; }
+      .bg-slate-900\/60 { background: #f8f9fa !important; border: 1px solid #dee2e6 !important; }
+      .text-slate-100, .text-slate-200, .text-slate-300 { color: #000 !important; }
+      .text-slate-400, .text-slate-500 { color: #666 !important; }
+      .border-slate-800, .border-slate-700 { border-color: #dee2e6 !important; }
+    }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
   
-  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50 no-print">
     <div class="max-w-6xl mx-auto px-4 py-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -27,440 +48,444 @@
             <div class="text-lg font-semibold tracking-tight">
               VeriSource<span class="align-top text-xs ml-0.5">™</span>
             </div>
-            <p class="text-xs text-slate-400">Single Upload</p>
+            <p class="text-xs text-slate-400">Verification Report</p>
           </div>
         </div>
-
-        <div class="flex items-center gap-4">
-          <a href="index.html" class="text-sm text-slate-400 hover:text-blue-400 transition">← Back to Home</a>
-          <a href="bulk-upload.html" class="text-sm px-4 py-2 rounded-lg border border-slate-700 hover:border-blue-500 hover:bg-slate-900 transition">
-            Try Bulk Upload
-          </a>
+        <div class="flex gap-2">
+          <button onclick="downloadPDF()" class="text-sm px-4 py-2 rounded-lg border border-slate-700 hover:border-blue-500 hover:bg-slate-900 transition">
+            📥 Download PDF
+          </button>
+          <button onclick="window.print()" class="text-sm px-4 py-2 rounded-lg border border-slate-700 hover:border-blue-500 hover:bg-slate-900 transition">
+            🖨️ Print Report
+          </button>
         </div>
       </div>
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-4 py-10">
+  <main class="max-w-4xl mx-auto px-4 py-10">
     
-    <div class="text-center mb-10 fade-in">
-      <h1 class="text-3xl md:text-4xl font-bold mb-3">Single File Verification</h1>
-      <p class="text-slate-400 max-w-2xl mx-auto">
-        Upload a single image to generate a cryptographic fingerprint and receive a comprehensive verification report
-      </p>
-    </div>
-
-    <div class="grid lg:grid-cols-2 gap-8">
-      
-      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-6 fade-in">
-        <div>
-          <h2 class="text-xl font-semibold mb-2">Upload Image</h2>
-          <p class="text-sm text-slate-400">
-            Select an image or video file to verify. Images: JPG, PNG, GIF, WebP | Videos: MP4, MOV, AVI, WEBM
-          </p>
-        </div>
-
-        <div class="border-2 border-dashed border-slate-700 rounded-xl p-8 text-center hover:border-blue-500/50 transition cursor-pointer bg-slate-900/30" id="dropzone">
-          <div class="space-y-4">
-            <div class="mx-auto h-16 w-16 rounded-full bg-blue-500/10 flex items-center justify-center">
-              <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-              </svg>
-            </div>
-            <div>
-              <p class="text-sm font-medium text-slate-200">Drop your image or video here or click to browse</p>
-              <p class="text-xs text-slate-500 mt-1">Maximum file size: 200MB</p>
-            </div>
-            <input type="file" id="fileInput" accept="image/*,video/*" class="hidden" onchange="handleFileSelect(this.files[0])">
-          </div>
-        </div>
-
-        <div id="fileInfo" class="hidden bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-              </div>
-              <div>
-                <p class="text-sm font-medium" id="fileName"></p>
-                <p class="text-xs text-slate-400" id="fileSize"></p>
-              </div>
-            </div>
-            <button onclick="clearFile()" class="text-slate-400 hover:text-red-400 transition">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <button onclick="uploadFile()" id="uploadBtn" disabled class="w-full py-3 px-6 rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-400 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500">
-          Verify File
-        </button>
-
-        <div id="loading" class="hidden text-center py-4">
-          <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-500 border-r-transparent"></div>
-          <p class="text-sm text-slate-400 mt-2">Processing your file...</p>
-        </div>
-      </div>
-
-      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
-        <h2 class="text-xl font-semibold mb-4">Verification Results</h2>
-        
-        <div id="resultsPlaceholder" class="text-center py-12">
-          <div class="mx-auto h-16 w-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4">
-            <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <p class="text-sm text-slate-500">Upload a file to see verification results</p>
-        </div>
-
-        <div id="results" class="hidden space-y-4">
-          <div id="statusCard" class="rounded-lg border p-4"></div>
-
-          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-3">
-            <h3 class="text-sm font-semibold text-slate-300">Fingerprint Details</h3>
-            <div class="space-y-2 text-xs font-mono">
-              <div>
-                <span class="text-slate-500">File ID:</span>
-                <p class="text-slate-300 break-all" id="fileId"></p>
-              </div>
-              <div>
-                <span class="text-slate-500">SHA-256:</span>
-                <p class="text-slate-300 break-all" id="sha256"></p>
-              </div>
-              <div>
-                <span class="text-slate-500">pHash:</span>
-                <p class="text-slate-300 break-all" id="phash"></p>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2">
-            <h3 class="text-sm font-semibold text-slate-300">Metadata</h3>
-            <div class="text-xs space-y-1" id="metadata"></div>
-          </div>
-
-          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2" id="aiDetectionSection">
-            <h3 class="text-sm font-semibold text-slate-300">AI Content Analysis</h3>
-            <div class="text-xs space-y-1" id="aiDetection"></div>
-          </div>
-
-          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2" id="duplicateSection">
-            <h3 class="text-sm font-semibold text-slate-300">Duplicate Detection</h3>
-            <div class="text-xs space-y-1" id="duplicateResults"></div>
-          </div>
-
-          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2" id="externalSection">
-            <h3 class="text-sm font-semibold text-slate-300">External Verification</h3>
-            <div class="text-xs space-y-1" id="externalVerification"></div>
-          </div>
-
-          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="videoSection">
-            <h3 class="text-sm font-semibold text-slate-300">Video Frame Analysis</h3>
-            <div class="text-xs space-y-1" id="videoAnalysis"></div>
-          </div>
-
-          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4">
-            <div class="text-xs text-slate-500 text-center" id="verificationTimestamp"></div>
-          </div>
-        </div>
+    <div id="reportContent" class="space-y-8">
+      <div class="text-center py-20">
+        <div class="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-blue-500 border-r-transparent"></div>
+        <p class="text-sm text-slate-400 mt-4">Loading report...</p>
       </div>
     </div>
 
   </main>
 
   <script>
-    const API_URL = 'https://api.verisource.io';
-    let selectedFile = null;
+    let reportData = null;
 
-    const dropzone = document.getElementById('dropzone');
-    const fileInput = document.getElementById('fileInput');
-
-    dropzone.addEventListener('click', () => fileInput.click());
-
-    dropzone.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      dropzone.classList.add('border-blue-500');
-    });
-
-    dropzone.addEventListener('dragleave', () => {
-      dropzone.classList.remove('border-blue-500');
-    });
-
-    dropzone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropzone.classList.remove('border-blue-500');
-      if (e.dataTransfer.files.length) {
-        handleFileSelect(e.dataTransfer.files[0]);
-      }
-    });
-
-    function handleFileSelect(file) {
-      if (!file) return;
-      selectedFile = file;
-      
-      document.getElementById('fileInfo').classList.remove('hidden');
-      document.getElementById('fileName').textContent = file.name;
-      document.getElementById('fileSize').textContent = formatFileSize(file.size);
-      document.getElementById('uploadBtn').disabled = false;
-    }
-
-    function clearFile() {
-      selectedFile = null;
-      fileInput.value = '';
-      document.getElementById('fileInfo').classList.add('hidden');
-      document.getElementById('uploadBtn').disabled = true;
-      document.getElementById('results').classList.add('hidden');
-      document.getElementById('resultsPlaceholder').classList.remove('hidden');
-    }
-
-    async function uploadFile() {
-      if (!selectedFile) return;
-
-      const loading = document.getElementById('loading');
-      const uploadBtn = document.getElementById('uploadBtn');
-      const results = document.getElementById('results');
-      const placeholder = document.getElementById('resultsPlaceholder');
-
-      loading.classList.remove('hidden');
-      uploadBtn.disabled = true;
-      results.classList.add('hidden');
-      placeholder.classList.add('hidden');
-
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-
+    // Read data from sessionStorage instead of URL
+    const dataStr = sessionStorage.getItem('verificationData');
+    
+    if (!dataStr) {
+      document.getElementById('reportContent').innerHTML = `
+        <div class="text-center py-20">
+          <p class="text-red-400">No verification data found</p>
+        </div>
+      `;
+    } else {
       try {
-        const res = await fetch(`${API_URL}/verify`, {
-          method: 'POST',
-          body: formData
-        });
-
-        const data = await res.json();
-        
-        // DEBUG: Log what we're getting from the API
-        console.log('=== VeriSource API Response ===');
-        console.log('Full response:', data);
-        console.log('Google Vision:', data.google_vision);
-        console.log('Web Detection:', data.google_vision?.web_detection);
-        console.log('Matching Pages:', data.google_vision?.web_detection?.pages_with_matching_images);
-        console.log('VirusTotal:', data.virustotal);
-        console.log('AI Detection:', data.ai_detection);
-        console.log('==============================');
-        
-        displayResults(data);
+        reportData = JSON.parse(dataStr);
+        console.log('✅ Data parsed successfully');
+        console.log('Calling displayReport...');
+        displayReport(reportData);
+        console.log('✅ displayReport completed');
       } catch (e) {
-        alert('Upload failed: ' + e.message);
-      } finally {
-        loading.classList.add('hidden');
-        uploadBtn.disabled = false;
-      }
-    }
-
-    function displayResults(data) {
-      const results = document.getElementById('results');
-      const statusCard = document.getElementById('statusCard');
-
-      const conf = data.confidence || {};
-      const isModified = conf.is_modified || false;
-      
-      // Use API confidence data if available
-      const statusColor = conf.color || '#F59E0B';
-      const statusIcon = conf.iconSvg || '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
-      const statusLabel = conf.label || 'VERIFICATION COMPLETE';
-
-      statusCard.className = `rounded-lg border p-4`;
-      statusCard.style.backgroundColor = statusColor + '10';
-      statusCard.style.borderColor = statusColor + '50';
-      
-      statusCard.innerHTML = `
-        <div class="flex items-center gap-3">
-          <div class="flex items-center justify-center w-12 h-12" style="color: ${statusColor}">
-            ${statusIcon}
-          </div>
-          <div class="flex-1">
-            <p class="font-semibold text-lg" style="color: ${statusColor}">${statusLabel}</p>
-           <a href="#" id="viewReportBtn" class="text-xs text-blue-400 hover:text-blue-300 underline">
-              View Report →
-            </a>
-          </div>
-        </div>
-        ${isModified ? `
-          <div class="mt-3 text-xs bg-amber-500/10 border border-amber-500/30 rounded-lg p-2">
-            <span class="text-amber-300">📝 Modified Content:</span>
-            <span class="text-slate-300"> ${conf.modification_details?.similarity || 'N/A'}% match to original</span>
-          </div>
-        ` : ''}
-      `;
-      // Add click handler for View Report button
-      setTimeout(() => {
-        const viewReportBtn = document.getElementById('viewReportBtn');
-        if (viewReportBtn) {
-          viewReportBtn.onclick = function(e) {
-            e.preventDefault();
-            sessionStorage.setItem('verificationData', JSON.stringify(data));
-            window.open('report.html', '_blank');
-            return false;
-          };
-        }
-      }, 100);
-      
-      // Fingerprint Details - cryptographic identifiers only
-      document.getElementById('fileId').textContent = data.verification?.previous_uploads?.[0]?.verification_id || 'New Upload';
-      document.getElementById('sha256').textContent = data.fingerprint?.hash || 'N/A';
-      document.getElementById('phash').textContent = data.phash || 'N/A';
-
-      // Metadata - file properties and attributes
-      const metadataDiv = document.getElementById('metadata');
-      metadataDiv.innerHTML = `
-        <div class="flex justify-between"><span class="text-slate-500">Filename:</span><span class="text-slate-300">${data.filename || 'N/A'}</span></div>
-        <div class="flex justify-between"><span class="text-slate-500">Format:</span><span class="text-slate-300">${(data.kind || 'unknown').toUpperCase()}</span></div>
-        <div class="flex justify-between"><span class="text-slate-500">Size:</span><span class="text-slate-300">${formatFileSize(data.size_bytes || 0)}</span></div>
-      `;
-
-      // AI Content Analysis
-      const aiDetectionDiv = document.getElementById('aiDetection');
-      const aiData = data.ai_detection || data.google_vision || {};
-      const aiGenProb = aiData.ai_generated_probability || aiData.confidence || 0;
-      const aiVerdict = aiData.verdict || aiData.label || 'PENDING';
-      const aiMethod = aiData.detection_method || 'Google Vision API';
-      
-      aiDetectionDiv.innerHTML = `
-        <div class="flex justify-between">
-          <span class="text-slate-500">AI Generated Probability:</span>
-          <span class="text-slate-300 font-semibold">${Math.round(aiGenProb)}%</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-slate-500">Detection Method:</span>
-          <span class="text-slate-300">${aiMethod}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-slate-500">Verdict:</span>
-          <span class="text-slate-300 font-semibold ${aiVerdict === 'AUTHENTIC' ? 'text-green-400' : aiVerdict === 'SUSPICIOUS' ? 'text-yellow-400' : 'text-red-400'}">${aiVerdict}</span>
-        </div>
-      `;
-
-      // Duplicate Detection
-      const duplicateDiv = document.getElementById('duplicateResults');
-      const previousUploads = data.verification?.previous_uploads || [];
-      const similarImages = data.similar_images || [];
-      const firstSeen = previousUploads[0]?.upload_date || data.first_seen || null;
-      
-      // Helper function to safely format date
-      const formatDate = (dateValue) => {
-        if (!dateValue) return null;
-        try {
-          const date = new Date(dateValue);
-          // Check if date is valid
-          if (isNaN(date.getTime())) return null;
-          return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-        } catch (e) {
-          return null;
-        }
-      };
-      
-      const formattedDate = formatDate(firstSeen);
-      
-      duplicateDiv.innerHTML = `
-        <div class="flex justify-between">
-          <span class="text-slate-500">Exact Matches:</span>
-          <span class="text-slate-300 font-semibold">${previousUploads.length > 0 ? previousUploads.length + ' found' : 'None found'}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-slate-500">Similar Images:</span>
-          <span class="text-slate-300 font-semibold">${similarImages.length > 0 ? similarImages.length + ' found' : 'None found'}</span>
-        </div>
-        ${formattedDate ? `
-        <div class="flex justify-between">
-          <span class="text-slate-500">First Uploaded:</span>
-          <span class="text-slate-300">${formattedDate}</span>
-        </div>
-        ` : ''}
-        ${previousUploads.length > 0 ? `
-        <div class="mt-2 pt-2 border-t border-slate-700">
-          <p class="text-amber-300 text-xs">⚠️ This file was previously verified</p>
-          <p class="text-slate-400 text-xs mt-1">Total verifications: ${previousUploads.length}</p>
-        </div>
-        ` : ''}
-      `;
-
-      // External Verification
-      const externalDiv = document.getElementById('externalVerification');
-      const virusTotal = data.virustotal || data.external_checks?.virustotal || {};
-      const googleVision = data.google_vision || data.external_checks?.google_vision || {};
-      const webMatches = googleVision.web_detection?.pages_with_matching_images?.length || 0;
-      
-      externalDiv.innerHTML = `
-        <div class="flex justify-between">
-          <span class="text-slate-500">VirusTotal:</span>
-          <span class="text-slate-300">${virusTotal.found ? `Found (${virusTotal.upload_count || 'multiple'} uploads)` : 'Not found'}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-slate-500">Google Vision:</span>
-          <span class="text-slate-300">${googleVision.safe_search_detection ? 'Safe content' : 'Analyzed'}</span>
-        </div>
-        <div class="flex justify-between">
-          <span class="text-slate-500">Web Matches:</span>
-          ${webMatches > 0 
-            ? `<a href="#" onclick="sessionStorage.setItem('verificationData', JSON.stringify(data)); window.open('web-matches.html', '_blank'); return false;" class="text-blue-400 hover:text-blue-300 underline font-semibold">${webMatches} results found →</a>`
-            : `<span class="text-slate-300">None found</span>`
-          }
-        </div>
-        ${googleVision.labels ? `
-        <div class="mt-2 pt-2 border-t border-slate-700">
-          <span class="text-slate-500">Detected Labels:</span>
-          <div class="flex flex-wrap gap-1 mt-1">
-            ${googleVision.labels.slice(0, 5).map(label => 
-              `<span class="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded">${label.description || label}</span>`
-            ).join('')}
-          </div>
-        </div>
-        ` : ''}
-      `;
-
-      // Video Frame Analysis (only show if video)
-      const videoSection = document.getElementById('videoSection');
-      const videoAnalysisDiv = document.getElementById('videoAnalysis');
-      
-      if (data.video_analysis || data.frames_analyzed) {
-        const videoData = data.video_analysis || {};
-        const framesAnalyzed = videoData.frames_analyzed || data.frames_analyzed || 0;
-        const suspiciousFrames = videoData.suspicious_frames_percentage || 0;
-        const aiGeneratedFrames = videoData.ai_generated_frames_percentage || 0;
-        
-        videoSection.classList.remove('hidden');
-        videoAnalysisDiv.innerHTML = `
-          <div class="flex justify-between">
-            <span class="text-slate-500">Frames Analyzed:</span>
-            <span class="text-slate-300 font-semibold">${framesAnalyzed}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-500">Suspicious Frames:</span>
-            <span class="text-slate-300 ${suspiciousFrames > 10 ? 'text-red-400' : 'text-green-400'}">${suspiciousFrames.toFixed(1)}%</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-500">AI Generated Frames:</span>
-            <span class="text-slate-300 ${aiGeneratedFrames > 10 ? 'text-red-400' : 'text-green-400'}">${aiGeneratedFrames.toFixed(1)}%</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-500">Overall Verdict:</span>
-            <span class="text-slate-300 font-semibold ${suspiciousFrames < 10 ? 'text-green-400' : 'text-amber-400'}">${suspiciousFrames < 10 ? 'AUTHENTIC' : 'SUSPICIOUS'}</span>
+        console.error('❌ Error in report generation:', e);
+        console.error('Stack trace:', e.stack);
+        document.getElementById('reportContent').innerHTML = `
+          <div class="text-center py-20">
+            <p class="text-red-400">Error loading report: ${e.message}</p>
+            <p class="text-slate-500 text-sm mt-2">Check console for details</p>
           </div>
         `;
-      } else {
-        videoSection.classList.add('hidden');
       }
+    }
 
-      // Verification Timestamp
-      const timestampDiv = document.getElementById('verificationTimestamp');
-      const verificationDate = new Date();
-      timestampDiv.textContent = `Verified on: ${verificationDate.toLocaleDateString()} at ${verificationDate.toLocaleTimeString()}`;
+    function displayReport(data) {
+      const conf = data.confidence || {};
+      const aiData = data.ai_detection || data.google_vision || {};
+      const previousUploads = data.verification?.previous_uploads || [];
+      const similarImages = data.similar_images || [];
+      const virusTotal = data.virustotal || data.external_checks?.virustotal || {};
+      const googleVision = data.google_vision || data.external_checks?.google_vision || {};
+      const videoData = data.video_analysis || {};
+      
+      // DEBUG: Log what we're getting from the API
+      console.log('=== VeriSource Report Data ===');
+      console.log('Full data:', data);
+      console.log('Google Vision:', googleVision);
+      console.log('Web Detection:', googleVision.web_detection);
+      console.log('Matching Pages:', googleVision.web_detection?.pages_with_matching_images);
+      console.log('==============================');
+      
+      // Calculate risk level
+      const riskLevel = conf.percentage >= 75 ? 'LOW' : conf.percentage >= 50 ? 'MEDIUM' : 'HIGH';
+      const riskColor = conf.percentage >= 75 ? '#10B981' : conf.percentage >= 50 ? '#F59E0B' : '#EF4444';
+      
+      // Generate key findings
+      const keyFindings = [];
+      if (aiData.verdict) keyFindings.push(`AI Detection: ${aiData.verdict}`);
+      if (previousUploads.length > 0) keyFindings.push(`Previously verified ${previousUploads.length} time(s)`);
+      if (virusTotal.found) keyFindings.push(`Found on VirusTotal (${virusTotal.upload_count || 'multiple'} uploads)`);
+      if (videoData.frames_analyzed) keyFindings.push(`${videoData.frames_analyzed} video frames analyzed`);
+      if (conf.is_modified) keyFindings.push(`Modified content detected (${conf.modification_details?.similarity}% match)`);
+      
+      const html = `
+        <!-- Executive Summary -->
+        <div class="bg-gradient-to-br from-slate-900/80 to-slate-800/60 border-2 rounded-xl p-8 fade-in print-section" style="border-color: ${conf.color || '#F59E0B'}">
+          <div class="text-center mb-6">
+            <h1 class="text-4xl font-bold mb-2" style="color: ${conf.color || '#F59E0B'}">
+              VERIFICATION REPORT
+            </h1>
+            <p class="text-slate-400 text-sm">Generated on ${new Date().toLocaleString()}</p>
+            <p class="text-slate-500 text-xs mt-1">Report ID: ${data.fingerprint?.hash?.substring(0, 16) || 'N/A'}</p>
+          </div>
 
-      results.classList.remove('hidden');
+          <div class="grid md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-slate-950/50 rounded-lg p-4 text-center">
+              <p class="text-slate-500 text-xs mb-1">Overall Verdict</p>
+              <p class="text-2xl font-bold" style="color: ${conf.color || '#F59E0B'}">${conf.label || 'VERIFIED'}</p>
+            </div>
+            <div class="bg-slate-950/50 rounded-lg p-4 text-center">
+              <p class="text-slate-500 text-xs mb-1">Confidence Score</p>
+              <p class="text-2xl font-bold" style="color: ${conf.color || '#F59E0B'}">${conf.percentage || 50}%</p>
+            </div>
+            <div class="bg-slate-950/50 rounded-lg p-4 text-center">
+              <p class="text-slate-500 text-xs mb-1">Risk Level</p>
+              <p class="text-2xl font-bold" style="color: ${riskColor}">${riskLevel}</p>
+            </div>
+          </div>
+
+          ${keyFindings.length > 0 ? `
+          <div class="bg-slate-950/50 rounded-lg p-4">
+            <h3 class="text-sm font-semibold text-slate-300 mb-3">🔍 Key Findings</h3>
+            <ul class="space-y-2 text-sm text-slate-300">
+              ${keyFindings.map(f => `<li>• ${f}</li>`).join('')}
+            </ul>
+          </div>
+          ` : ''}
+
+          ${conf.is_modified ? `
+            <div class="mt-4 bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
+              <div class="flex items-start gap-3">
+                <span class="text-2xl">📝</span>
+                <div>
+                  <p class="font-semibold text-amber-300 mb-1">Modified Content Detected</p>
+                  <p class="text-sm text-slate-300">${conf.modification_details?.similarity}% similarity to original content</p>
+                  ${conf.modification_details?.modifications ? `
+                    <ul class="text-xs text-slate-400 mt-2 space-y-1">
+                      ${conf.modification_details.modifications.map(m => `<li>• ${m}</li>`).join('')}
+                    </ul>
+                  ` : ''}
+                </div>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+
+        <!-- File Information -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in print-section">
+          <h2 class="text-xl font-bold mb-4">📄 File Information</h2>
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div><span class="text-slate-500">Filename:</span><p class="text-slate-200 font-medium">${data.filename || 'N/A'}</p></div>
+            <div><span class="text-slate-500">File Type:</span><p class="text-slate-200 font-medium">${(data.kind || 'unknown').toUpperCase()}</p></div>
+            <div><span class="text-slate-500">File Size:</span><p class="text-slate-200 font-medium">${formatFileSize(data.size_bytes || 0)}</p></div>
+            <div><span class="text-slate-500">Verified On:</span><p class="text-slate-200 font-medium">${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p></div>
+          </div>
+        </div>
+
+        <!-- AI Content Analysis -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in print-section">
+          <h2 class="text-xl font-bold mb-4">🤖 AI Content Analysis</h2>
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500">AI Generated Probability:</span>
+              <span class="text-slate-200 font-bold text-lg">${Math.round(aiData.ai_generated_probability || aiData.confidence || 0)}%</span>
+            </div>
+            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
+              <div class="h-full rounded-full bg-gradient-to-r from-green-500 to-red-500" 
+                   style="width: ${Math.round(aiData.ai_generated_probability || aiData.confidence || 0)}%"></div>
+            </div>
+            <div class="flex justify-between items-center pt-2">
+              <span class="text-slate-500">Detection Method:</span>
+              <span class="text-slate-200">${aiData.detection_method || 'Google Vision API'}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500">Verdict:</span>
+              <span class="font-semibold ${aiData.verdict === 'AUTHENTIC' ? 'text-green-400' : aiData.verdict === 'SUSPICIOUS' ? 'text-yellow-400' : 'text-red-400'}">
+                ${aiData.verdict || aiData.label || 'PENDING'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Duplicate Detection -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in print-section">
+          <h2 class="text-xl font-bold mb-4">🔍 Duplicate Detection</h2>
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500">Exact Matches:</span>
+              <span class="text-slate-200 font-semibold">${previousUploads.length > 0 ? previousUploads.length + ' found' : 'None found'}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500">Similar Images:</span>
+              <span class="text-slate-200 font-semibold">${similarImages.length > 0 ? similarImages.length + ' found' : 'None found'}</span>
+            </div>
+            ${(() => {
+              const firstSeenDate = previousUploads[0]?.upload_date || data.first_seen;
+              if (!firstSeenDate) return '';
+              try {
+                const date = new Date(firstSeenDate);
+                if (isNaN(date.getTime())) return '';
+                const formattedDate = date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+                return `
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-500">First Uploaded:</span>
+                  <span class="text-slate-200">${formattedDate}</span>
+                </div>
+                `;
+              } catch (e) {
+                return '';
+              }
+            })()}
+            ${previousUploads.length > 0 ? `
+            <div class="mt-4 pt-4 border-t border-slate-700 bg-amber-500/10 rounded-lg p-3">
+              <p class="text-amber-300 text-xs font-semibold">⚠️ Previously Verified Content</p>
+              <p class="text-slate-300 text-xs mt-1">This file has been verified ${previousUploads.length} time(s) before.</p>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- External Verification -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in print-section">
+          <h2 class="text-xl font-bold mb-4">🌐 External Verification</h2>
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500">VirusTotal Status:</span>
+              <span class="text-slate-200">${virusTotal.found ? `Found (${virusTotal.upload_count || 'multiple'} uploads)` : 'Not found in database'}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500">Google Vision Analysis:</span>
+              <span class="text-slate-200">${googleVision.safe_search_detection ? 'Safe content verified' : 'Content analyzed'}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500">Web Matches:</span>
+              ${(() => {
+                const matchCount = googleVision.web_detection?.pages_with_matching_images?.length || 0;
+                if (matchCount > 0) {
+                  return `<a href="#" id="webMatchesLink" class="text-blue-400 hover:text-blue-300 underline font-semibold">${matchCount} results found →</a>`;
+                } else {
+                  return `<span class="text-slate-200">None found</span>`;
+                }
+              })()}
+            </div>
+            ${googleVision.labels?.length > 0 ? `
+            <div class="mt-4 pt-4 border-t border-slate-700">
+              <span class="text-slate-500 block mb-2">Detected Labels:</span>
+              <div class="flex flex-wrap gap-2">
+                ${googleVision.labels.slice(0, 8).map(label => 
+                  `<span class="text-xs bg-slate-700/50 text-slate-300 px-3 py-1 rounded-full">${label.description || label}</span>`
+                ).join('')}
+              </div>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Video Frame Analysis (only if video) -->
+        ${videoData.frames_analyzed || data.frames_analyzed ? `
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in print-section">
+          <h2 class="text-xl font-bold mb-4">🎬 Video Frame Analysis</h2>
+          <div class="space-y-3 text-sm">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500">Frames Analyzed:</span>
+              <span class="text-slate-200 font-semibold">${videoData.frames_analyzed || data.frames_analyzed}</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500">Suspicious Frames:</span>
+              <span class="font-semibold ${(videoData.suspicious_frames_percentage || 0) > 10 ? 'text-red-400' : 'text-green-400'}">
+                ${(videoData.suspicious_frames_percentage || 0).toFixed(1)}%
+              </span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500">AI Generated Frames:</span>
+              <span class="font-semibold ${(videoData.ai_generated_frames_percentage || 0) > 10 ? 'text-red-400' : 'text-green-400'}">
+                ${(videoData.ai_generated_frames_percentage || 0).toFixed(1)}%
+              </span>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-slate-700">
+              <span class="text-slate-500">Overall Video Verdict:</span>
+              <span class="font-semibold ${(videoData.suspicious_frames_percentage || 0) < 10 ? 'text-green-400' : 'text-amber-400'}">
+                ${(videoData.suspicious_frames_percentage || 0) < 10 ? 'AUTHENTIC' : 'SUSPICIOUS'}
+              </span>
+            </div>
+          </div>
+        </div>
+        ` : ''}
+
+        <!-- Cryptographic Fingerprints (Collapsible) -->
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in print-section">
+          <div class="flex items-center justify-between cursor-pointer" onclick="toggleSection('fingerprints')">
+            <h2 class="text-xl font-bold">🔐 Cryptographic Fingerprints</h2>
+            <span id="fingerprints-toggle" class="text-slate-400 no-print">▼</span>
+          </div>
+          <div id="fingerprints-content" class="collapsible-content expanded">
+            <div class="space-y-4 text-sm mt-4">
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-slate-500 text-xs">SHA-256:</span>
+                  <button onclick="copyToClipboard('${data.fingerprint?.hash || ''}', 'sha256-btn')" 
+                          id="sha256-btn"
+                          class="no-print text-xs px-3 py-1 rounded bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 transition">
+                    📋 Copy
+                  </button>
+                </div>
+                <p class="text-slate-200 font-mono text-xs break-all bg-slate-950/50 p-3 rounded">${data.fingerprint?.hash || 'N/A'}</p>
+              </div>
+              ${data.phash ? `
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-slate-500 text-xs">pHash:</span>
+                  <button onclick="copyToClipboard('${data.phash}', 'phash-btn')" 
+                          id="phash-btn"
+                          class="no-print text-xs px-3 py-1 rounded bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 transition">
+                    📋 Copy
+                  </button>
+                </div>
+                <p class="text-slate-200 font-mono text-xs break-all bg-slate-950/50 p-3 rounded">${data.phash}</p>
+              </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+
+        <!-- Confidence Analysis (Collapsible) -->
+        ${conf.factors ? `
+          <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in print-section">
+            <div class="flex items-center justify-between cursor-pointer" onclick="toggleSection('confidence')">
+              <h2 class="text-xl font-bold">📊 Confidence Analysis</h2>
+              <span id="confidence-toggle" class="text-slate-400 no-print">▼</span>
+            </div>
+            <div id="confidence-content" class="collapsible-content expanded">
+              <div class="space-y-4 mt-4">
+                ${conf.factors.map(factor => `
+                  <div>
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-sm font-semibold text-slate-300">${factor.name}</span>
+                      <span class="text-sm text-slate-400">${factor.score}/${factor.max} (${factor.percentage}%)</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                      <div class="h-full rounded-full ${factor.percentage >= 75 ? 'bg-emerald-500' : factor.percentage >= 50 ? 'bg-amber-500' : 'bg-red-500'}" 
+                           style="width: ${factor.percentage}%"></div>
+                    </div>
+                    ${factor.details?.length > 0 ? `
+                    <ul class="mt-2 space-y-1 text-xs text-slate-400">
+                      ${factor.details.map(d => `<li>• ${d}</li>`).join('')}
+                    </ul>
+                    ` : ''}
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- Warnings & Recommendations -->
+        ${conf.warnings?.length || conf.recommendations?.length ? `
+          <div class="grid md:grid-cols-2 gap-6 fade-in print-section">
+            ${conf.warnings?.length ? `
+              <div class="bg-slate-900/60 border border-amber-500/30 rounded-xl p-6">
+                <h3 class="text-lg font-bold mb-3 text-amber-300">⚠️ Warnings</h3>
+                <ul class="space-y-2 text-sm text-slate-300">${conf.warnings.map(w => `<li>• ${w}</li>`).join('')}</ul>
+              </div>
+            ` : ''}
+            ${conf.recommendations?.length ? `
+              <div class="bg-slate-900/60 border border-blue-500/30 rounded-xl p-6">
+                <h3 class="text-lg font-bold mb-3 text-blue-300">💡 Recommendations</h3>
+                <ul class="space-y-2 text-sm text-slate-300">${conf.recommendations.map(r => `<li>• ${r}</li>`).join('')}</ul>
+              </div>
+            ` : ''}
+          </div>
+        ` : ''}
+
+        <!-- Footer -->
+        <div class="text-center text-xs text-slate-500 border-t border-slate-800 pt-6 print-section">
+          <p class="font-semibold text-slate-400 mb-2">VeriSource™ Verification Report</p>
+          <p>This report was generated by VeriSource™ AI-powered content verification platform</p>
+          <p class="mt-2">For questions or support, visit verisource.io</p>
+          <p class="mt-4 text-slate-600">© ${new Date().getFullYear()} VeriSource. All rights reserved.</p>
+        </div>
+      `;
+
+      document.getElementById('reportContent').innerHTML = html;
+      
+      // Add event listener for web matches link (with safety checks)
+      setTimeout(() => {
+        try {
+          const webMatchesLink = document.getElementById('webMatchesLink');
+          if (webMatchesLink) {
+            webMatchesLink.addEventListener('click', function(e) {
+              e.preventDefault();
+              openWebMatches();
+            });
+            console.log('✅ Web Matches link handler attached');
+          } else {
+            console.log('ℹ️ No web matches link (no matches found)');
+          }
+        } catch (err) {
+          console.error('Error attaching web matches handler:', err);
+        }
+      }, 100);
+    }
+
+    function toggleSection(sectionId) {
+      const content = document.getElementById(sectionId + '-content');
+      const toggle = document.getElementById(sectionId + '-toggle');
+      
+      if (content.classList.contains('expanded')) {
+        content.classList.remove('expanded');
+        toggle.textContent = '▶';
+      } else {
+        content.classList.add('expanded');
+        toggle.textContent = '▼';
+      }
+    }
+
+    function copyToClipboard(text, buttonId) {
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById(buttonId);
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✓ Copied!';
+        btn.classList.add('bg-green-500/30', 'text-green-400');
+        
+        setTimeout(() => {
+          btn.innerHTML = originalText;
+          btn.classList.remove('bg-green-500/30', 'text-green-400');
+        }, 2000);
+      });
+    }
+
+    function downloadPDF() {
+      const element = document.getElementById('reportContent');
+      const opt = {
+        margin: 10,
+        filename: `verisource-report-${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      
+      html2pdf().set(opt).from(element).save();
+    }
+
+    function openWebMatches() {
+      // Data is already in sessionStorage from when report was loaded
+      window.open('web-matches.html', '_blank', 'width=1200,height=800');
     }
 
     function formatFileSize(bytes) {
