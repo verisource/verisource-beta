@@ -157,6 +157,16 @@
             <h3 class="text-sm font-semibold text-slate-300">External Verification</h3>
             <div class="text-xs space-y-1" id="externalVerification"></div>
           </div>
+          <!-- Weather Verification Section -->
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="weatherSection">
+            <h3 class="text-sm font-semibold text-slate-300">Weather Verification</h3>
+            <div class="text-xs space-y-1" id="weatherVerification"></div>
+          </div>
+          <!-- Landmark Verification Section -->
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="landmarkSection">
+            <h3 class="text-sm font-semibold text-slate-300">Landmark Verification</h3>
+            <div class="text-xs space-y-1" id="landmarkVerification"></div>
+          </div>
 
           <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="videoSection">
             <h3 class="text-sm font-semibold text-slate-300">Video Frame Analysis</h3>
@@ -557,6 +567,119 @@
               sessionStorage.setItem('verificationData', JSON.stringify(data));
               window.open('web-matches.html', '_blank');
               return false;
+
+      // Weather Verification
+      const weatherSection = document.getElementById('weatherSection');
+      const weatherDiv = document.getElementById('weatherVerification');
+      const weather = data.weather_verification;
+      
+      if (weather && weather.enabled) {
+        weatherSection.classList.remove('hidden');
+        
+        let weatherHTML = '';
+        
+        if (weather.details && !weather.details.error) {
+          weatherHTML = `
+            <div class="flex justify-between">
+              <span class="text-slate-500">Status:</span>
+              <span class="text-slate-300 font-semibold ${weather.verified ? 'text-green-400' : 'text-yellow-400'}">
+                ${weather.verified ? '✓ Verified' : '⚠ Not Verified'}
+              </span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Condition:</span>
+              <span class="text-slate-300">${weather.details.condition || 'N/A'}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Temperature:</span>
+              <span class="text-slate-300">${weather.details.avgtemp_c ? weather.details.avgtemp_c + '°C' : 'N/A'}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Precipitation:</span>
+              <span class="text-slate-300">${weather.details.precipitation_mm ? weather.details.precipitation_mm + 'mm' : '0mm'}</span>
+            </div>
+          `;
+        } else {
+          weatherHTML = `
+            <div class="flex justify-between">
+              <span class="text-slate-500">Status:</span>
+              <span class="text-slate-300 text-yellow-400">Data Unavailable</span>
+            </div>
+            ${weather.details?.message ? `
+            <div class="text-slate-400 text-xs italic">${weather.details.message}</div>
+            ` : ''}
+          `;
+        }
+        
+        if (weather.warnings && weather.warnings.length > 0) {
+          weatherHTML += `
+            <div class="mt-2 pt-2 border-t border-slate-700">
+              <span class="text-slate-500">Warnings:</span>
+              ${weather.warnings.map(w => 
+                `<div class="text-yellow-400 text-xs mt-1">⚠ ${w}</div>`
+              ).join('')}
+            </div>
+          `;
+        }
+        
+        weatherDiv.innerHTML = weatherHTML;
+      } else {
+        weatherSection.classList.add('hidden');
+      }
+
+      // Landmark Verification
+      const landmarkSection = document.getElementById('landmarkSection');
+      const landmarkDiv = document.getElementById('landmarkVerification');
+      const landmark = data.landmark_verification;
+      
+      if (landmark && landmark.landmarks_detected > 0) {
+        landmarkSection.classList.remove('hidden');
+        
+        let landmarkHTML = `
+          <div class="flex justify-between">
+            <span class="text-slate-500">Landmarks Detected:</span>
+            <span class="text-slate-300 font-semibold">${landmark.landmarks_detected}</span>
+          </div>
+        `;
+        
+        if (landmark.details && landmark.details.length > 0) {
+          landmarkHTML += `
+            <div class="mt-2 pt-2 border-t border-slate-700 space-y-2">
+              ${landmark.details.map(l => `
+                <div class="bg-slate-900/50 p-2 rounded">
+                  <div class="flex justify-between">
+                    <span class="text-slate-300 font-semibold">${l.name}</span>
+                    <span class="text-slate-400">${l.confidence}% confidence</span>
+                  </div>
+                  ${l.distance_km !== undefined ? `
+                  <div class="flex justify-between text-xs mt-1">
+                    <span class="text-slate-500">Distance from GPS:</span>
+                    <span class="text-slate-300 ${l.match === 'exact' ? 'text-green-400' : l.match === 'close' ? 'text-yellow-400' : 'text-red-400'}">
+                      ${l.distance_km}km (${l.match})
+                    </span>
+                  </div>
+                  ` : ''}
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+        
+        if (landmark.warnings && landmark.warnings.length > 0) {
+          landmarkHTML += `
+            <div class="mt-2 pt-2 border-t border-slate-700">
+              <span class="text-slate-500">Warnings:</span>
+              ${landmark.warnings.map(w => 
+                `<div class="text-yellow-400 text-xs mt-1">⚠ ${w}</div>`
+              ).join('')}
+            </div>
+          `;
+        }
+        
+        landmarkDiv.innerHTML = landmarkHTML;
+      } else {
+        landmarkSection.classList.add('hidden');
+      }
             };
           }
         }, 100);

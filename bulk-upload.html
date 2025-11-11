@@ -351,6 +351,19 @@
         },
         
         timestamps: {
+        
+        weatherVerification: data.weather_verification ? {
+          enabled: data.weather_verification.enabled,
+          verified: data.weather_verification.verified,
+          details: data.weather_verification.details,
+          warnings: data.weather_verification.warnings
+        } : null,
+        
+        landmarkVerification: data.landmark_verification ? {
+          landmarks_detected: data.landmark_verification.landmarks_detected,
+          details: data.landmark_verification.details,
+          warnings: data.landmark_verification.warnings
+        } : null,
           created: data.verification?.first_seen,
           updated: data.verification?.previous_uploads?.[data.verification.previous_uploads.length - 1]?.date
         },
@@ -632,6 +645,84 @@
             ${result.videoAnalysis ? `
               <div class="bg-slate-900/50 rounded-lg p-4">
                 <h4 class="font-medium mb-3">Video Frame Analysis</h4>
+            <!-- Weather Verification -->
+            ${result.weatherVerification ? `
+              <div class="bg-slate-900/50 rounded-lg p-4">
+                <h4 class="font-medium mb-3">Weather Verification</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Status:</span>
+                    <span class="${result.weatherVerification.verified ? 'text-green-400' : 'text-yellow-400'}">
+                      ${result.weatherVerification.verified ? '✓ Verified' : '⚠ Not Verified'}
+                    </span>
+                  </div>
+                  ${result.weatherVerification.details && !result.weatherVerification.details.error ? `
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">Condition:</span>
+                      <span>${result.weatherVerification.details.condition || 'N/A'}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">Temperature:</span>
+                      <span>${result.weatherVerification.details.avgtemp_c ? result.weatherVerification.details.avgtemp_c + '°C' : 'N/A'}</span>
+                    </div>
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">Precipitation:</span>
+                      <span>${result.weatherVerification.details.precipitation_mm ? result.weatherVerification.details.precipitation_mm + 'mm' : '0mm'}</span>
+                    </div>
+                  ` : result.weatherVerification.details?.message ? `
+                    <div class="text-slate-400 text-xs italic">${result.weatherVerification.details.message}</div>
+                  ` : ''}
+                  ${result.weatherVerification.warnings?.length > 0 ? `
+                    <div class="mt-2 pt-2 border-t border-slate-700">
+                      <div class="text-slate-400 mb-1">Warnings:</div>
+                      ${result.weatherVerification.warnings.map(w => 
+                        `<div class="text-yellow-400 text-xs">⚠ ${w}</div>`
+                      ).join('')}
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            ` : ''}
+            <!-- Landmark Verification -->
+            ${result.landmarkVerification && result.landmarkVerification.landmarks_detected > 0 ? `
+              <div class="bg-slate-900/50 rounded-lg p-4">
+                <h4 class="font-medium mb-3">Landmark Verification</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Landmarks Detected:</span>
+                    <span class="font-semibold">${result.landmarkVerification.landmarks_detected}</span>
+                  </div>
+                  ${result.landmarkVerification.details?.length > 0 ? `
+                    <div class="mt-2 pt-2 border-t border-slate-700 space-y-2">
+                      ${result.landmarkVerification.details.map(l => `
+                        <div class="bg-slate-800/50 p-2 rounded">
+                          <div class="flex justify-between">
+                            <span class="font-semibold">${l.name}</span>
+                            <span class="text-slate-400 text-xs">${l.confidence}%</span>
+                          </div>
+                          ${l.distance_km !== undefined ? `
+                            <div class="flex justify-between text-xs mt-1">
+                              <span class="text-slate-400">Distance:</span>
+                              <span class="${l.match === 'exact' ? 'text-green-400' : l.match === 'close' ? 'text-yellow-400' : 'text-red-400'}">
+                                ${l.distance_km}km (${l.match})
+                              </span>
+                            </div>
+                          ` : ''}
+                        </div>
+                      `).join('')}
+                    </div>
+                  ` : ''}
+                  ${result.landmarkVerification.warnings?.length > 0 ? `
+                    <div class="mt-2 pt-2 border-t border-slate-700">
+                      <div class="text-slate-400 mb-1">Warnings:</div>
+                      ${result.landmarkVerification.warnings.map(w => 
+                        `<div class="text-yellow-400 text-xs">⚠ ${w}</div>`
+                      ).join('')}
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            ` : ''}
                 <div class="space-y-2 text-sm">
                   <div class="flex justify-between">
                     <span class="text-slate-400">Frames Analyzed:</span>
