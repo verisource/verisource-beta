@@ -260,9 +260,70 @@
       }
     }
 
+    // Map API response to match report.html expected structure
+    function mapApiResponseForReport(data, filename) {
+      return {
+        fileId: data.verification?.previous_uploads?.[0]?.verification_id || "N/A",
+        filename: filename,
+        overallConfidence: data.confidence?.percentage || 0,
+        confidenceLevel: data.confidence?.level,
+        confidenceLabel: data.confidence?.label,
+        confidenceColor: data.confidence?.color,
+        confidenceBreakdown: data.confidence?.factors ? 
+          data.confidence.factors.reduce((acc, factor) => {
+            acc[factor.name] = factor.percentage;
+            return acc;
+          }, {}) : null,
+        fingerprint: {
+          sha256: data.fingerprint?.hash || "N/A",
+          pHash: data.phash || "N/A"
+        },
+        metadata: {
+          format: data.kind?.toUpperCase() || "N/A",
+          size: formatFileSize(data.size_bytes || 0),
+          dimensions: data.ai_detection?.metadata_check?.dimensions || "N/A",
+          uploadDate: data.verification?.first_seen || new Date().toISOString()
+        },
+        aiDetection: {
+          isAiGenerated: data.ai_detection?.likely_ai_generated || false,
+          confidence: data.ai_detection?.ai_confidence || 0,
+          label: data.confidence?.label
+        },
+        duplicateDetection: {
+          isDuplicate: data.verification?.times_verified > 1,
+          originalFileId: data.verification?.previous_uploads?.[0]?.verification_id,
+          firstSeen: data.verification?.first_seen,
+          timesVerified: data.verification?.times_verified
+        },
+        externalVerification: {
+          virusTotal: data.virustotal ? {
+            malicious: 0,
+            total: data.virustotal.upload_count || 0,
+            found: data.virustotal.found
+          } : null,
+          googleVision: data.google_vision?.labels ? {
+            labels: data.google_vision.labels.slice(0, 10).map(l => l.description)
+          } : null
+        },
+        timestamps: {
+          created: data.verification?.first_seen,
+          updated: data.verification?.previous_uploads?.[data.verification.previous_uploads.length - 1]?.date
+        },
+        verificationCount: data.verification?.times_verified || 1,
+        _rawResponse: data
+      };
+    }
+    
+    function formatFileSize(bytes) {
+      if (!bytes) return "N/A";
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+      return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    }
+
     function displayResults(data) {
       // Store data globally for easy access
-      window.currentVerificationData = data;
+      window.currentVerificationData = mapApiResponseForReport(data, selectedFile?.name || "uploaded-file");
       
       const results = document.getElementById('results');
       const statusCard = document.getElementById('statusCard');
