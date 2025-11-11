@@ -266,28 +266,45 @@
       progressSection.classList.remove('hidden');
       resultsSection.classList.add('hidden');
       verificationResults = [];
-
+      
       const total = selectedFiles.length;
       let completed = 0;
-
-      for (const file of selectedFiles) {
-        try {
-          const result = await verifyFile(file);
-          console.log('Verification result for', file.name, ':', result); // Debug logging
-          verificationResults.push({ filename: file.name, ...result });
-        } catch (error) {
-          console.error('Error verifying', file.name, ':', error);
-          verificationResults.push({ 
-            filename: file.name, 
-            error: error.message,
-            overallConfidence: 0
-          });
-        }
-
-        completed++;
+      const BATCH_SIZE = 10; // Process 10 files at a time
+      
+      // Split files into batches of 10
+      for (let i = 0; i < selectedFiles.length; i += BATCH_SIZE) {
+        const batch = selectedFiles.slice(i, i + BATCH_SIZE);
+        
+        // Process batch in parallel
+        const batchPromises = batch.map(async (file) => {
+          try {
+            const result = await verifyFile(file);
+            console.log('Verification result for', file.name, ':', result);
+            return { filename: file.name, ...result };
+          } catch (error) {
+            console.error('Error verifying', file.name, ':', error);
+            return { 
+              filename: file.name, 
+              error: error.message,
+              overallConfidence: 0
+            };
+          }
+        });
+        
+        // Wait for all files in this batch to complete
+        const batchResults = await Promise.all(batchPromises);
+        verificationResults.push(...batchResults);
+        
+        // Update progress bar
+        completed += batch.length;
         const percentage = (completed / total) * 100;
         progressBar.style.width = percentage + '%';
         progressText.textContent = `${completed} / ${total}`;
+      }
+      
+      console.log('All verification results:', verificationResults);
+      displayResults();
+    }
       }
 
       console.log('All verification results:', verificationResults); // Debug logging
