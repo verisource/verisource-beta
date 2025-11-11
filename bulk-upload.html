@@ -374,10 +374,10 @@
       const confidenceScore = Math.round(result.overallConfidence || 0);
 
       return `
-        <div class="bg-slate-800/50 border border-slate-700 rounded-lg p-6 space-y-4">
+        <div class="bg-slate-800/50 border border-slate-700 rounded-lg p-6 space-y-4 hover:border-blue-500 transition-all cursor-pointer" onclick="openDetailedReport(${index})">
           
           <!-- Header -->
-          <div class="flex items-start justify-between">
+          <div class="flex items-start justify-between" onclick="event.stopPropagation()">
             <div class="flex-1">
               <h3 class="font-semibold text-lg mb-2">${result.filename}</h3>
               <div class="flex items-center gap-3">
@@ -390,9 +390,14 @@
                 </div>
               </div>
             </div>
-            <button onclick="toggleDetails(${index})" class="text-blue-400 hover:text-blue-300 text-sm">
-              View Details
-            </button>
+            <div class="flex gap-2">
+              <button onclick="openDetailedReport(${index}); event.stopPropagation();" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition">
+                View Full Report
+              </button>
+              <button onclick="toggleDetails(${index}); event.stopPropagation();" class="text-blue-400 hover:text-blue-300 text-sm">
+                Toggle Details
+              </button>
+            </div>
           </div>
 
           <!-- Duplicate Warning -->
@@ -629,6 +634,16 @@
     function toggleDetails(index) {
       const details = document.getElementById(`details-${index}`);
       details.classList.toggle('hidden');
+    }
+
+    function openDetailedReport(index) {
+      const result = verificationResults[index];
+      
+      // Store the verification data in sessionStorage so the report page can access it
+      sessionStorage.setItem('verificationData', JSON.stringify(result));
+      
+      // Open the report page in a new tab
+      window.open('report.html', '_blank');
     }
 
     function downloadCSVReport() {
