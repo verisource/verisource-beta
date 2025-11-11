@@ -190,14 +190,29 @@
     function loadReport() {
       const data = sessionStorage.getItem('verificationData');
       
+      console.log('==========================================');
+      console.log('REPORT PAGE - LOADING DATA');
+      console.log('==========================================');
+      console.log('Raw sessionStorage data:', data);
+      console.log('');
+      
       if (!data) {
+        console.error('❌ No verification data found in sessionStorage');
         document.getElementById('reportContent').classList.add('hidden');
         document.getElementById('noDataMessage').classList.remove('hidden');
         return;
       }
 
       const result = JSON.parse(data);
-      console.log('Report data:', result);
+      console.log('✅ Parsed result object:', JSON.stringify(result, null, 2));
+      console.log('');
+      console.log('Result keys:', Object.keys(result));
+      console.log('overallConfidence:', result.overallConfidence);
+      console.log('confidenceBreakdown:', result.confidenceBreakdown);
+      console.log('fingerprint:', result.fingerprint);
+      console.log('metadata:', result.metadata);
+      console.log('aiDetection:', result.aiDetection);
+      console.log('==========================================');
 
       // Display file name
       document.getElementById('fileName').textContent = result.filename || 'Verification Report';
