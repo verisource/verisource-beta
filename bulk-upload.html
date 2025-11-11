@@ -273,8 +273,10 @@
       for (const file of selectedFiles) {
         try {
           const result = await verifyFile(file);
+          console.log('Verification result for', file.name, ':', result); // Debug logging
           verificationResults.push({ filename: file.name, ...result });
         } catch (error) {
+          console.error('Error verifying', file.name, ':', error);
           verificationResults.push({ 
             filename: file.name, 
             error: error.message,
@@ -288,6 +290,7 @@
         progressText.textContent = `${completed} / ${total}`;
       }
 
+      console.log('All verification results:', verificationResults); // Debug logging
       displayResults();
     }
 
@@ -301,7 +304,91 @@
       });
 
       if (!response.ok) throw new Error('Verification failed');
-      return await response.json();
+      
+      const data = await response.json();
+      
+      // Map API response to expected format
+      return {
+        fileId: data.verification_id || data.fileId || data.file_id,
+        filename: file.name,
+        overallConfidence: data.confidence?.score || data.overall_confidence || data.overallConfidence || 0,
+        
+        // Confidence breakdown
+        confidenceBreakdown: {
+          'AI Authenticity': data.confidence?.breakdown?.ai_authenticity || data.ai_authenticity_score || 0,
+          'Metadata Quality': data.confidence?.breakdown?.metadata_quality || data.metadata_quality_score || 0,
+          'External Verification': data.confidence?.breakdown?.external_verification || data.external_verification_score || 0,
+          'Forensic Analysis': data.confidence?.breakdown?.forensic_analysis || data.forensic_analysis_score || 0,
+          'Duplicate Check': data.confidence?.breakdown?.duplicate_check || data.duplicate_check_score || 0
+        },
+        
+        // Fingerprint
+        fingerprint: {
+          sha256: data.sha256 || data.fingerprint?.sha256,
+          pHash: data.phash || data.fingerprint?.phash || data.fingerprint?.pHash
+        },
+        
+        // Metadata
+        metadata: {
+          format: data.file_format || data.format || data.metadata?.format,
+          size: data.file_size || data.size || data.metadata?.size,
+          dimensions: data.dimensions || data.metadata?.dimensions,
+          duration: data.duration || data.metadata?.duration,
+          uploadDate: data.created_at || data.upload_date
+        },
+        
+        // AI Detection
+        aiDetection: {
+          isAiGenerated: data.ai_detection?.likely_ai_generated || data.aiDetection?.isAiGenerated || false,
+          confidence: data.ai_detection?.ai_confidence || data.aiDetection?.confidence || 0,
+          label: data.ai_detection?.label || data.confidence?.label
+        },
+        
+        // Duplicate Detection
+        duplicateDetection: {
+          isDuplicate: data.duplicate_detection?.is_duplicate || data.duplicateDetection?.isDuplicate || false,
+          originalFileId: data.duplicate_detection?.original_file_id || data.duplicateDetection?.originalFileId,
+          firstSeen: data.duplicate_detection?.first_seen || data.duplicateDetection?.firstSeen,
+          similarity: data.duplicate_detection?.similarity_score || data.duplicateDetection?.similarity
+        },
+        
+        // External Verification
+        externalVerification: {
+          virusTotal: data.external_verification?.virustotal || data.externalVerification?.virusTotal ? {
+            malicious: data.external_verification?.virustotal?.malicious || data.externalVerification?.virusTotal?.malicious || 0,
+            total: data.external_verification?.virustotal?.total || data.externalVerification?.virusTotal?.total || 0
+          } : null,
+          googleVision: data.external_verification?.google_vision || data.externalVerification?.googleVision ? {
+            labels: data.external_verification?.google_vision?.labels || data.externalVerification?.googleVision?.labels || []
+          } : null
+        },
+        
+        // Video Analysis
+        videoAnalysis: data.video_analysis || data.videoAnalysis ? {
+          totalFrames: data.video_analysis?.total_frames || data.videoAnalysis?.totalFrames || 0,
+          aiFrames: data.video_analysis?.ai_frames || data.videoAnalysis?.aiFrames || 0,
+          avgConfidence: data.video_analysis?.average_confidence || data.videoAnalysis?.avgConfidence || 0,
+          aiPercentage: data.video_analysis?.ai_percentage || data.videoAnalysis?.aiPercentage || 0,
+          deepfakeDetected: data.video_analysis?.deepfake_detected || data.videoAnalysis?.deepfakeDetected || false
+        } : null,
+        
+        // Audio Analysis
+        audioAnalysis: data.audio_analysis || data.audioAnalysis ? {
+          syntheticVoice: data.audio_analysis?.synthetic_voice || data.audioAnalysis?.syntheticVoice || false,
+          aiConfidence: data.audio_analysis?.ai_confidence || data.audioAnalysis?.aiConfidence || 0
+        } : null,
+        
+        // Timestamps
+        timestamps: {
+          created: data.created_at || data.timestamps?.created,
+          updated: data.updated_at || data.timestamps?.updated
+        },
+        
+        verificationCount: data.verification_count || data.verificationCount || 1,
+        
+        // Store raw response for debugging
+        _rawResponse: data
+      };
     }
 
     function displayResults() {
@@ -438,17 +525,22 @@
             <div class="bg-slate-900/50 rounded-lg p-4">
               <h4 class="font-medium mb-3">Confidence Score Breakdown</h4>
               <div class="space-y-3">
-                ${result.confidenceBreakdown ? Object.entries(result.confidenceBreakdown).map(([key, value]) => `
-                  <div>
-                    <div class="flex justify-between text-sm mb-1">
-                      <span class="text-slate-400">${formatConfidenceKey(key)}</span>
-                      <span class="font-semibold">${value}%</span>
-                    </div>
-                    <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-                      <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all" style="width: ${value}%"></div>
-                    </div>
-                  </div>
-                `).join('') : '<p class="text-sm text-slate-400">No breakdown available</p>'}
+                ${result.confidenceBreakdown && Object.keys(result.confidenceBreakdown).length > 0 ? 
+                  Object.entries(result.confidenceBreakdown)
+                    .filter(([key, value]) => value > 0)
+                    .map(([key, value]) => `
+                      <div>
+                        <div class="flex justify-between text-sm mb-1">
+                          <span class="text-slate-400">${key}</span>
+                          <span class="font-semibold">${Math.round(value)}%</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                          <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all" style="width: ${value}%"></div>
+                        </div>
+                      </div>
+                    `).join('') 
+                  : '<p class="text-sm text-slate-400">Confidence breakdown not available from API</p>'
+                }
               </div>
             </div>
             
