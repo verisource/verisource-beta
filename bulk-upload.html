@@ -311,90 +311,52 @@
       
       // Map API response using ACTUAL field names from VeriSource API
       return {
-        fileId: data.canonical?.file_id || data.verification_id || data.file_id,
+        fileId: data.verification?.previous_uploads?.[0]?.verification_id || 'N/A',
         filename: file.name,
         
-        // Confidence - using actual API structure
-        overallConfidence: data.confidence?.percentage || data.confidence?.score || 0,
-        confidenceLevel: data.confidence?.level, // HIGH, MEDIUM, LOW, VERY_LOW
+        overallConfidence: data.confidence?.percentage || 0,
+        confidenceLevel: data.confidence?.level,
         confidenceLabel: data.confidence?.label,
         confidenceColor: data.confidence?.color,
         
-        // Confidence breakdown - actual API fields
-        confidenceBreakdown: data.confidence?.breakdown ? {
-          'AI Authenticity': data.confidence.breakdown.ai_authenticity || 0,
-          'Metadata Quality': data.confidence.breakdown.metadata_quality || 0,
-          'External Verification': data.confidence.breakdown.external_verification || 0,
-          'Forensic Analysis': data.confidence.breakdown.forensic_analysis || 0,
-          'Duplicate Check': data.confidence.breakdown.duplicate_check || 0
-        } : null,
+        confidenceBreakdown: data.confidence?.factors ? 
+          data.confidence.factors.reduce((acc, factor) => {
+            acc[factor.name] = factor.percentage;
+            return acc;
+          }, {}) : null,
         
-        // Fingerprint - using canonical object
         fingerprint: {
-          sha256: data.canonical?.fingerprint?.sha256 || data.sha256,
-          pHash: data.canonical?.fingerprint?.phash || data.phash
+          sha256: data.fingerprint?.hash || 'N/A',
+          pHash: data.phash || 'N/A'
         },
         
-        // Metadata - using canonical object
         metadata: {
-          format: data.canonical?.kind?.toUpperCase() || data.file_format || data.format,
-          size: formatFileSize(data.canonical?.size_bytes || data.file_size || data.size),
-          dimensions: data.canonical?.dimensions || data.dimensions,
-          duration: data.canonical?.duration || data.duration,
-          uploadDate: data.canonical?.created_at || data.created_at
+          format: data.kind?.toUpperCase() || 'N/A',
+          size: formatFileSize(data.size_bytes || 0),
+          dimensions: data.ai_detection?.metadata_check?.dimensions || 'N/A',
+          uploadDate: data.verification?.first_seen || new Date().toISOString()
         },
         
-        // AI Detection
         aiDetection: {
           isAiGenerated: data.ai_detection?.likely_ai_generated || false,
           confidence: data.ai_detection?.ai_confidence || 0,
-          label: data.ai_detection?.label || data.confidence?.label
+          label: data.confidence?.label
         },
         
-        // Duplicate Detection - using similarity_search
         duplicateDetection: {
-          isDuplicate: data.similarity_search?.similar_images?.length > 0 || false,
-          originalFileId: data.similarity_search?.similar_images?.[0]?.file_id,
-          firstSeen: data.similarity_search?.similar_images?.[0]?.created_at,
-          similarity: data.similarity_search?.similar_images?.[0]?.similarity_percentage
+          isDuplicate: data.verification?.times_verified > 1,
+          originalFileId: data.verification?.previous_uploads?.[0]?.verification_id,
+          firstSeen: data.verification?.first_seen,
+          timesVerified: data.verification?.times_verified
         },
         
-        // External Verification
-        externalVerification: {
-          virusTotal: data.external_search?.results ? {
-            malicious: 0,
-            total: data.external_search.results.times_submitted || 0,
-            found: data.external_search.found
-          } : null,
-          googleVision: data.google_vision?.labels ? {
-            labels: data.google_vision.labels.slice(0, 10)
-          } : null
-        },
-        
-        // Video Analysis (if present)
-        videoAnalysis: data.video_analysis ? {
-          totalFrames: data.video_analysis.total_frames || 0,
-          aiFrames: data.video_analysis.ai_frames || 0,
-          avgConfidence: data.video_analysis.average_confidence || 0,
-          aiPercentage: data.video_analysis.ai_percentage || 0,
-          deepfakeDetected: data.video_analysis.deepfake_detected || false
-        } : null,
-        
-        // Audio Analysis (if present)
-        audioAnalysis: data.audio_analysis ? {
-          syntheticVoice: data.audio_analysis.synthetic_voice || false,
-          aiConfidence: data.audio_analysis.ai_confidence || 0
-        } : null,
-        
-        // Timestamps
         timestamps: {
-          created: data.canonical?.created_at || data.created_at,
-          updated: data.canonical?.updated_at || data.updated_at
+          created: data.verification?.first_seen,
+          updated: data.verification?.previous_uploads?.[data.verification.previous_uploads.length - 1]?.date
         },
         
-        verificationCount: data.verification_count || 1,
+        verificationCount: data.verification?.times_verified || 1,
         
-        // Store raw response for debugging
         _rawResponse: data
       };
     }
@@ -803,7 +765,7 @@
       sessionStorage.setItem('verificationData', JSON.stringify(result));
       
       // Open the report page in a new tab
-      window.open('report.html', '_blank');
+      window.open('report.html?v=' + Date.now(), '_blank');
     }
 
     function formatConfidenceKey(key) {
