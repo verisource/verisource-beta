@@ -104,35 +104,21 @@
         </div>
       </div>
 
-      <!-- Confidence Score Breakdown -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
-        <h2 class="text-xl font-bold mb-4">Confidence Score Breakdown</h2>
-        <div id="confidenceBreakdown" class="space-y-3">
-          <p class="text-sm text-slate-400">Loading confidence data...</p>
-        </div>
-      </div>
-
-      <!-- AI Detection Results -->
-      <div id="aiDetectionSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
-        <h2 class="text-xl font-bold mb-4">AI Content Analysis</h2>
-        <div id="aiDetectionContent"></div>
-      </div>
-
       <!-- Fingerprint Details -->
       <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
         <h2 class="text-xl font-bold mb-4">Fingerprint Details</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-slate-800/50 rounded-lg p-4">
-            <div class="text-sm text-slate-400 mb-1">File ID</div>
-            <div class="font-mono text-sm" id="fileId">N/A</div>
+        <div class="space-y-3 text-sm font-mono">
+          <div>
+            <span class="text-slate-400">File ID:</span>
+            <p class="text-slate-300 break-all mt-1" id="fileId">N/A</p>
           </div>
-          <div class="bg-slate-800/50 rounded-lg p-4">
-            <div class="text-sm text-slate-400 mb-1">SHA-256 Hash</div>
-            <div class="font-mono text-xs break-all" id="sha256">N/A</div>
+          <div>
+            <span class="text-slate-400">SHA-256:</span>
+            <p class="text-slate-300 break-all mt-1" id="sha256">N/A</p>
           </div>
-          <div id="phashSection" class="hidden bg-slate-800/50 rounded-lg p-4 md:col-span-2">
-            <div class="text-sm text-slate-400 mb-1">Perceptual Hash (pHash)</div>
-            <div class="font-mono text-xs" id="phash">N/A</div>
+          <div id="phashContainer">
+            <span class="text-slate-400">pHash:</span>
+            <p class="text-slate-300 break-all mt-1" id="phash">N/A</p>
           </div>
         </div>
       </div>
@@ -140,45 +126,16 @@
       <!-- Metadata -->
       <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
         <h2 class="text-xl font-bold mb-4">Metadata</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="metadataGrid">
+        <div class="space-y-2 text-sm" id="metadataContainer">
           <p class="text-sm text-slate-400">Loading metadata...</p>
         </div>
-      </div>
-
-      <!-- External Verification -->
-      <div id="externalVerificationSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
-        <h2 class="text-xl font-bold mb-4">External Verification</h2>
-        <div id="externalVerificationContent"></div>
-      </div>
-
-      <!-- Video Frame Analysis -->
-      <div id="videoAnalysisSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
-        <h2 class="text-xl font-bold mb-4">Video Frame Analysis</h2>
-        <div id="videoAnalysisContent"></div>
-      </div>
-
-      <!-- Audio Analysis -->
-      <div id="audioAnalysisSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
-        <h2 class="text-xl font-bold mb-4">Audio Analysis</h2>
-        <div id="audioAnalysisContent"></div>
       </div>
 
       <!-- Verification History -->
       <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
         <h2 class="text-xl font-bold mb-4">Verification History</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="bg-slate-800/50 rounded-lg p-4">
-            <div class="text-sm text-slate-400 mb-1">First Verified</div>
-            <div class="text-sm" id="firstVerified">N/A</div>
-          </div>
-          <div class="bg-slate-800/50 rounded-lg p-4">
-            <div class="text-sm text-slate-400 mb-1">Last Updated</div>
-            <div class="text-sm" id="lastUpdated">N/A</div>
-          </div>
-          <div id="verificationCountSection" class="hidden bg-slate-800/50 rounded-lg p-4">
-            <div class="text-sm text-slate-400 mb-1">Times Verified</div>
-            <div class="text-xl font-semibold" id="verificationCount">0</div>
-          </div>
+        <div class="space-y-2 text-sm" id="verificationHistory">
+          <p class="text-sm text-slate-400">Loading verification history...</p>
         </div>
       </div>
 
@@ -240,40 +197,12 @@
         `;
       }
 
-      // Display confidence breakdown
-      displayConfidenceBreakdown(result);
-
-      // Display AI detection
-      if (result.aiDetection) {
-        displayAiDetection(result);
-      }
-
       // Display fingerprint details
       document.getElementById('fileId').textContent = result.fileId || result.verification_id || 'N/A';
       document.getElementById('sha256').textContent = result.fingerprint?.sha256 || result.sha256 || 'N/A';
-      
-      if (result.fingerprint?.pHash || result.phash) {
-        document.getElementById('phashSection').classList.remove('hidden');
-        document.getElementById('phash').textContent = result.fingerprint?.pHash || result.phash;
-      }
 
-      // Display metadata
+      // Display metadata (includes pHash handling)
       displayMetadata(result);
-
-      // Display external verification
-      if (result.externalVerification) {
-        displayExternalVerification(result);
-      }
-
-      // Display video analysis
-      if (result.videoAnalysis) {
-        displayVideoAnalysis(result);
-      }
-
-      // Display audio analysis
-      if (result.audioAnalysis) {
-        displayAudioAnalysis(result);
-      }
 
       // Display verification history
       displayVerificationHistory(result);
@@ -409,42 +338,50 @@
     }
 
     function displayMetadata(result) {
-      const container = document.getElementById('metadataGrid');
+      const container = document.getElementById('metadataContainer');
       const metadata = result.metadata || {};
       
-      const fields = [];
+      let html = '<div class="space-y-1 text-xs">';
       
       if (metadata.format) {
-        fields.push({ label: 'Format', value: metadata.format.toUpperCase() });
+        html += `<div><span class="text-slate-400">Format:</span> <span class="text-slate-300">${metadata.format}</span></div>`;
       }
       
       if (metadata.size) {
-        fields.push({ label: 'File Size', value: metadata.size });
+        html += `<div><span class="text-slate-400">Size:</span> <span class="text-slate-300">${metadata.size}</span></div>`;
       }
       
       if (metadata.dimensions) {
-        fields.push({ label: 'Dimensions', value: metadata.dimensions });
+        html += `<div><span class="text-slate-400">Dimensions:</span> <span class="text-slate-300">${metadata.dimensions}</span></div>`;
       }
       
       if (metadata.duration) {
-        fields.push({ label: 'Duration', value: metadata.duration });
+        html += `<div><span class="text-slate-400">Duration:</span> <span class="text-slate-300">${metadata.duration}</span></div>`;
       }
       
       if (metadata.uploadDate) {
-        fields.push({ label: 'Upload Date', value: new Date(metadata.uploadDate).toLocaleDateString() });
+        html += `<div><span class="text-slate-400">Upload Date:</span> <span class="text-slate-300">${new Date(metadata.uploadDate).toLocaleDateString()}</span></div>`;
       }
-
-      if (fields.length === 0) {
+      
+      // Add confidence info if available
+      if (result.confidenceLevel) {
+        html += `<div><span class="text-slate-400">Confidence:</span> <span class="text-slate-300">${result.overallConfidence}% (${result.confidenceLevel})</span></div>`;
+      }
+      
+      html += '</div>';
+      
+      if (html === '<div class="space-y-1 text-xs"></div>') {
         container.innerHTML = '<p class="text-sm text-slate-400">No metadata available</p>';
-        return;
+      } else {
+        container.innerHTML = html;
       }
-
-      container.innerHTML = fields.map(field => `
-        <div class="bg-slate-800/50 rounded-lg p-4">
-          <div class="text-sm text-slate-400 mb-1">${field.label}</div>
-          <div class="text-sm font-medium">${field.value}</div>
-        </div>
-      `).join('');
+      
+      // Handle pHash display
+      if (result.fingerprint?.pHash || result.phash) {
+        document.getElementById('phash').textContent = result.fingerprint?.pHash || result.phash;
+      } else {
+        document.getElementById('phashContainer').style.display = 'none';
+      }
     }
 
     function displayExternalVerification(result) {
@@ -555,21 +492,26 @@
     }
 
     function displayVerificationHistory(result) {
+      const container = document.getElementById('verificationHistory');
       const firstVerified = result.timestamps?.created || result.created_at;
       const lastUpdated = result.timestamps?.updated || result.updated_at;
-      const count = result.verificationCount || result.verification_count;
+      
+      let html = '<div class="space-y-1 text-xs">';
       
       if (firstVerified) {
-        document.getElementById('firstVerified').textContent = new Date(firstVerified).toLocaleString();
+        html += `<div><span class="text-slate-400">First Verified:</span> <span class="text-slate-300">${new Date(firstVerified).toLocaleString()}</span></div>`;
       }
       
       if (lastUpdated) {
-        document.getElementById('lastUpdated').textContent = new Date(lastUpdated).toLocaleString();
+        html += `<div><span class="text-slate-400">Last Updated:</span> <span class="text-slate-300">${new Date(lastUpdated).toLocaleString()}</span></div>`;
       }
       
-      if (count) {
-        document.getElementById('verificationCountSection').classList.remove('hidden');
-        document.getElementById('verificationCount').textContent = count;
+      html += '</div>';
+      
+      if (html === '<div class="space-y-1 text-xs"></div>') {
+        container.innerHTML = '<p class="text-sm text-slate-400">No verification history available</p>';
+      } else {
+        container.innerHTML = html;
       }
     }
 
