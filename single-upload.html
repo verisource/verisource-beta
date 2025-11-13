@@ -167,7 +167,16 @@
             <h3 class="text-sm font-semibold text-slate-300">Landmark Verification</h3>
             <div class="text-xs space-y-1" id="landmarkVerification"></div>
           </div>
-
+<!-- Shadow Physics Verification Section -->
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="shadowPhysicsSection">
+            <h3 class="text-sm font-semibold text-slate-300">☀️ Shadow Physics Verification</h3>
+            <div class="text-xs space-y-1" id="shadowPhysics"></div>
+          </div>
+          <!-- Deepfake Detection Section -->
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="deepfakeSection">
+            <h3 class="text-sm font-semibold text-slate-300">🎭 Deepfake Detection</h3>
+            <div class="text-xs space-y-1" id="deepfakeDetection"></div>
+          </div>
           <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="videoSection">
             <h3 class="text-sm font-semibold text-slate-300">Video Frame Analysis</h3>
             <div class="text-xs space-y-1" id="videoAnalysis"></div>
@@ -670,7 +679,113 @@
             <div class="mt-2 pt-2 border-t border-slate-700">
               <span class="text-slate-500">Warnings:</span>
               ${landmark.warnings.map(w => 
-                `<div class="text-yellow-400 text-xs mt-1">⚠ ${w}</div>`
+// Shadow Physics Verification
+      const shadowPhysicsSection = document.getElementById('shadowPhysicsSection');
+      const shadowPhysicsDiv = document.getElementById('shadowPhysics');
+      const shadowPhysics = data.shadow_physics;
+      
+      if (shadowPhysics && shadowPhysics.physics_valid !== null) {
+        shadowPhysicsSection.classList.remove('hidden');
+        
+        const isValid = shadowPhysics.physics_valid;
+        let shadowHTML = `
+          <div class="flex justify-between">
+            <span class="text-slate-500">Physics Validation:</span>
+            <span class="font-semibold ${isValid ? 'text-green-400' : 'text-red-400'}">
+              ${isValid ? '✓ VALID' : '✗ INVALID'}
+            </span>
+          </div>
+        `;
+        
+        if (shadowPhysics.sun_position) {
+          shadowHTML += `
+            <div class="mt-2 pt-2 border-t border-slate-700">
+              <div class="text-slate-500 mb-1">Sun Position:</div>
+              <div class="bg-slate-900/50 p-2 rounded space-y-1">
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-400">Altitude:</span>
+                  <span class="text-slate-300">${shadowPhysics.sun_position.altitude}°</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-400">Azimuth:</span>
+                  <span class="text-slate-300">${shadowPhysics.sun_position.azimuth}°</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        
+        if (shadowPhysics.violations && shadowPhysics.violations.length > 0) {
+          shadowHTML += `
+            <div class="mt-2 pt-2 border-t border-slate-700">
+              <span class="text-slate-500">Violations:</span>
+              ${shadowPhysics.violations.map(v => 
+                `<div class="text-red-400 text-xs mt-1">⚠ ${v}</div>`
+              ).join('')}
+            </div>
+          `;
+        }
+        
+        shadowPhysicsDiv.innerHTML = shadowHTML;
+      } else {
+        shadowPhysicsSection.classList.add('hidden');
+      }
+
+      // Deepfake Detection
+      const deepfakeSection = document.getElementById('deepfakeSection');
+      const deepfakeDiv = document.getElementById('deepfakeDetection');
+      const deepfake = data.deepfake_detection;
+      
+      if (deepfake && deepfake.face_analysis) {
+        deepfakeSection.classList.remove('hidden');
+        
+        const isDeepfake = deepfake.is_deepfake;
+        let deepfakeHTML = `
+          <div class="flex justify-between">
+            <span class="text-slate-500">Analysis Result:</span>
+            <span class="font-semibold ${isDeepfake ? 'text-red-400' : 'text-green-400'}">
+              ${isDeepfake ? '⚠ DEEPFAKE DETECTED' : '✓ AUTHENTIC FACES'}
+            </span>
+          </div>
+        `;
+        
+        if (deepfake.face_analysis) {
+          deepfakeHTML += `
+            <div class="flex justify-between">
+              <span class="text-slate-500">Faces Detected:</span>
+              <span class="text-slate-300">${deepfake.face_analysis.faces_detected}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Suspicious Faces:</span>
+              <span class="text-slate-300 ${deepfake.face_analysis.suspicious_faces > 0 ? 'text-yellow-400' : ''}">${deepfake.face_analysis.suspicious_faces}</span>
+            </div>
+          `;
+        }
+        
+        if (deepfake.confidence > 0) {
+          deepfakeHTML += `
+            <div class="flex justify-between">
+              <span class="text-slate-500">Confidence:</span>
+              <span class="text-slate-300">${deepfake.confidence}%</span>
+            </div>
+          `;
+        }
+        
+        if (deepfake.indicators && deepfake.indicators.length > 0) {
+          deepfakeHTML += `
+            <div class="mt-2 pt-2 border-t border-slate-700">
+              <span class="text-slate-500">Indicators:</span>
+              ${deepfake.indicators.map(i => 
+                `<div class="text-yellow-400 text-xs mt-1">⚠ ${i}</div>`
+              ).join('')}
+            </div>
+          `;
+        }
+        
+        deepfakeDiv.innerHTML = deepfakeHTML;
+      } else {
+        deepfakeSection.classList.add('hidden');
+      }                `<div class="text-yellow-400 text-xs mt-1">⚠ ${w}</div>`
               ).join('')}
             </div>
           `;

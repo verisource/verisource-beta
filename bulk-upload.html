@@ -735,7 +735,80 @@
                 </div>
               </div>
             ` : ''}
+<!-- Shadow Physics Verification -->
+            ${result.shadow_physics && result.shadow_physics.physics_valid !== null ? `
+              <div class="bg-slate-900/50 rounded-lg p-4">
+                <h4 class="font-medium mb-3">☀️ Shadow Physics Verification</h4>
                 <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Physics Validation:</span>
+                    <span class="font-semibold ${result.shadow_physics.physics_valid ? 'text-green-400' : 'text-red-400'}">
+                      ${result.shadow_physics.physics_valid ? '✓ VALID' : '✗ INVALID'}
+                    </span>
+                  </div>
+                  ${result.shadow_physics.sun_position ? `
+                    <div class="mt-2 pt-2 border-t border-slate-700">
+                      <div class="text-slate-400 mb-1">Sun Position:</div>
+                      <div class="flex justify-between text-xs">
+                        <span class="text-slate-400">Altitude:</span>
+                        <span>${result.shadow_physics.sun_position.altitude}°</span>
+                      </div>
+                      <div class="flex justify-between text-xs">
+                        <span class="text-slate-400">Azimuth:</span>
+                        <span>${result.shadow_physics.sun_position.azimuth}°</span>
+                      </div>
+                    </div>
+                  ` : ''}
+                  ${result.shadow_physics.violations?.length > 0 ? `
+                    <div class="mt-2 pt-2 border-t border-slate-700">
+                      <div class="text-slate-400 mb-1">Violations:</div>
+                      ${result.shadow_physics.violations.map(v => 
+                        `<div class="text-red-400 text-xs">⚠ ${v}</div>`
+                      ).join('')}
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Deepfake Detection -->
+            ${result.deepfake_detection && result.deepfake_detection.face_analysis ? `
+              <div class="bg-slate-900/50 rounded-lg p-4">
+                <h4 class="font-medium mb-3">🎭 Deepfake Detection</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Analysis Result:</span>
+                    <span class="font-semibold ${result.deepfake_detection.is_deepfake ? 'text-red-400' : 'text-green-400'}">
+                      ${result.deepfake_detection.is_deepfake ? '⚠ DEEPFAKE DETECTED' : '✓ AUTHENTIC FACES'}
+                    </span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Faces Detected:</span>
+                    <span>${result.deepfake_detection.face_analysis.faces_detected}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Suspicious Faces:</span>
+                    <span class="${result.deepfake_detection.face_analysis.suspicious_faces > 0 ? 'text-yellow-400' : 'text-slate-300'}">
+                      ${result.deepfake_detection.face_analysis.suspicious_faces}
+                    </span>
+                  </div>
+                  ${result.deepfake_detection.confidence > 0 ? `
+                    <div class="flex justify-between">
+                      <span class="text-slate-400">Confidence:</span>
+                      <span>${result.deepfake_detection.confidence}%</span>
+                    </div>
+                  ` : ''}
+                  ${result.deepfake_detection.indicators?.length > 0 ? `
+                    <div class="mt-2 pt-2 border-t border-slate-700">
+                      <div class="text-slate-400 mb-1">Indicators:</div>
+                      ${result.deepfake_detection.indicators.map(i => 
+                        `<div class="text-yellow-400 text-xs">⚠ ${i}</div>`
+                      ).join('')}
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            ` : ''}                <div class="space-y-2 text-sm">
                   <div class="flex justify-between">
                     <span class="text-slate-400">Frames Analyzed:</span>
                     <span>${result.videoAnalysis.totalFrames || 0}</span>
