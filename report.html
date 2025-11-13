@@ -45,7 +45,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
   
-  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+  <header class="border-b border-slate-700 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
     <div class="max-w-6xl mx-auto px-4 py-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -84,7 +84,7 @@
     <div id="reportContent" class="space-y-6">
       
       <!-- Header Section -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
+      <div class="bg-slate-800/30 border border-slate-700 rounded-xl p-6 fade-in">
         <div class="flex items-start justify-between mb-6">
           <div class="flex-1">
             <h1 class="text-3xl font-bold mb-2" id="fileName">Loading...</h1>
@@ -113,8 +113,8 @@
       </div>
 
       <!-- Confidence Score Breakdown (Collapsible) -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden fade-in">
-        <button onclick="toggleSection('confidenceSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-900/80 transition">
+      <div class="bg-slate-800/30 border border-slate-700 rounded-xl overflow-hidden fade-in">
+        <button onclick="toggleSection('confidenceSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-800/50 transition">
           <h2 class="text-xl font-bold">Confidence Score Breakdown</h2>
           <svg id="confidenceToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -128,8 +128,8 @@
       </div>
 
       <!-- AI Detection (Collapsible) -->
-      <div id="aiDetectionCard" class="hidden bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden fade-in">
-        <button onclick="toggleSection('aiDetectionSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-900/80 transition">
+      <div id="aiDetectionCard" class="hidden bg-slate-800/30 border border-slate-700 rounded-xl overflow-hidden fade-in">
+        <button onclick="toggleSection('aiDetectionSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-800/50 transition">
           <h2 class="text-xl font-bold">AI Content Analysis</h2>
           <svg id="aiDetectionToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -141,7 +141,7 @@
       </div>
 
       <!-- Fingerprint Details -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
+      <div class="bg-slate-800/30 border border-slate-700 rounded-xl p-6 fade-in">
         <h2 class="text-xl font-bold mb-4">Fingerprint Details</h2>
         <div class="space-y-3 text-sm font-mono">
           <div>
@@ -160,7 +160,7 @@
       </div>
 
       <!-- Metadata -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
+      <div class="bg-slate-800/30 border border-slate-700 rounded-xl p-6 fade-in">
         <h2 class="text-xl font-bold mb-4">Metadata</h2>
         <div class="space-y-2 text-sm" id="metadataContainer">
           <p class="text-sm text-slate-400">Loading metadata...</p>
@@ -168,8 +168,8 @@
       </div>
 
       <!-- External Verification (Collapsible) -->
-      <div id="externalVerificationCard" class="hidden bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden fade-in">
-        <button onclick="toggleSection('externalVerificationSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-900/80 transition">
+      <div id="externalVerificationCard" class="hidden bg-slate-800/30 border border-slate-700 rounded-xl overflow-hidden fade-in">
+        <button onclick="toggleSection('externalVerificationSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-800/50 transition">
           <h2 class="text-xl font-bold">External Verification</h2>
           <svg id="externalVerificationToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -181,8 +181,8 @@
       </div>
 
       <!-- Video Frame Analysis (Collapsible) -->
-      <div id="videoAnalysisCard" class="hidden bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden fade-in">
-        <button onclick="toggleSection('videoAnalysisSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-900/80 transition">
+      <div id="videoAnalysisCard" class="hidden bg-slate-800/30 border border-slate-700 rounded-xl overflow-hidden fade-in">
+        <button onclick="toggleSection('videoAnalysisSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-800/50 transition">
           <h2 class="text-xl font-bold">Video Frame Analysis</h2>
           <svg id="videoAnalysisToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -194,8 +194,8 @@
       </div>
 
       <!-- Audio Analysis (Collapsible) -->
-      <div id="audioAnalysisCard" class="hidden bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden fade-in">
-        <button onclick="toggleSection('audioAnalysisSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-900/80 transition">
+      <div id="audioAnalysisCard" class="hidden bg-slate-800/30 border border-slate-700 rounded-xl overflow-hidden fade-in">
+        <button onclick="toggleSection('audioAnalysisSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-800/50 transition">
           <h2 class="text-xl font-bold">Audio Analysis</h2>
           <svg id="audioAnalysisToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -207,7 +207,7 @@
       </div>
 
       <!-- Verification History -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
+      <div class="bg-slate-800/30 border border-slate-700 rounded-xl p-6 fade-in">
         <h2 class="text-xl font-bold mb-4">Verification History</h2>
         <div class="space-y-2 text-sm" id="verificationHistory">
           <p class="text-sm text-slate-400">Loading verification history...</p>
