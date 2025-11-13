@@ -266,6 +266,18 @@
       const statusText = getStatusText(result);
       statusBadge.className = `${statusClass} px-4 py-2 rounded-lg text-white font-medium text-sm`;
       statusBadge.textContent = statusText;
+      statusBadge.className = `${statusClass} px-4 py-2 rounded-lg text-white font-medium text-sm`;
+      statusBadge.textContent = statusText;
+      
+      // Display status icon (from API confidence data)
+      const statusIconContainer = document.getElementById('statusIconContainer');
+      const statusIcon = document.getElementById('statusIcon');
+      const iconColor = result.confidenceColor || '#3b82f6';
+      const iconSvg = result.confidenceIconSvg || '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+      
+      statusIconContainer.style.background = `${iconColor}10`;
+      statusIcon.style.color = iconColor;
+      statusIcon.innerHTML = iconSvg;
 
       // Display overall confidence
       const confidence = Math.round(result.overallConfidence || 0);
