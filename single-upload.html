@@ -167,16 +167,7 @@
             <h3 class="text-sm font-semibold text-slate-300">Landmark Verification</h3>
             <div class="text-xs space-y-1" id="landmarkVerification"></div>
           </div>
-<!-- Shadow Physics Verification Section -->
-          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="shadowPhysicsSection">
-            <h3 class="text-sm font-semibold text-slate-300">☀️ Shadow Physics Verification</h3>
-            <div class="text-xs space-y-1" id="shadowPhysics"></div>
-          </div>
-          <!-- Deepfake Detection Section -->
-          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="deepfakeSection">
-            <h3 class="text-sm font-semibold text-slate-300">🎭 Deepfake Detection</h3>
-            <div class="text-xs space-y-1" id="deepfakeDetection"></div>
-          </div>
+
           <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="videoSection">
             <h3 class="text-sm font-semibold text-slate-300">Video Frame Analysis</h3>
             <div class="text-xs space-y-1" id="videoAnalysis"></div>
@@ -679,7 +670,16 @@
             <div class="mt-2 pt-2 border-t border-slate-700">
               <span class="text-slate-500">Warnings:</span>
               ${landmark.warnings.map(w => 
-// Shadow Physics Verification
+                `<div class="text-yellow-400 text-xs mt-1">⚠ ${w}</div>`
+              ).join('')}
+            </div>
+          `;
+        }
+        
+        landmarkDiv.innerHTML = landmarkHTML;
+      } else {
+        landmarkSection.classList.add('hidden');
+      }// Shadow Physics Verification
       const shadowPhysicsSection = document.getElementById('shadowPhysicsSection');
       const shadowPhysicsDiv = document.getElementById('shadowPhysics');
       const shadowPhysics = data.shadow_physics;
@@ -785,15 +785,6 @@
         deepfakeDiv.innerHTML = deepfakeHTML;
       } else {
         deepfakeSection.classList.add('hidden');
-      }                `<div class="text-yellow-400 text-xs mt-1">⚠ ${w}</div>`
-              ).join('')}
-            </div>
-          `;
-        }
-        
-        landmarkDiv.innerHTML = landmarkHTML;
-      } else {
-        landmarkSection.classList.add('hidden');
       }
             };
           }
