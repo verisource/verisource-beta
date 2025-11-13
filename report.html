@@ -627,7 +627,19 @@
       if (confidence >= 25) return '⚠️ MANIPULATION DETECTED';
       return '🚫 HEAVILY MANIPULATED';
     }
-
+    
+    function getDefaultIcon(result) {
+  // Default fallback icons if API doesn't provide one
+  const confidence = result.overallConfidence || 0;
+  
+  if (confidence >= 75) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+  } else if (confidence >= 50) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+  } else {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+  }
+}
     // Load report on page load
     window.addEventListener('DOMContentLoaded', loadReport);
   </script>
