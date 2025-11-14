@@ -251,19 +251,23 @@
         return;
       }
 
-      const result = JSON.parse(data);
+     const result = JSON.parse(data);
 
-    // Map snake_case API response to camelCase for frontend
-  if (result.video_analysis) {
+// Map snake_case API response to camelCase for frontend
+if (result.video_analysis) {
   result.videoAnalysis = {
-    totalFrames: result.video_analysis.frames_analyzed || 0,
-    aiFrames: result.video_analysis.ai_frames_detected || 0,
-    avgConfidence: result.video_analysis.average_confidence || 0,
-    aiPercentage: result.video_analysis.ai_percentage || 0,
-    deepfakeDetected: result.video_analysis.deepfake_detected || false,
-    frameResults: result.video_analysis.frame_results || []
-     };
-    }
+    totalFrames: result.video_analysis.analysis?.framesAnalyzed || result.video_analysis.frames_analyzed || 0,
+    aiFrames: result.video_analysis.analysis?.aiGeneratedFrames || result.video_analysis.ai_generated_frames || 0,
+    avgConfidence: result.video_analysis.analysis?.videoConfidence || result.video_analysis.average_confidence || 0,
+    aiPercentage: result.video_analysis.analysis?.aiPercentage || result.video_analysis.ai_percentage || 0,
+    deepfakeDetected: result.video_analysis.analysis?.verdict === 'AI-Generated' || false,
+    suspiciousFrames: result.video_analysis.analysis?.suspiciousFrames || 0,
+    suspiciousPercentage: result.video_analysis.analysis?.suspiciousPercentage || 0,
+    verdict: result.video_analysis.analysis?.verdict || 'Unknown',
+    temporalAnalysis: result.video_analysis.analysis?.temporalAnalysis || null,
+    frequencyAnalysis: result.video_analysis.analysis?.frequencyAnalysis || null
+  };
+} 
       console.log('✅ Parsed result object:', JSON.stringify(result, null, 2));
       console.log('');
       console.log('Result keys:', Object.keys(result));
