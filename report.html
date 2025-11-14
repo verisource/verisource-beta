@@ -89,10 +89,13 @@
           <div class="flex-1">
             <h1 class="text-3xl font-bold mb-2" id="fileName">Loading...</h1>
             <div class="flex items-center gap-3 flex-wrap">
-              <span id="statusBadge" class="px-4 py-2 rounded-lg text-white font-medium text-sm">
+              <div id="statusIconContainer" class="flex items-center gap-3 px-4 py-2 rounded-lg">
+                <div id="statusIcon" class="w-8 h-8 flex-shrink-0"></div>
+                <span id="statusBadge" class="text-white font-medium text-sm">
                 Loading...
               </span>
-              <div class="text-sm">
+            </div>
+            <div class="text-sm">
                 <span class="text-slate-400">Overall Confidence:</span>
                 <span class="font-semibold ml-1 text-2xl" id="overallConfidence">0%</span>
               </div>
@@ -260,13 +263,24 @@
       // Display file name
       document.getElementById('fileName').textContent = result.filename || 'Verification Report';
 
-      // Display status badge
+      // Display status badge with icon
       const statusBadge = document.getElementById('statusBadge');
+      const statusIconContainer = document.getElementById('statusIconContainer');
+      const statusIcon = document.getElementById('statusIcon');
       const statusClass = getStatusClass(result);
       const statusText = getStatusText(result);
-      statusBadge.className = `${statusClass} px-4 py-2 rounded-lg text-white font-medium text-sm`;
-      statusBadge.textContent = statusText;
+      
+      // Set container background color
+      statusIconContainer.className = `${statusClass} flex items-center gap-3 px-4 py-2 rounded-lg`;
+      
+      // Set icon from stored data
+      const iconSvg = result.confidenceIconSvg || getDefaultIcon(result);
+      statusIcon.innerHTML = iconSvg;
+      statusIcon.style.color = 'currentColor';
 
+      // Set status text
+      statusBadge.textContent = statusText;
+      
       // Display overall confidence
       const confidence = Math.round(result.overallConfidence || 0);
       document.getElementById('overallConfidence').textContent = confidence + '%';

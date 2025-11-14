@@ -279,6 +279,7 @@
         confidenceLevel: data.confidence?.level,
         confidenceLabel: data.confidence?.label,
         confidenceColor: data.confidence?.color,
+        confidenceIconSvg: data.confidence?.iconSvg,
         confidenceBreakdown: data.confidence?.factors ? 
           data.confidence.factors.reduce((acc, factor) => {
             acc[factor.name] = factor.percentage;
