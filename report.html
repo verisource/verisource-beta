@@ -267,22 +267,25 @@
       const statusBadge = document.getElementById('statusBadge');
       const statusIconContainer = document.getElementById('statusIconContainer');
       const statusIcon = document.getElementById('statusIcon');
-      const statusText = getStatusText(result);
-      
-      // Use API color instead of hardcoded class
+
+      // Use API data directly (no custom functions)
       const apiColor = result.confidenceColor || '#EF4444';
+      const apiLabel = result.confidenceLabel || 'VERIFICATION COMPLETE';
+      const apiIcon = result.confidenceIconSvg || getDefaultIcon(result);
+ 
+      
+      // Set container styles with API color
       statusIconContainer.className = `flex items-center gap-3 px-4 py-2 rounded-lg`;
       statusIconContainer.style.backgroundColor = apiColor + '20'; // 20 = 12.5% opacity
       statusIconContainer.style.borderColor = apiColor + '50'; // 50 = 31% opacity
       statusIconContainer.style.border = '1px solid';
       statusIconContainer.style.color = apiColor; // Icon color
       
-      // Set icon from stored data
-      const iconSvg = result.confidenceIconSvg || getDefaultIcon(result);
+      // Set icon 
       statusIcon.innerHTML = iconSvg;
       
-      // Set status text
-      statusBadge.textContent = statusText;
+      // Set status text (use API label directly, no emojis)
+      statusBadge.textContent = apiLabel;
 
       // Display overall confidence
       const confidence = Math.round(result.overallConfidence || 0);
