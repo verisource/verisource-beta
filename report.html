@@ -268,6 +268,18 @@ if (result.video_analysis) {
     frequencyAnalysis: result.video_analysis.analysis?.frequencyAnalysis || null
   };
 } 
+// Map AI detection data
+if (result.ai_detection) {
+  result.aiDetection = {
+    isAiGenerated: result.ai_detection.likely_ai_generated || false,
+    confidence: result.ai_detection.ai_confidence || 0,
+    label: result.ai_detection.likely_ai_generated ? 'AI-Generated' : 'Likely Authentic',
+    indicators: result.ai_detection.indicators || [],
+    detectors: result.ai_detection.individual_results || null,
+    ensemble: result.ai_detection.ensemble_used || false,
+    detectorCount: result.ai_detection.detector_count || 0
+  };
+}
       console.log('✅ Parsed result object:', JSON.stringify(result, null, 2));
       console.log('');
       console.log('Result keys:', Object.keys(result));
