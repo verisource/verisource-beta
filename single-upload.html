@@ -798,10 +798,11 @@
       
       if (data.video_analysis || data.frames_analyzed) {
         const videoData = data.video_analysis || {};
-        const framesAnalyzed = videoData.frames_analyzed || data.frames_analyzed || 0;
-        const suspiciousFrames = videoData.suspicious_frames_percentage || 0;
-        const aiGeneratedFrames = videoData.ai_generated_frames_percentage || 0;
-        
+        const analysisData = videoData.analysis || {};
+        const framesAnalyzed = analysisData.framesAnalyzed || videoData.frames_analyzed || 0;
+        const suspiciousFrames = analysisData.suspiciousPercentage || videoData.suspicious_frames_percentage || 0;
+        const aiGeneratedFrames = analysisData.aiPercentage || videoData.ai_generated_frames_percentage || 0;
+        const verdict = analysisData.verdict || 'Unknown';
         videoSection.classList.remove('hidden');
         videoAnalysisDiv.innerHTML = `
           <div class="flex justify-between">
@@ -818,7 +819,7 @@
           </div>
           <div class="flex justify-between">
             <span class="text-slate-500">Overall Verdict:</span>
-            <span class="text-slate-300 font-semibold ${suspiciousFrames < 10 ? 'text-green-400' : 'text-amber-400'}">${suspiciousFrames < 10 ? 'AUTHENTIC' : 'SUSPICIOUS'}</span>
+            <span class="text-slate-300 font-semibold ${verdict === 'Authentic' || verdict === 'AUTHENTIC' ? 'text-green-400' : 'text-amber-400'}">${verdict}</span>
           </div>
         `;
       } 
