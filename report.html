@@ -252,6 +252,18 @@
       }
 
       const result = JSON.parse(data);
+
+    // Map snake_case API response to camelCase for frontend
+  if (result.video_analysis) {
+  result.videoAnalysis = {
+    totalFrames: result.video_analysis.frames_analyzed || 0,
+    aiFrames: result.video_analysis.ai_frames_detected || 0,
+    avgConfidence: result.video_analysis.average_confidence || 0,
+    aiPercentage: result.video_analysis.ai_percentage || 0,
+    deepfakeDetected: result.video_analysis.deepfake_detected || false,
+    frameResults: result.video_analysis.frame_results || []
+     };
+    }
       console.log('✅ Parsed result object:', JSON.stringify(result, null, 2));
       console.log('');
       console.log('Result keys:', Object.keys(result));
