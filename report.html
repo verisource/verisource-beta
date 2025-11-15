@@ -650,10 +650,9 @@
     }
 
     // Load and display report
-     (function() {
-
-      try {
-        const data = sessionStorage.getItem('verificationData');
+   document.addEventListener('DOMContentLoaded', function() {
+    try {
+     const data = sessionStorage.getItem('verificationData');
         
         if (!data) {
           document.getElementById('reportContent').classList.add('hidden');
@@ -1029,5 +1028,5 @@
         console.error('Report error:', error);
         alert('Error loading report: ' + error.message);
       }
-    }) ();
+    });
   </script>
