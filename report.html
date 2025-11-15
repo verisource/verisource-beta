@@ -660,7 +660,12 @@
 
       const result = JSON.parse(data);
       console.log('Report data:', result);
-
+      console.log('Filename:', result.filename);
+      console.log('Size:', result.size_bytes);
+      console.log('Kind:', result.kind);
+      console.log('Fingerprint:', result.fingerprint);
+      alert('Data loaded! Filename: ' + result.filename + ', Size: ' + result.size_bytes);
+      
       // 1. File name & confidence
       document.getElementById('fileName').textContent = result.filename || 'Unknown File';
       const confidence = result.confidence?.percentage || 0;
