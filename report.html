@@ -649,7 +649,8 @@
     }
 
     // Load and display report
-    window.onload = function() {
+     (function() {
+
       try {
         const data = sessionStorage.getItem('verificationData');
         
@@ -1027,5 +1028,5 @@
         console.error('Report error:', error);
         alert('Error loading report: ' + error.message);
       }
-    };
+    }) ();
   </script>
