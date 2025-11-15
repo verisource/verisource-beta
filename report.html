@@ -622,6 +622,13 @@
       
       const parsed = JSON.parse(data);
       const result = parsed._rawResponse || parsed;
+      // Merge outer AI detection data if _rawResponse doesn't have it
+if (!result.ai_detection && parsed.aiDetection) {
+  result.ai_detection = {
+    likely_ai_generated: parsed.aiDetection.isAiGenerated,
+    ai_confidence: parsed.aiDetection.confidence
+  };
+}
       let csv = 'Field,Value\n';
       csv += `Filename,${result.filename || '-'}\n`;
       csv += `File Size,${result.size_bytes || 0}\n`;
