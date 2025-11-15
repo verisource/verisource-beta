@@ -620,7 +620,8 @@
       const data = sessionStorage.getItem('verificationData');
       if (!data) return;
       
-      const result = JSON.parse(data);
+      const parsed = JSON.parse(data);
+      const result = parsed._rawResponse || parsed;
       let csv = 'Field,Value\n';
       csv += `Filename,${result.filename || '-'}\n`;
       csv += `File Size,${result.size_bytes || 0}\n`;
