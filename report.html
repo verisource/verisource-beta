@@ -252,7 +252,61 @@
         </div>
       </article>
     </section>
+<!-- 5B. JPEG FORENSICS ANALYSIS -->
+    <section id="jpegForensicsSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-cyan-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">JPEG Forensic Analysis</h2>
+          <p class="text-[11px] text-slate-400">Error Level Analysis, compression artifacts, noise patterns</p>
+        </div>
+      </header>
+      
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="manipulationConfidence" class="text-2xl font-bold text-cyan-300">0%</p>
+          <p class="text-[10px] text-slate-400 mt-1">Manipulation Score</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="compressionQuality" class="text-2xl font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Compression Quality</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="noiseLevel" class="text-sm font-bold capitalize">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Noise Level</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="elaStatus" class="text-sm font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">ELA Status</p>
+        </div>
+      </div>
 
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">Compression Analysis</h4>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="text-slate-400">Double Compressed</span>
+              <span id="doubleCompressed" class="text-emerald-300">No</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Quality Estimate</span>
+              <span id="qualityEstimate">-</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">Forensic Indicators</h4>
+          <ul id="forensicIndicators" class="space-y-1 text-slate-400">
+            <li>• No forensic analysis performed</li>
+          </ul>
+        </div>
+      </div>
+    </section>
     <!-- 6. VIDEO FRAME ANALYSIS (if video) -->
     <section id="videoAnalysisSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
       <header class="flex items-center gap-2 mb-4">
@@ -517,6 +571,54 @@
       </div>
     </section>
 
+  <!-- 12B. REVERSE IMAGE SEARCH DETAILS -->
+    <section id="reverseSearchSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-indigo-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">Reverse Image Search Results</h2>
+          <p class="text-[11px] text-slate-400">TinEye & other reverse search services</p>
+        </div>
+      </header>
+      
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="tineyeMatches" class="text-2xl font-bold text-indigo-300">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">Total Matches</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="imageAge" class="text-sm font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">First Seen</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="topDomain" class="text-sm font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Top Domain</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="newsCount" class="text-2xl font-bold">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">News Sites</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">First Appearance</h4>
+          <div id="firstAppearance" class="space-y-2 text-slate-400">
+            <p>No data available</p>
+          </div>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">Domain Breakdown</h4>
+          <div id="domainBreakdown" class="space-y-1 text-slate-400">
+            <p>No data available</p>
+          </div>
+        </div>
+      </div>
+    </section>  
     <!-- 13. ON-CHAIN ANCHOR DETAILS (Blockchain - future feature) -->
     <section id="blockchainSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
       <header class="flex items-center justify-between mb-4">
@@ -689,7 +791,7 @@ if (!result.ai_detection && parsed.aiDetection) {
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
             </svg>
-            LIKELY AI-GENERATED
+            AI-GENERATED IMAGE
           `;
           verdictBadge.className = 'inline-flex items-center gap-2 px-4 py-2 pill border border-red-500/40 bg-red-500/10 text-red-300 text-sm font-medium';
         } else if (aiConf >= 40) {
@@ -705,7 +807,7 @@ if (!result.ai_detection && parsed.aiDetection) {
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/>
             </svg>
-            LIKELY AUTHENTIC
+            LIKELY CAMERA-CAPTURED
           `;
           verdictBadge.className = 'inline-flex items-center gap-2 px-4 py-2 pill border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 text-sm font-medium';
         }
@@ -989,6 +1091,68 @@ if (!result.ai_detection && parsed.aiDetection) {
             document.getElementById('weatherLandmarkStatus').textContent = 'Verified';
           } else {
             document.getElementById('weatherLandmarkStatus').textContent = 'No data';
+          }
+        }
+// NEW: JPEG Forensics
+        if (result.ai_detection?.forensic_analysis) {
+          document.getElementById('jpegForensicsSection').classList.remove('hidden');
+          const fa = result.ai_detection.forensic_analysis;
+          
+          document.getElementById('manipulationConfidence').textContent = `${fa.manipulation_confidence || 0}%`;
+          document.getElementById('compressionQuality').textContent = fa.compression_quality || '-';
+          document.getElementById('noiseLevel').textContent = fa.noise_level || 'unknown';
+          document.getElementById('elaStatus').textContent = fa.ela_performed ? 'Performed' : 'Not performed';
+          document.getElementById('doubleCompressed').textContent = fa.double_compressed ? 'Yes' : 'No';
+          document.getElementById('doubleCompressed').className = fa.double_compressed ? 'text-red-300' : 'text-emerald-300';
+          document.getElementById('qualityEstimate').textContent = fa.compression_quality ? `${fa.compression_quality}%` : '-';
+          
+          if (result.ai_detection.indicators?.length > 0) {
+            document.getElementById('forensicIndicators').innerHTML = result.ai_detection.indicators.slice(0, 5).map(ind => 
+              `<li class="flex items-start gap-2">
+                <span class="text-cyan-300">•</span>
+                <span>${ind}</span>
+              </li>`
+            ).join('');
+          }
+        }
+
+        // NEW: TinEye Reverse Search
+        if (result.reverse_image_search?.tineye?.status === 'found') {
+          document.getElementById('reverseSearchSection').classList.remove('hidden');
+          const tineye = result.reverse_image_search.tineye;
+          
+          document.getElementById('tineyeMatches').textContent = tineye.total_results || 0;
+          document.getElementById('imageAge').textContent = tineye.first_appearance?.age?.human_readable || '-';
+          document.getElementById('topDomain').textContent = tineye.top_domains?.[0]?.domain || '-';
+          document.getElementById('newsCount').textContent = tineye.domain_breakdown?.news_sites || 0;
+          
+          if (tineye.first_appearance) {
+            const fa = tineye.first_appearance;
+            document.getElementById('firstAppearance').innerHTML = `
+              <div class="flex justify-between">
+                <span class="text-slate-400">Date</span>
+                <span>${fa.age?.human_readable || '-'}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Source</span>
+                <span class="truncate ml-2">${fa.source_domain || '-'}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Backlinks</span>
+                <span>${fa.backlinks?.length || 0}</span>
+              </div>
+            `;
+          }
+          
+          if (tineye.domain_breakdown) {
+            const db = tineye.domain_breakdown;
+            document.getElementById('domainBreakdown').innerHTML = `
+              <div class="flex justify-between"><span>News Sites</span><span>${db.news_sites || 0}</span></div>
+              <div class="flex justify-between"><span>Social Media</span><span>${db.social_media || 0}</span></div>
+              <div class="flex justify-between"><span>Stock Photos</span><span>${db.stock_photo_sites || 0}</span></div>
+              <div class="flex justify-between"><span>Blogs</span><span>${db.blogs || 0}</span></div>
+              <div class="flex justify-between"><span>Other</span><span>${db.other || 0}</span></div>
+            `;
           }
         }
 
