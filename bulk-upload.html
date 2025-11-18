@@ -12,14 +12,37 @@
     }
     .fade-in { animation: fadeIn 0.6s ease-out forwards; }
     
-    /* Image status classes */
-    .status-verified-photo { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-    .status-likely-camera { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
-    .status-modified { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
-    .status-manipulation { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
-    .status-heavily-manipulated { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
-    .status-ai-image { background: linear-gradient(135deg, #9333EA 0%, #7c3aed 100%); } /* Purple for AI */
-    .status-edited-photo { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); } /* Amber for edited */
+/* Image status classes - matching report.html bordered style */
+    .status-ai-image { 
+      border: 1px solid rgba(147, 51, 234, 0.4); 
+      background: rgba(147, 51, 234, 0.1); 
+      color: rgb(216, 180, 254);
+    }
+    .status-edited-photo { 
+      border: 1px solid rgba(245, 158, 11, 0.4); 
+      background: rgba(245, 158, 11, 0.1); 
+      color: rgb(251, 191, 36);
+    }
+    .status-verified-photo { 
+      border: 1px solid rgba(16, 185, 129, 0.4); 
+      background: rgba(16, 185, 129, 0.1); 
+      color: rgb(110, 231, 183);
+    }
+    .status-likely-camera { 
+      border: 1px solid rgba(16, 185, 129, 0.4); 
+      background: rgba(16, 185, 129, 0.1); 
+      color: rgb(110, 231, 183);
+    }
+    .status-manipulation { 
+      border: 1px solid rgba(245, 158, 11, 0.4); 
+      background: rgba(245, 158, 11, 0.1); 
+      color: rgb(251, 191, 36);
+    }
+    .status-heavily-manipulated { 
+      border: 1px solid rgba(239, 68, 68, 0.4); 
+      background: rgba(239, 68, 68, 0.1); 
+      color: rgb(252, 165, 165);
+    }
     
     /* Video status classes */
     .status-verified-video { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
@@ -471,7 +494,7 @@
             <div class="flex-1">
               <h3 class="font-semibold text-lg mb-2">${result.filename}</h3>
               <div class="flex items-center gap-3">
-                <span class="${statusClass} px-4 py-2 rounded-lg text-white font-medium text-sm">
+                <span class="${statusClass} inline-flex items-center gap-2 px-4 py-2 rounded-full font-medium text-sm">
                   ${statusText}
                 </span>
                 <div class="text-sm">
