@@ -928,10 +928,10 @@
      // Use AI confidence for categorization
       const aiConf = result.aiDetection?.confidence || 0;
       
-      if (aiConf >= 70) return '🤖 AI-GENERATED IMAGE';
-      if (aiConf >= 40) return '✏️ EDITED PHOTOGRAPH';
-      if (confidence >= 75) return '✅ VERIFIED PHOTOGRAPH';
-      if (confidence >= 50) return '📷 LIKELY CAMERA-CAPTURED';
+      if (aiConf >= 70) return '⚠ AI-GENERATED IMAGE';
+      if (aiConf >= 40) return '✏ EDITED PHOTOGRAPH';
+      if (confidence >= 75) return '✓ VERIFIED PHOTOGRAPH';
+      if (confidence >= 50) return '✓ LIKELY CAMERA-CAPTURED';
       if (confidence >= 25) return '⚠️ MANIPULATION DETECTED';
       return '🚫 HEAVILY MANIPULATED'; 
     }
