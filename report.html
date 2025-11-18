@@ -1022,8 +1022,8 @@ if (!result.ai_detection && parsed.aiDetection) {
           }
 
           // Individual detector scores
-          if (ai.individual_results) {
-            const ir = ai.individual_results;
+          if (ai.ensemble_results || ai.individual_results) {
+            const ir = ai.ensemble_results || ai.individual_results;
             let scoresHtml = '';
             if (ir.jpeg) {
               scoresHtml += `
