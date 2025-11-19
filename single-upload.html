@@ -538,6 +538,16 @@
         <div class="flex justify-between">
           <span class="text-slate-500">Google Vision:</span>
           <span class="text-slate-300">${googleVision.safe_search_detection ? 'Safe content' : 'Analyzed'}</span>
+        
+          <div class="flex justify-between">
+            <span class="text-slate-500">TinEye:</span>
+            <span class="text-slate-300">${data.externalVerification?.tineye?.totalResults || 0} matches</span>
+          
+          <div class="flex justify-between">
+            <span class="text-slate-500">TinEye:</span>
+            <span class="text-slate-300">${data.externalVerification?.tineye?.totalResults || 0} matches</span>
+          </div>
+        </div>
         </div>
         <div class="flex justify-between">
           <span class="text-slate-500">Web Matches:</span>
