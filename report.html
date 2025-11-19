@@ -886,6 +886,8 @@ if (!result.ai_detection && parsed.aiDetection) {
 
         // 2. Verdict badge
         const verdictBadge = document.getElementById('verdictBadge');
+        const aiConf = result.ai_detection?.ai_confidence || 0;
+        const isLikelyAI = result.ai_detection?.likely_ai_generated || false;
         
         // Handle videos differently from images
         if (result.kind === 'video' && result.video_analysis?.analysis?.verdict) {
@@ -916,7 +918,7 @@ if (!result.ai_detection && parsed.aiDetection) {
               </svg>
               AUTHENTIC VIDEO
             `;
-            verdictBadge.className = 'inline-flex items-center gap-2 px-4 py-2 pill border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 text-sm font-medium';
+            verdictBadge.className = 'inline-flex items-center gap-2 px-4 py-2 pill border border-green-500/40 bg-green-500/10 text-green-400 text-sm font-medium';
           } else {
             // Fallback to raw verdict
             verdictBadge.innerHTML = `
@@ -930,9 +932,6 @@ if (!result.ai_detection && parsed.aiDetection) {
         } 
         // Handle images (original logic)
         else {
-          const aiConf = result.ai_detection?.ai_confidence || 0;
-          const isLikelyAI = result.ai_detection?.likely_ai_generated || false;
-          
           if (isLikelyAI || aiConf >= 70) {
             verdictBadge.innerHTML = `
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -956,7 +955,7 @@ if (!result.ai_detection && parsed.aiDetection) {
               </svg>
               LIKELY CAMERA-CAPTURED
             `;
-            verdictBadge.className = 'inline-flex items-center gap-2 px-4 py-2 pill border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 text-sm font-medium';
+            verdictBadge.className = 'inline-flex items-center gap-2 px-4 py-2 pill border border-green-500/40 bg-green-500/10 text-green-400 text-sm font-medium';
           }
         }
 
@@ -1118,7 +1117,20 @@ if (!result.ai_detection && parsed.aiDetection) {
           document.getElementById('aiFrames').textContent = va.aiGeneratedFrames || 0;
           document.getElementById('suspiciousFrames').textContent = `${va.suspiciousPercentage || 0}%`;
           document.getElementById('aiPercentage').textContent = `${va.aiPercentage || 0}%`;
-          document.getElementById('videoVerdict').textContent = va.verdict || '-';
+          // Set verdict text and color dynamically
+          const verdictEl = document.getElementById('videoVerdict');
+          verdictEl.textContent = va.verdict || '-';
+          
+          // Update color based on verdict
+          if (va.verdict === 'AUTHENTIC') {
+            verdictEl.className = 'text-sm font-bold text-green-400';
+          } else if (va.verdict === 'LIKELY_AI_GENERATED' || va.verdict === 'AI_GENERATED') {
+            verdictEl.className = 'text-sm font-bold text-purple-300';
+          } else if (va.verdict === 'SUSPICIOUS' || va.verdict === 'POSSIBLY_MANIPULATED') {
+            verdictEl.className = 'text-sm font-bold text-amber-300';
+          } else {
+            verdictEl.className = 'text-sm font-bold text-slate-300';
+          }
 
           if (va.temporalAnalysis) {
             const ta = va.temporalAnalysis;
