@@ -183,7 +183,19 @@
             <h3 class="text-sm font-semibold text-slate-300">External Verification</h3>
             <div class="text-xs space-y-1" id="externalVerification"></div>
           </div>
-          <!-- Weather Verification Section -->
+          <!-- Deepfake Detection Section -->
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="deepfakeSection">
+            <h3 class="text-sm font-semibold text-slate-300">Deepfake Detection</h3>
+            <div class="text-xs space-y-1" id="deepfakeDetection"></div>
+          </div>
+
+                    <!-- Shadow Physics Verification Section -->
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="shadowPhysicsSection">
+            <h3 class="text-sm font-semibold text-slate-300">Shadow Physics Analysis</h3>
+            <div class="text-xs space-y-1" id="shadowPhysics"></div>
+          </div>
+
+                    <!-- Weather Verification Section -->
           <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="weatherSection">
             <h3 class="text-sm font-semibold text-slate-300">Weather Verification</h3>
             <div class="text-xs space-y-1" id="weatherVerification"></div>
@@ -976,10 +988,6 @@
         deepfakeDiv.innerHTML = deepfakeHTML;
       } else {
         deepfakeSection.classList.add('hidden');
-      }
-            };
-          }
-        }, 100);
       }
 
       // Video Frame Analysis (only show if video)
