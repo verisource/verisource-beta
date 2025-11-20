@@ -690,6 +690,7 @@
       const virusTotal = data.virustotal || data.external_checks?.virustotal || {};
       const googleVision = data.google_vision || data.external_checks?.google_vision || {};
       const webMatches = googleVision.web_detection?.pages_with_matching_images?.length || 0;
+      const tineye = data.externalVerification?.tineye || data.tineye || {};
       
       externalDiv.innerHTML = `
         <div class="flex justify-between">
@@ -699,16 +700,10 @@
         <div class="flex justify-between">
           <span class="text-slate-500">Google Vision:</span>
           <span class="text-slate-300">${googleVision.safe_search_detection ? 'Safe content' : 'Analyzed'}</span>
-        
-          <div class="flex justify-between">
-            <span class="text-slate-500">TinEye:</span>
-            <span class="text-slate-300">${data.externalVerification?.tineye?.totalResults || 0} matches</span>
-          
-          <div class="flex justify-between">
-            <span class="text-slate-500">TinEye:</span>
-            <span class="text-slate-300">${data.externalVerification?.tineye?.totalResults || 0} matches</span>
-          </div>
         </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">TinEye:</span>
+          <span class="text-slate-300">${tineye.totalResults ? tineye.totalResults.toLocaleString() : '0'} matches</span>
         </div>
         <div class="flex justify-between">
           <span class="text-slate-500">Web Matches:</span>
@@ -724,6 +719,26 @@
             ${googleVision.labels.slice(0, 5).map(label => 
               `<span class="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded">${label.description || label}</span>`
             ).join('')}
+          </div>
+        </div>
+        ` : ''}
+        ${tineye.totalResults && tineye.totalResults > 0 ? `
+        <div class="mt-2 pt-2 border-t border-slate-700">
+          <span class="text-slate-500 text-xs">TinEye Matches (${tineye.totalResults}):</span>
+          <div class="mt-1 space-y-1">
+            ${tineye.matches?.slice(0, 3).map(match => `
+              <div class="bg-slate-700/30 rounded p-1.5">
+                <a href="${match.backlink}" target="_blank" class="text-xs text-blue-400 hover:underline block truncate">
+                  ${match.domain || 'View Match'}
+                </a>
+                <p class="text-[10px] text-slate-500 mt-0.5">
+                  ${match.width}×${match.height} • Crawled: ${new Date(match.crawl_date).toLocaleDateString()}
+                </p>
+              </div>
+            `).join('') || ''}
+            ${tineye.totalResults > 3 ? `
+              <p class="text-[10px] text-slate-500 text-center">... and ${tineye.totalResults - 3} more</p>
+            ` : ''}
           </div>
         </div>
         ` : ''}
