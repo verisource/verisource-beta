@@ -517,7 +517,7 @@
           
           // Patch Entropy
           if (fa.patch_entropy !== null) {
-            const val = fa.patch_entropy.toFixed(2);
+            const val = (fa.patch_entropy || 0).toFixed(2);
             const cls = fa.patch_entropy < 3.5 ? 'text-red-400' : fa.patch_entropy >= 6.0 ? 'text-green-400' : 'text-amber-400';
             const status = fa.patch_entropy < 3.5 ? 'Low' : fa.patch_entropy >= 6.0 ? 'High' : 'Moderate';
             forensicHTML += `
@@ -611,7 +611,7 @@
           
           // Patch Entropy
           if (fa.patch_entropy !== null) {
-            const val = fa.patch_entropy.toFixed(2);
+            const val = (fa.patch_entropy || 0).toFixed(2);
             const cls = fa.patch_entropy < 3.5 ? 'text-red-400' : fa.patch_entropy >= 6.0 ? 'text-green-400' : 'text-amber-400';
             const status = fa.patch_entropy < 3.5 ? 'Low' : fa.patch_entropy >= 6.0 ? 'High' : 'Moderate';
             forensicHTML += `
