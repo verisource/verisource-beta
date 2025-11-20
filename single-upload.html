@@ -303,24 +303,51 @@
         try {
           if (xhr.status === 200) {
             const data = JSON.parse(xhr.responseText);
-        
-        // DEBUG: Log what we're getting from the API
-        console.log('=== VeriSource API Response ===');
-        console.log('Full response:', data);
-        console.log('Google Vision:', data.google_vision);
-        console.log('Web Detection:', data.google_vision?.web_detection);
-        console.log('Matching Pages:', data.google_vision?.web_detection?.pages_with_matching_images);
-        console.log('VirusTotal:', data.virustotal);
-        console.log('AI Detection:', data.ai_detection);
-        console.log('==============================');
-        
-        displayResults(data);
-      } catch (e) {
-        alert('Upload failed: ' + e.message);
-      } finally {
+            
+            // DEBUG: Log what we're getting from the API
+            console.log('=== VeriSource API Response ===');
+            console.log('Full response:', data);
+            console.log('Google Vision:', data.google_vision);
+            console.log('Web Detection:', data.google_vision?.web_detection);
+            console.log('Matching Pages:', data.google_vision?.web_detection?.pages_with_matching_images);
+            console.log('VirusTotal:', data.virustotal);
+            console.log('AI Detection:', data.ai_detection);
+            console.log('==============================');
+            
+            displayResults(data);
+            loading.classList.add('hidden');
+            uploadBtn.disabled = false;
+          } else {
+            throw new Error(`Server error: ${xhr.status}`);
+          }
+        } catch (e) {
+          console.error('Error:', e);
+          alert('Upload failed: ' + e.message);
+          loading.classList.add('hidden');
+          uploadBtn.disabled = false;
+        }
+      });
+      
+      // Handle errors
+      xhr.addEventListener('error', () => {
+        alert('❌ Network error. Please check your connection.');
         loading.classList.add('hidden');
         uploadBtn.disabled = false;
-      }
+      });
+      
+      // Handle timeout
+      xhr.addEventListener('timeout', () => {
+        alert('❌ Upload timeout. File may be too large or connection too slow.');
+        loading.classList.add('hidden');
+        uploadBtn.disabled = false;
+      });
+      
+      // Set timeout to 5 minutes for large files
+      xhr.timeout = 300000;
+      
+      // Send the request
+      xhr.open('POST', `${API_URL}/verify`);
+      xhr.send(formData);
     }
 
     // Map API response to match report.html expected structure
