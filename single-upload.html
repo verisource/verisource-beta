@@ -754,6 +754,10 @@
               sessionStorage.setItem('verificationData', JSON.stringify(data));
               window.open('web-matches.html', '_blank');
               return false;
+            };
+          }
+        }, 100);
+      }
 
       // Weather Verification
       const weatherSection = document.getElementById('weatherSection');
