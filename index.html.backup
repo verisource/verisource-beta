@@ -1,365 +1,300 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VeriSource Beta</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.container{background:white;border-radius:20px;padding:40px;max-width:750px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
-.login-screen{text-align:center}
-.login-screen h1{color:#667eea;margin-bottom:20px}
-.login-screen p{color:#666;margin-bottom:30px}
-.login-form input{width:100%;padding:15px;border:2px solid #e0e0e0;border-radius:10px;font-size:1em;margin-bottom:15px}
-.login-form input:focus{outline:none;border-color:#667eea}
-.login-form button{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border:none;padding:15px 40px;border-radius:10px;font-size:1em;cursor:pointer;width:100%;font-weight:600}
-.error{color:#e74c3c;margin-top:10px;display:none}
-.error.show{display:block}
-.test-interface{display:none}
-.test-interface.show{display:block}
-h1{color:#667eea;margin-bottom:10px;font-size:2em}
-.subtitle{color:#666;margin-bottom:20px}
-.tabs{display:flex;gap:10px;margin-bottom:30px;border-bottom:2px solid #e0e0e0}
-.tab{padding:12px 24px;cursor:pointer;border:none;background:none;color:#666;font-size:1em;transition:all 0.3s;border-bottom:3px solid transparent}
-.tab.active{color:#667eea;border-bottom-color:#667eea;font-weight:600}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.upload-area{border:3px dashed #667eea;border-radius:10px;padding:40px;text-align:center;margin-bottom:20px;cursor:pointer;transition:all 0.3s}
-.upload-area:hover{background:#f8f9ff;border-color:#764ba2}
-.upload-area.dragover{background:#f0f4ff;border-color:#667eea}
-.upload-area.small{padding:20px;margin-bottom:10px}
-input[type="file"]{display:none}
-button{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;border:none;padding:15px 40px;border-radius:10px;font-size:1em;cursor:pointer;width:100%;font-weight:600;transition:all 0.3s}
-button:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 4px 12px rgba(102,126,234,0.4)}
-button:disabled{opacity:0.5;cursor:not-allowed}
-.result{margin-top:30px;padding:20px;border-radius:10px;background:#f8f9ff;display:none;position:relative}
-.result.show{display:block}
-.result pre{background:white;padding:15px;border-radius:5px;overflow-x:auto;max-height:400px;overflow-y:auto;font-size:0.85em;white-space:pre-wrap;word-wrap:break-word}
-.copy-btn{position:absolute;top:20px;right:20px;padding:8px 16px;font-size:0.85em;width:auto}
-.loading{display:none;text-align:center;margin:20px 0}
-.loading.show{display:block}
-.spinner{border:4px solid #f3f3f3;border-top:4px solid #667eea;border-radius:50%;width:40px;height:40px;animation:spin 1s linear infinite;margin:0 auto}
-@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-.progress-bar{width:100%;height:8px;background:#e0e0e0;border-radius:4px;margin:15px 0;display:none;overflow:hidden}
-.progress-bar.show{display:block}
-.progress-fill{height:100%;background:linear-gradient(90deg,#667eea 0%,#764ba2 100%);transition:width 0.3s;width:0}
-.info{background:#e8f4f8;border-left:4px solid #667eea;padding:15px;margin-top:20px;border-radius:5px;font-size:0.9em}
-.selected-file{margin-top:15px;padding:12px;background:#e8f4f8;border-radius:5px;display:none}
-.selected-file.show{display:block}
-.logout-btn{background:#e74c3c;padding:10px 20px;font-size:0.9em;margin-top:20px}
-.beta-info{margin-top:30px;padding:15px;background:#f8f9ff;border-radius:10px;font-size:0.9em}
-.format-badges{display:flex;gap:10px;justify-content:center;margin-top:15px;flex-wrap:wrap}
-.format-badge{background:#667eea;color:white;padding:8px 16px;border-radius:20px;font-size:0.85em;display:flex;align-items:center;gap:6px}
-.compare-section{margin-top:20px}
-.file-slot{border:2px dashed #ccc;border-radius:10px;padding:30px 20px;text-align:center;margin-bottom:15px;background:#f9f9f9;cursor:pointer;transition:all 0.3s}
-.file-slot:hover{border-color:#667eea;background:#f8f9ff}
-.file-slot.filled{border-color:#667eea;background:#e8f4f8}
-.compare-result{margin-top:20px;padding:20px;border-radius:10px;text-align:center;font-size:1.1em;font-weight:600;display:none}
-.compare-result.show{display:block}
-.compare-result.match{background:#d4edda;color:#155724;border:2px solid #c3e6cb}
-.compare-result.different{background:#f8d7da;color:#721c24;border:2px solid #f5c6cb}
-.error-message{background:#f8d7da;color:#721c24;padding:15px;border-radius:10px;border-left:4px solid #e74c3c;margin-top:15px;display:none}
-.error-message.show{display:block}
-</style>
+  <script src="./auth-check.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>VeriSource™ - Content Verification Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+    .fade-in-delay-1 { animation: fadeIn 0.6s ease-out 0.1s forwards; opacity: 0; }
+    .fade-in-delay-2 { animation: fadeIn 0.6s ease-out 0.2s forwards; opacity: 0; }
+    .fade-in-delay-3 { animation: fadeIn 0.6s ease-out 0.3s forwards; opacity: 0; }
+    .dropdown-menu {
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+    }
+    .dropdown:hover .dropdown-menu {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+  </style>
 </head>
-<body>
-<div class="container">
-<div class="login-screen" id="loginScreen">
-<h1>🔐 VeriSource Beta Access</h1>
-<p>This beta test is invite-only. Enter your access key.</p>
-<div class="login-form">
-<input type="password" id="accessKey" placeholder="Enter beta access key">
-<button onclick="checkAccess()">Access Beta</button>
-<p class="error" id="errorMsg">❌ Invalid access key</p>
-</div>
-<div class="beta-info"><strong>🧪 Beta Testers:</strong><br>Check your invitation email for the access key.</div>
-</div>
-
-<div class="test-interface" id="testInterface">
-<h1>🔍 VeriSource Beta</h1>
-<p class="subtitle">Media Verification API</p>
-
-<div class="format-badges">
-<div class="format-badge">📷 JPG, PNG, GIF</div>
-<div class="format-badge">🎬 MP4, MOV, AVI</div>
-<div class="format-badge">🎵 MP3, WAV, M4A</div>
-<div class="format-badge">📦 Up to 100MB</div>
-</div>
-
-<div class="tabs">
-<button class="tab active" onclick="switchTab('single')">Single Upload</button>
-<button class="tab" onclick="switchTab('compare')">Compare Files</button>
-</div>
-
-<div id="singleTab" class="tab-content active">
-<div class="upload-area" id="uploadArea">
-<div style="font-size:3em;margin-bottom:10px">📁</div>
-<p><strong>Click or drag file here</strong></p>
-<p style="margin-top:10px;color:#666;font-size:0.9em">Test any media file</p>
-<input type="file" id="fileInput" accept="image/*,video/*,audio/*">
-</div>
-<div class="selected-file" id="selectedFile"></div>
-<div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
-<button id="uploadBtn" disabled>Upload & Verify</button>
-<div class="error-message" id="errorMessage"></div>
-<div class="loading" id="loading"><div class="spinner"></div><p style="margin-top:15px;color:#666">Analyzing...</p></div>
-<div class="result" id="result">
-<button class="copy-btn" onclick="copyFingerprint()">📋 Copy Hash</button>
-<h3 style="color:#667eea;margin-bottom:15px">✅ Result</h3>
-<pre id="resultJson"></pre>
-</div>
-</div>
-
-<div id="compareTab" class="tab-content">
-<p style="color:#666;margin-bottom:20px;text-align:center">Upload two files to verify if they produce the same fingerprint</p>
-<div class="file-slot" id="slot1" onclick="document.getElementById('file1Input').click()">
-<div style="font-size:2em;margin-bottom:10px">📁</div>
-<strong>File 1</strong>
-<p style="color:#666;margin-top:5px;font-size:0.9em">Click to select</p>
-<input type="file" id="file1Input" style="display:none" accept="image/*,video/*,audio/*">
-</div>
-<div class="file-slot" id="slot2" onclick="document.getElementById('file2Input').click()">
-<div style="font-size:2em;margin-bottom:10px">📁</div>
-<strong>File 2</strong>
-<p style="color:#666;margin-top:5px;font-size:0.9em">Click to select</p>
-<input type="file" id="file2Input" style="display:none" accept="image/*,video/*,audio/*">
-</div>
-<button id="compareBtn" disabled onclick="compareFiles()">Compare Fingerprints</button>
-<div class="error-message" id="compareError"></div>
-<div class="loading" id="compareLoading"><div class="spinner"></div><p style="margin-top:15px;color:#666">Comparing...</p></div>
-<div class="compare-result" id="compareResult"></div>
-</div>
-
-<div class="info">
-<strong>🧪 Testing Guide:</strong>
-<ul style="margin-left:20px;margin-top:10px">
-<li>Upload any media file up to 100MB</li>
-<li>Copy the fingerprint for your records</li>
-<li>Use Compare tab to verify same file = same hash</li>
-<li>Report any issues or bugs</li>
-</ul>
-</div>
-<button class="logout-btn" onclick="logout()">Logout</button>
-</div>
-</div>
-
-<script>
-const BETA_ACCESS_KEY="verisource-beta-2024";
-const API_URL="https://api.verisource.io/verify";
-let isAuthenticated=false;
-let file1=null,file2=null;
-
-const errorMessages={
-  'File too large':'File exceeds 100MB limit. Please use a smaller file.',
-  'No file':'Please select a file first.',
-  'Network request failed':'Connection failed. Check your internet and try again.',
-  'Failed to fetch':'Could not connect to server. Please try again.',
-  'Unsupported file type':'File type not supported. Use JPG, PNG, MP4, MP3, etc.'
-};
-
-window.onload=function(){
-  if(sessionStorage.getItem('betaAccess')===BETA_ACCESS_KEY){
-    showTestInterface()
-  }
-};
-
-function checkAccess(){
-  const inputKey=document.getElementById('accessKey').value;
-  if(inputKey===BETA_ACCESS_KEY){
-    sessionStorage.setItem('betaAccess',inputKey);
-    document.getElementById('errorMsg').classList.remove('show');
-    showTestInterface()
-  }else{
-    document.getElementById('errorMsg').classList.add('show');
-    document.getElementById('accessKey').value=''
-  }
-}
-
-function showTestInterface(){
-  document.getElementById('loginScreen').style.display='none';
-  document.getElementById('testInterface').classList.add('show');
-  isAuthenticated=true
-}
-
-function logout(){
-  sessionStorage.removeItem('betaAccess');
-  document.getElementById('testInterface').classList.remove('show');
-  document.getElementById('loginScreen').style.display='block';
-  document.getElementById('accessKey').value='';
-  isAuthenticated=false
-}
-
-function switchTab(tab){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  if(tab==='single'){
-    document.querySelector('.tab:nth-child(1)').classList.add('active');
-    document.getElementById('singleTab').classList.add('active')
-  }else{
-    document.querySelector('.tab:nth-child(2)').classList.add('active');
-    document.getElementById('compareTab').classList.add('active')
-  }
-}
-
-function showError(elementId,message){
-  const el=document.getElementById(elementId);
-  const friendly=errorMessages[message]||message;
-  el.textContent='⚠️ '+friendly;
-  el.classList.add('show');
-  setTimeout(()=>el.classList.remove('show'),5000)
-}
-
-document.getElementById('accessKey')?.addEventListener('keypress',function(e){
-  if(e.key==='Enter')checkAccess()
-});
-
-const fileInput=document.getElementById('fileInput');
-const uploadArea=document.getElementById('uploadArea');
-const uploadBtn=document.getElementById('uploadBtn');
-const loading=document.getElementById('loading');
-const result=document.getElementById('result');
-const resultJson=document.getElementById('resultJson');
-const selectedFile=document.getElementById('selectedFile');
-const progressBar=document.getElementById('progressBar');
-const progressFill=document.getElementById('progressFill');
-let currentFile=null;
-
-if(uploadArea){
-  uploadArea.addEventListener('click',()=>fileInput.click());
-  fileInput.addEventListener('change',(e)=>{
-    if(e.target.files.length>0){
-      currentFile=e.target.files[0];
-      uploadBtn.disabled=false;
-      selectedFile.textContent=`📎 ${currentFile.name} (${(currentFile.size/1024/1024).toFixed(2)} MB)`;
-      selectedFile.classList.add('show')
-    }
-  });
+<body class="bg-slate-950 text-slate-100 min-h-screen">
   
-  ['dragover','dragleave','drop'].forEach(evt=>{
-    uploadArea.addEventListener(evt,(e)=>e.preventDefault())
-  });
-  
-  uploadArea.addEventListener('dragover',()=>uploadArea.classList.add('dragover'));
-  uploadArea.addEventListener('dragleave',()=>uploadArea.classList.remove('dragover'));
-  uploadArea.addEventListener('drop',(e)=>{
-    uploadArea.classList.remove('dragover');
-    if(e.dataTransfer.files.length>0){
-      currentFile=e.dataTransfer.files[0];
-      uploadBtn.disabled=false;
-      selectedFile.textContent=`📎 ${currentFile.name} (${(currentFile.size/1024/1024).toFixed(2)} MB)`;
-      selectedFile.classList.add('show')
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-slate-950 font-bold text-xl">
+            V
+          </div>
+          <div>
+            <div class="text-lg font-semibold tracking-tight">
+              VeriSource<span class="align-top text-xs ml-0.5">™</span>
+            </div>
+            <p class="text-xs text-slate-400">Content Verification Platform</p>
+          </div>
+        </div>
+
+        <nav class="hidden md:flex items-center gap-6">
+          <a href="#home" class="text-sm hover:text-blue-400 transition">Home</a>
+          
+          <div class="relative dropdown">
+            <button class="text-sm hover:text-blue-400 transition flex items-center gap-1">
+              Verify Content
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
+            <div class="dropdown-menu absolute top-full left-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-lg shadow-xl">
+              <a href="single-upload.html" class="block px-4 py-2 text-sm hover:bg-slate-800 rounded-t-lg transition">Single Upload</a>
+              <a href="bulk-upload.html" class="block px-4 py-2 text-sm hover:bg-slate-800 rounded-b-lg transition">Bulk Upload</a>
+            </div>
+          </div>
+
+          <a href="#features" class="text-sm hover:text-blue-400 transition">Features</a>
+          <a href="#api" class="text-sm hover:text-blue-400 transition">API</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <span class="inline-flex items-center gap-1 rounded-full bg-blue-500/10 px-3 py-1 text-xs font-medium text-blue-300 border border-blue-500/30">
+            <span class="h-2 w-2 rounded-full bg-blue-400 animate-pulse"></span>
+            API Online
+          </span>
+        </div>
+      </div>
+
+      <button id="mobile-menu-btn" class="md:hidden absolute right-4 top-5 text-slate-400">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div id="mobile-menu" class="hidden md:hidden border-t border-slate-800 bg-slate-900">
+      <div class="px-4 py-2 space-y-1">
+        <a href="#home" class="block px-3 py-2 text-sm hover:bg-slate-800 rounded">Home</a>
+        <a href="single-upload.html" class="block px-3 py-2 text-sm hover:bg-slate-800 rounded">Single Upload</a>
+        <a href="bulk-upload.html" class="block px-3 py-2 text-sm hover:bg-slate-800 rounded">Bulk Upload</a>
+        <a href="#features" class="block px-3 py-2 text-sm hover:bg-slate-800 rounded">Features</a>
+        <a href="#api" class="block px-3 py-2 text-sm hover:bg-slate-800 rounded">API</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-10 space-y-16">
+    
+    <section id="home" class="grid md:grid-cols-2 gap-8 items-center py-12 fade-in">
+      <div class="space-y-6">
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
+          Verify content authenticity before you trust it.
+        </h1>
+        <p class="text-lg text-slate-300 leading-relaxed">
+          VeriSource™ generates cryptographic fingerprints for digital content and provides comprehensive verification reports. Built for platforms, fact-checkers, and security teams.
+        </p>
+
+        <ul class="text-sm text-slate-300 space-y-3">
+          <li class="flex gap-3 items-start">
+            <span class="mt-1 h-5 w-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+              <svg class="w-3 h-3 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </span>
+            <span>SHA-256 and perceptual hash fingerprinting for images and media</span>
+          </li>
+          <li class="flex gap-3 items-start">
+            <span class="mt-1 h-5 w-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+              <svg class="w-3 h-3 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </span>
+            <span>Duplicate detection and verification history tracking</span>
+          </li>
+          <li class="flex gap-3 items-start">
+            <span class="mt-1 h-5 w-5 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+              <svg class="w-3 h-3 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+              </svg>
+            </span>
+            <span>RESTful API with batch processing capabilities</span>
+          </li>
+        </ul>
+
+        <div class="flex flex-wrap gap-4 pt-4">
+          <a href="single-upload.html" class="inline-flex items-center justify-center rounded-lg bg-blue-500 px-6 py-3 text-sm font-medium text-white shadow-lg hover:bg-blue-400 transition transform hover:scale-105">
+            Try Single Upload
+          </a>
+          <a href="bulk-upload.html" class="inline-flex items-center justify-center rounded-lg border border-slate-700 px-6 py-3 text-sm font-medium text-slate-100 hover:bg-slate-900 hover:border-slate-600 transition">
+            Try Bulk Upload
+          </a>
+        </div>
+
+        <p class="text-xs text-slate-500 pt-2">
+          Beta environment • For testing and integration purposes only
+        </p>
+      </div>
+
+      <div class="bg-slate-900/70 border border-slate-800 rounded-xl shadow-2xl overflow-hidden fade-in-delay-1">
+        <div class="flex items-center justify-between px-4 py-3 border-b border-slate-800 bg-slate-900/80">
+          <div class="flex items-center gap-2">
+            <span class="h-3 w-3 rounded-full bg-red-500/80"></span>
+            <span class="h-3 w-3 rounded-full bg-amber-400/80"></span>
+            <span class="h-3 w-3 rounded-full bg-emerald-400/80"></span>
+          </div>
+          <span class="text-xs text-slate-400">sample request</span>
+        </div>
+        <div class="p-6 font-mono text-xs space-y-4">
+<pre class="text-slate-300 leading-relaxed">
+<span class="text-blue-400">curl</span> -X POST https://api.verisource.io/verify \
+  -H <span class="text-emerald-400">"X-API-Key: &lt;your_key&gt;"</span> \
+  -F <span class="text-amber-400">"file=@image.jpg"</span>
+</pre>
+
+<pre class="text-emerald-300 leading-relaxed text-xs">
+{
+  "fileId": "file_abc123...",
+  "fingerprint": {
+    "sha256": "8b66dc4151...",
+    "perceptualHash": "a3f2d1b5..."
+  },
+  "verification": {
+    "isOriginal": true,
+    "confidence": "high"
+  },
+  "metadata": {
+    "format": "jpeg",
+    "size": 2458624
+  }
+}
+</pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="py-12 fade-in-delay-2">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold mb-4">Platform Features</h2>
+        <p class="text-slate-400 max-w-2xl mx-auto">
+          Comprehensive tools for content verification, from single uploads to enterprise batch processing
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 hover:border-blue-500/50 transition">
+          <div class="h-12 w-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Cryptographic Fingerprinting</h3>
+          <p class="text-sm text-slate-400">
+            Generate SHA-256 hashes and perceptual fingerprints for tamper detection and content tracking
+          </p>
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 hover:border-blue-500/50 transition">
+          <div class="h-12 w-12 rounded-lg bg-cyan-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Bulk Processing</h3>
+          <p class="text-sm text-slate-400">
+            Upload and verify up to 100 files simultaneously with parallel processing and batch dashboards
+          </p>
+        </div>
+
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 hover:border-blue-500/50 transition">
+          <div class="h-12 w-12 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold mb-2">Verification History</h3>
+          <p class="text-sm text-slate-400">
+            Track content across time with comprehensive verification logs and duplicate detection
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="api" class="grid md:grid-cols-2 gap-6 py-12">
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4">
+        <h2 class="text-xl font-bold">Core API Endpoints</h2>
+        <ul class="text-sm text-slate-300 space-y-3">
+          <li>
+            <span class="font-mono text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700 mr-2">POST /verify</span>
+            Single file verification with fingerprint generation
+          </li>
+          <li>
+            <span class="font-mono text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700 mr-2">POST /api/verify/batch</span>
+            Batch upload with parallel processing (up to 100 files)
+          </li>
+          <li>
+            <span class="font-mono text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700 mr-2">GET /api/batch/:id</span>
+            Retrieve batch verification results
+          </li>
+        </ul>
+      </div>
+
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4">
+        <h2 class="text-xl font-bold">Authentication</h2>
+        <p class="text-sm text-slate-300">
+          All API requests require an <span class="font-mono text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700">X-API-Key</span> header for authentication.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-slate-900 bg-slate-950/90 mt-16">
+    <div class="max-w-6xl mx-auto px-4 py-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <p class="text-xs text-slate-500">
+          VeriSource™ Beta • For evaluation and integration testing only
+        </p>
+        <div class="flex flex-wrap gap-4 text-xs text-slate-500">
+          <span>Build: <span class="font-mono">beta-0.2.0</span></span>
+          <span>Environment: <span class="font-mono">staging</span></span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
     }
-  })
-}
 
-if(uploadBtn){
-  uploadBtn.addEventListener('click',async()=>{
-    if(!currentFile||!isAuthenticated)return;
-    uploadBtn.disabled=true;
-    loading.classList.add('show');
-    result.classList.remove('show');
-    progressBar.classList.add('show');
-    progressFill.style.width='0%';
-    
-    const formData=new FormData();
-    formData.append('file',currentFile);
-    
-    try{
-      progressFill.style.width='30%';
-      const response=await fetch(API_URL,{method:'POST',body:formData});
-      progressFill.style.width='80%';
-      const data=await response.json();
-      progressFill.style.width='100%';
-      
-      if(!response.ok){
-        throw new Error(data.error||data.message||'Upload failed')
-      }
-      
-      resultJson.textContent=JSON.stringify(data,null,2);
-      result.classList.add('show')
-    }catch(error){
-      showError('errorMessage',error.message);
-      console.error('Upload error:',error)
-    }finally{
-      loading.classList.remove('show');
-      progressBar.classList.remove('show');
-      uploadBtn.disabled=false
-    }
-  })
-}
-
-function copyFingerprint(){
-  try{
-    const data=JSON.parse(resultJson.textContent);
-    const fp=data.canonical?.fingerprint||'No fingerprint found';
-    navigator.clipboard.writeText(fp);
-    alert('✅ Fingerprint copied to clipboard!')
-  }catch(e){
-    alert('❌ Could not copy fingerprint')
-  }
-}
-
-document.getElementById('file1Input')?.addEventListener('change',function(e){
-  if(e.target.files.length>0){
-    file1=e.target.files[0];
-    document.getElementById('slot1').classList.add('filled');
-    document.getElementById('slot1').innerHTML=`<div style="font-size:2em;margin-bottom:10px">✅</div><strong>File 1</strong><p style="font-size:0.85em;color:#666;margin-top:5px">${file1.name}</p>`;
-    checkCompareReady()
-  }
-});
-
-document.getElementById('file2Input')?.addEventListener('change',function(e){
-  if(e.target.files.length>0){
-    file2=e.target.files[0];
-    document.getElementById('slot2').classList.add('filled');
-    document.getElementById('slot2').innerHTML=`<div style="font-size:2em;margin-bottom:10px">✅</div><strong>File 2</strong><p style="font-size:0.85em;color:#666;margin-top:5px">${file2.name}</p>`;
-    checkCompareReady()
-  }
-});
-
-function checkCompareReady(){
-  document.getElementById('compareBtn').disabled=!(file1&&file2)
-}
-
-async function uploadForCompare(file){
-  const formData=new FormData();
-  formData.append('file',file);
-  const response=await fetch(API_URL,{method:'POST',body:formData});
-  if(!response.ok)throw new Error('Upload failed');
-  return await response.json()
-}
-
-async function compareFiles(){
-  if(!file1||!file2)return;
-  document.getElementById('compareBtn').disabled=true;
-  document.getElementById('compareLoading').classList.add('show');
-  document.getElementById('compareResult').classList.remove('show');
-  
-  try{
-    const [result1,result2]=await Promise.all([
-      uploadForCompare(file1),
-      uploadForCompare(file2)
-    ]);
-    
-    const fp1=result1.canonical?.fingerprint;
-    const fp2=result2.canonical?.fingerprint;
-    const compareResult=document.getElementById('compareResult');
-    
-    if(fp1===fp2){
-      compareResult.className='compare-result match show';
-      compareResult.innerHTML=`<div style="font-size:2em;margin-bottom:10px">✅</div><strong>MATCH!</strong><p style="margin-top:10px;font-size:0.9em;font-weight:normal">Both files produce the same fingerprint</p><code style="display:block;margin-top:10px;font-size:0.75em;background:white;padding:10px;border-radius:5px;word-break:break-all">${fp1}</code>`
-    }else{
-      compareResult.className='compare-result different show';
-      compareResult.innerHTML=`<div style="font-size:2em;margin-bottom:10px">❌</div><strong>DIFFERENT</strong><p style="margin-top:10px;font-size:0.9em;font-weight:normal">Files have different fingerprints</p>`
-    }
-  }catch(error){
-    showError('compareError',error.message)
-  }finally{
-    document.getElementById('compareLoading').classList.remove('show');
-    document.getElementById('compareBtn').disabled=false
-  }
-}
-</script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href !== '#') {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      });
+    });
+  </script>
 </body>
 </html>

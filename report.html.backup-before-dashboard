@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verification Report - VeriSource™</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+    
+    /* Status badge styles */
+    .status-verified-photo { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .status-likely-camera { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+    .status-modified { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+    .status-manipulation { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    .status-heavily-manipulated { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+    .status-ai-image { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+    .status-verified-video { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .status-ai-content { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    .status-mixed-content { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+    .status-ai-video { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); }
+    .status-deepfake { background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%); }
+    .status-verified-audio { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .status-natural-voice { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+    .status-synthetic-voice { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+    .status-fully-ai-audio { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+    
+    .duplicate-banner {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border-left: 4px solid #b45309;
+    }
+    
+    /* Toggle button styles */
+    .toggle-btn {
+      transition: transform 0.3s ease;
+    }
+    .toggle-btn.open {
+      transform: rotate(180deg);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  
+  <header class="border-b border-slate-700 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-slate-950 font-bold text-xl">
+            V
+          </div>
+          <div>
+            <div class="text-lg font-semibold tracking-tight">
+              VeriSource<span class="align-top text-xs ml-0.5">™</span>
+            </div>
+            <p class="text-xs text-slate-400">Verification Report</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <button onclick="window.close()" class="text-sm text-slate-400 hover:text-blue-400 transition">← Close</button>
+          <button onclick="window.print()" class="text-sm px-4 py-2 rounded-lg border border-slate-700 hover:border-blue-500 hover:bg-slate-900 transition">
+            🖨️ Print Report
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-10">
+    
+    <div id="noDataMessage" class="hidden text-center py-20">
+      <div class="text-6xl mb-4">⚠️</div>
+      <h2 class="text-2xl font-bold mb-2">No Verification Data Found</h2>
+      <p class="text-slate-400 mb-6">This report requires verification data from a bulk or single upload.</p>
+      <a href="index.html" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg inline-block transition">
+        Return to Home
+      </a>
+    </div>
+
+    <div id="reportContent" class="space-y-6">
+      
+      <!-- Header Section -->
+      <div class="bg-slate-800/30 border border-slate-700 rounded-xl p-6 fade-in">
+        <div class="flex items-start justify-between mb-6">
+          <div class="flex-1">
+            <h1 class="text-3xl font-bold mb-2" id="fileName">Loading...</h1>
+            <div class="flex items-center gap-3 flex-wrap">
+              <div id="statusIconContainer" class="flex items-center gap-3 px-4 py-2 rounded-lg">
+                <div id="statusIcon" class="w-8 h-8 flex-shrink-0"></div>
+                <span id="statusBadge" class="text-white font-medium text-sm">
+                Loading...
+              </span>
+            </div>
+            <div class="text-sm">
+                <span class="text-slate-400">Overall Confidence:</span>
+                <span class="font-semibold ml-1 text-2xl" id="overallConfidence">0%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Duplicate Warning -->
+        <div id="duplicateWarning" class="hidden duplicate-banner rounded-lg p-4 text-white mb-6">
+          <div class="flex items-start gap-3">
+            <div class="text-2xl">⚠️</div>
+            <div>
+              <div class="font-semibold mb-1">Duplicate Detected</div>
+              <div class="text-sm opacity-90" id="duplicateMessage"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confidence Score Breakdown (Collapsible) -->
+      <div class="bg-slate-800/30 border border-slate-700 rounded-xl overflow-hidden fade-in">
+        <button onclick="toggleSection('confidenceSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-800/50 transition">
+          <h2 class="text-xl font-bold">Confidence Score Breakdown</h2>
+          <svg id="confidenceToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <div id="confidenceSection" class="hidden px-6 pb-6">
+          <div id="confidenceBreakdown" class="space-y-3">
+            <p class="text-sm text-slate-400">Loading confidence data...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Detection (Collapsible) -->
+      <div id="aiDetectionCard" class="hidden bg-slate-800/30 border border-slate-700 rounded-xl overflow-hidden fade-in">
+        <button onclick="toggleSection('aiDetectionSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-800/50 transition">
+          <h2 class="text-xl font-bold">AI Content Analysis</h2>
+          <svg id="aiDetectionToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <div id="aiDetectionSection" class="hidden px-6 pb-6">
+          <div id="aiDetectionContent"></div>
+        </div>
+      </div>
+
+      <!-- Fingerprint Details -->
+      <div class="bg-slate-800/30 border border-slate-700 rounded-xl p-6 fade-in">
+        <h2 class="text-xl font-bold mb-4">Fingerprint Details</h2>
+        <div class="space-y-3 text-sm font-mono">
+          <div>
+            <span class="text-slate-400">File ID:</span>
+            <p class="text-slate-300 break-all mt-1" id="fileId">N/A</p>
+          </div>
+          <div>
+            <span class="text-slate-400">SHA-256:</span>
+            <p class="text-slate-300 break-all mt-1" id="sha256">N/A</p>
+          </div>
+          <div id="phashContainer">
+            <span class="text-slate-400">pHash:</span>
+            <p class="text-slate-300 break-all mt-1" id="phash">N/A</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metadata -->
+      <div class="bg-slate-800/30 border border-slate-700 rounded-xl p-6 fade-in">
+        <h2 class="text-xl font-bold mb-4">Metadata</h2>
+        <div class="space-y-2 text-sm" id="metadataContainer">
+          <p class="text-sm text-slate-400">Loading metadata...</p>
+        </div>
+      </div>
+
+      <!-- External Verification (Collapsible) -->
+      <div id="externalVerificationCard" class="hidden bg-slate-800/30 border border-slate-700 rounded-xl overflow-hidden fade-in">
+        <button onclick="toggleSection('externalVerificationSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-800/50 transition">
+          <h2 class="text-xl font-bold">External Verification</h2>
+          <svg id="externalVerificationToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <div id="externalVerificationSection" class="hidden px-6 pb-6">
+          <div id="externalVerificationContent"></div>
+        </div>
+      </div>
+
+      <!-- Video Frame Analysis (Collapsible) -->
+      <div id="videoAnalysisCard" class="hidden bg-slate-800/30 border border-slate-700 rounded-xl overflow-hidden fade-in">
+        <button onclick="toggleSection('videoAnalysisSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-800/50 transition">
+          <h2 class="text-xl font-bold">Video Frame Analysis</h2>
+          <svg id="videoAnalysisToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <div id="videoAnalysisSection" class="hidden px-6 pb-6">
+          <div id="videoAnalysisContent"></div>
+        </div>
+      </div>
+
+      <!-- Audio Analysis (Collapsible) -->
+      <div id="audioAnalysisCard" class="hidden bg-slate-800/30 border border-slate-700 rounded-xl overflow-hidden fade-in">
+        <button onclick="toggleSection('audioAnalysisSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-800/50 transition">
+          <h2 class="text-xl font-bold">Audio Analysis</h2>
+          <svg id="audioAnalysisToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+        <div id="audioAnalysisSection" class="hidden px-6 pb-6">
+          <div id="audioAnalysisContent"></div>
+        </div>
+      </div>
+
+      <!-- Verification History -->
+      <div class="bg-slate-800/30 border border-slate-700 rounded-xl p-6 fade-in">
+        <h2 class="text-xl font-bold mb-4">Verification History</h2>
+        <div class="space-y-2 text-sm" id="verificationHistory">
+          <p class="text-sm text-slate-400">Loading verification history...</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // Toggle section function
+    function toggleSection(sectionId) {
+      const section = document.getElementById(sectionId);
+      const toggle = document.getElementById(sectionId.replace('Section', 'Toggle'));
+      
+      if (section.classList.contains('hidden')) {
+        section.classList.remove('hidden');
+        toggle.classList.add('open');
+      } else {
+        section.classList.add('hidden');
+        toggle.classList.remove('open');
+      }
+    }
+
+    // Load verification data from sessionStorage
+    function loadReport() {
+      console.log('=================================================');
+      console.log('REPORT PAGE - LOADING DATA');
+      console.log('=================================================');
+      
+      const data = sessionStorage.getItem('verificationData');
+      console.log('Raw sessionStorage data:', data);
+      
+      if (!data) {
+        console.error('❌ No verification data found in sessionStorage');
+        document.getElementById('reportContent').classList.add('hidden');
+        document.getElementById('noDataMessage').classList.remove('hidden');
+        return;
+      }
+
+     const result = JSON.parse(data);
+
+// Map snake_case API response to camelCase for frontend
+if (result.video_analysis) {
+  result.videoAnalysis = {
+    totalFrames: result.video_analysis.analysis?.framesAnalyzed || result.video_analysis.frames_analyzed || 0,
+    aiFrames: result.video_analysis.analysis?.aiGeneratedFrames || result.video_analysis.ai_generated_frames || 0,
+    avgConfidence: result.video_analysis.analysis?.videoConfidence || result.video_analysis.average_confidence || 0,
+    aiPercentage: result.video_analysis.analysis?.aiPercentage || result.video_analysis.ai_percentage || 0,
+    deepfakeDetected: result.video_analysis.analysis?.verdict === 'AI-Generated' || false,
+    suspiciousFrames: result.video_analysis.analysis?.suspiciousFrames || 0,
+    suspiciousPercentage: result.video_analysis.analysis?.suspiciousPercentage || 0,
+    verdict: result.video_analysis.analysis?.verdict || 'Unknown',
+    temporalAnalysis: result.video_analysis.analysis?.temporalAnalysis || null,
+    frequencyAnalysis: result.video_analysis.analysis?.frequencyAnalysis || null
+  };
+} 
+// Map AI detection data
+if (result.ai_detection) {
+  result.aiDetection = {
+    isAiGenerated: result.ai_detection.likely_ai_generated || false,
+    confidence: result.ai_detection.ai_confidence || 0,
+    label: result.ai_detection.likely_ai_generated ? 'AI-Generated' : 'Likely Authentic',
+    indicators: result.ai_detection.indicators || [],
+    detectors: result.ai_detection.individual_results || null,
+    ensemble: result.ai_detection.ensemble_used || false,
+    detectorCount: result.ai_detection.detector_count || 0
+  };
+}
+      console.log('✅ Parsed result object:', JSON.stringify(result, null, 2));
+      console.log('');
+      console.log('Result keys:', Object.keys(result));
+      console.log('overallConfidence:', result.overallConfidence);
+      console.log('fingerprint:', result.fingerprint);
+      console.log('metadata:', result.metadata);
+      console.log('==========================================');
+
+      // Display file name
+      document.getElementById('fileName').textContent = result.filename || 'Verification Report';
+
+      // Display status badge with icon
+      const statusBadge = document.getElementById('statusBadge');
+      const statusIconContainer = document.getElementById('statusIconContainer');
+      const statusIcon = document.getElementById('statusIcon');
+
+      // Use API data directly (no custom functions)
+      const apiColor = result.confidenceColor || '#EF4444';
+      const apiLabel = result.confidenceLabel || 'VERIFICATION COMPLETE';
+      const apiIcon = result.confidenceIconSvg || getDefaultIcon(result);
+ 
+      
+      // Set container styles with API color
+      statusIconContainer.className = `flex items-center gap-3 px-4 py-2 rounded-lg`;
+      statusIconContainer.style.backgroundColor = apiColor + '20'; // 20 = 12.5% opacity
+      statusIconContainer.style.borderColor = apiColor + '50'; // 50 = 31% opacity
+      statusIconContainer.style.border = '1px solid';
+      statusIconContainer.style.color = apiColor; // Icon color
+      
+      // Set icon 
+      statusIcon.innerHTML = apiIcon;
+      
+      // Set status text (use API label directly, no emojis)
+      statusBadge.textContent = apiLabel;
+
+      // Display overall confidence
+      const confidence = Math.round(result.overallConfidence || 0);
+      document.getElementById('overallConfidence').textContent = confidence + '%';
+
+      // Display duplicate warning
+      if (result.duplicateDetection?.isDuplicate) {
+        const duplicateWarning = document.getElementById('duplicateWarning');
+        duplicateWarning.classList.remove('hidden');
+        const firstSeen = result.duplicateDetection.firstSeen ? new Date(result.duplicateDetection.firstSeen).toLocaleDateString() : 'Unknown';
+        const fileId = result.duplicateDetection.originalFileId || 'N/A';
+        document.getElementById('duplicateMessage').innerHTML = `
+          This file was previously verified on ${firstSeen}<br>
+          Original File ID: ${fileId}
+        `;
+      }
+
+      // Display confidence breakdown
+      displayConfidenceBreakdown(result);
+
+      // Display AI detection if available
+      if (result.aiDetection) {
+        displayAiDetection(result);
+      }
+
+      // Display fingerprint details
+      document.getElementById('fileId').textContent = result.fileId || result.verification_id || 'N/A';
+      document.getElementById('sha256').textContent = result.fingerprint?.sha256 || result.sha256 || 'N/A';
+
+      // Display metadata (includes pHash handling)
+      displayMetadata(result);
+
+      // Display external verification if available
+      if (result.externalVerification) {
+        displayExternalVerification(result);
+      }
+
+      // Display video analysis if available
+      if (result.videoAnalysis) {
+        displayVideoAnalysis(result);
+      }
+
+      // Display audio analysis if available
+      if (result.audioAnalysis) {
+        displayAudioAnalysis(result);
+      }
+
+      // Display verification history
+      displayVerificationHistory(result);
+    }
+
+    function displayConfidenceBreakdown(result) {
+      const container = document.getElementById('confidenceBreakdown');
+      
+      if (!result.confidenceBreakdown || Object.keys(result.confidenceBreakdown).length === 0) {
+        container.innerHTML = '<p class="text-sm text-slate-400">Confidence breakdown not available</p>';
+        return;
+      }
+
+      const breakdown = Object.entries(result.confidenceBreakdown)
+        .filter(([key, value]) => value > 0)
+        .map(([key, value]) => `
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-slate-400">${key}</span>
+              <span class="font-semibold">${Math.round(value)}%</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all" style="width: ${value}%"></div>
+            </div>
+          </div>
+        `).join('');
+
+      container.innerHTML = breakdown;
+    }
+
+    function displayAiDetection(result) {
+      const card = document.getElementById('aiDetectionCard');
+      const content = document.getElementById('aiDetectionContent');
+      
+      card.classList.remove('hidden');
+      
+      const isAi = result.aiDetection.isAiGenerated || false;
+      const confidence = Math.round(result.aiDetection.confidence || 0);
+      const label = result.aiDetection.label || 'Unknown';
+
+      content.innerHTML = `
+        <div class="bg-slate-800/50 rounded-lg p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="font-medium">Detection Result</h4>
+            <span class="text-sm ${isAi ? 'text-red-400' : 'text-green-400'}">
+              ${isAi ? 'AI-Generated' : 'Likely Authentic'}
+            </span>
+          </div>
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between">
+              <span class="text-slate-400">AI Confidence:</span>
+              <span class="font-semibold">${confidence}%</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Classification:</span>
+              <span class="font-semibold">${label}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function displayMetadata(result) {
+      const container = document.getElementById('metadataContainer');
+      const metadata = result.metadata || {};
+      
+      let html = '<div class="space-y-1 text-xs">';
+      
+      if (metadata.format) {
+        html += `<div><span class="text-slate-400">Format:</span> <span class="text-slate-300">${metadata.format}</span></div>`;
+      }
+      
+      if (metadata.size) {
+        html += `<div><span class="text-slate-400">Size:</span> <span class="text-slate-300">${metadata.size}</span></div>`;
+      }
+      
+      if (metadata.dimensions) {
+        html += `<div><span class="text-slate-400">Dimensions:</span> <span class="text-slate-300">${metadata.dimensions}</span></div>`;
+      }
+      
+      if (metadata.duration) {
+        html += `<div><span class="text-slate-400">Duration:</span> <span class="text-slate-300">${metadata.duration}</span></div>`;
+      }
+      
+      if (metadata.uploadDate) {
+        html += `<div><span class="text-slate-400">Upload Date:</span> <span class="text-slate-300">${new Date(metadata.uploadDate).toLocaleDateString()}</span></div>`;
+      }
+      
+      if (result.confidenceLevel) {
+        html += `<div><span class="text-slate-400">Confidence Level:</span> <span class="text-slate-300">${result.overallConfidence}% (${result.confidenceLevel})</span></div>`;
+      }
+      
+      html += '</div>';
+      
+      if (html === '<div class="space-y-1 text-xs"></div>') {
+        container.innerHTML = '<p class="text-sm text-slate-400">No metadata available</p>';
+      } else {
+        container.innerHTML = html;
+      }
+      
+      // Handle pHash display
+      if (result.fingerprint?.pHash || result.phash) {
+        document.getElementById('phash').textContent = result.fingerprint?.pHash || result.phash;
+      } else {
+        document.getElementById('phashContainer').style.display = 'none';
+      }
+    }
+
+    function displayExternalVerification(result) {
+      const card = document.getElementById('externalVerificationCard');
+      const content = document.getElementById('externalVerificationContent');
+      
+      const hasVirusTotal = result.externalVerification?.virusTotal;
+      const hasGoogleVision = result.externalVerification?.googleVision?.labels?.length > 0;
+      
+      if (!hasVirusTotal && !hasGoogleVision) return;
+      
+      card.classList.remove('hidden');
+      
+      let html = '<div class="space-y-4">';
+      
+      if (hasVirusTotal) {
+        const vt = result.externalVerification.virusTotal;
+        html += `
+          <div class="bg-slate-800/50 rounded-lg p-4">
+            <h4 class="font-medium mb-2">VirusTotal Scan</h4>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-slate-400">Detection Result:</span>
+              <span class="text-sm ${vt.malicious > 0 ? 'text-red-400' : 'text-green-400'}">
+                ${vt.malicious > 0 ? 'Threats Detected' : 'Clean'}
+              </span>
+            </div>
+            <div class="text-xs text-slate-500 mt-1">
+              ${vt.malicious} / ${vt.total} scanners flagged this file
+            </div>
+          </div>
+        `;
+      }
+      
+      if (hasGoogleVision) {
+        const labels = result.externalVerification.googleVision.labels;
+        html += `
+          <div class="bg-slate-800/50 rounded-lg p-4">
+            <h4 class="font-medium mb-2">Detected Labels</h4>
+            <div class="flex flex-wrap gap-2">
+              ${labels.map(label => `
+                <span class="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-xs">${label}</span>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+      
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function displayVideoAnalysis(result) {
+      const card = document.getElementById('videoAnalysisCard');
+      const content = document.getElementById('videoAnalysisContent');
+      
+      card.classList.remove('hidden');
+      
+      const va = result.videoAnalysis;
+      
+      content.innerHTML = `
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="text-slate-400">Frames Analyzed:</span>
+            <span>${va.totalFrames || 0}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">AI Frames Detected:</span>
+            <span class="${va.aiFrames > 0 ? 'text-red-400' : 'text-green-400'}">
+              ${va.aiFrames || 0}
+            </span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Average Frame Score:</span>
+            <span>${Math.round(va.avgConfidence || 0)}%</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">AI Content Percentage:</span>
+            <span class="${va.aiPercentage > 30 ? 'text-red-400' : 'text-green-400'}">
+              ${Math.round(va.aiPercentage || 0)}%
+            </span>
+          </div>
+        </div>
+      `;
+    }
+
+    function displayAudioAnalysis(result) {
+      const card = document.getElementById('audioAnalysisCard');
+      const content = document.getElementById('audioAnalysisContent');
+      
+      card.classList.remove('hidden');
+      
+      const aa = result.audioAnalysis;
+      
+      content.innerHTML = `
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="text-slate-400">Synthetic Voice Detection:</span>
+            <span class="${aa.syntheticVoice ? 'text-red-400' : 'text-green-400'}">
+              ${aa.syntheticVoice ? 'Detected' : 'Not Detected'}
+            </span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">AI Confidence:</span>
+            <span>${Math.round(aa.aiConfidence || 0)}%</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function displayVerificationHistory(result) {
+      const container = document.getElementById('verificationHistory');
+      const firstVerified = result.timestamps?.created || result.created_at;
+      const lastUpdated = result.timestamps?.updated || result.updated_at;
+      const count = result.verificationCount;
+      
+      let html = '<div class="space-y-1 text-xs">';
+      
+      if (firstVerified) {
+        html += `<div><span class="text-slate-400">First Verified:</span> <span class="text-slate-300">${new Date(firstVerified).toLocaleString()}</span></div>`;
+      }
+      
+      if (lastUpdated) {
+        html += `<div><span class="text-slate-400">Last Updated:</span> <span class="text-slate-300">${new Date(lastUpdated).toLocaleString()}</span></div>`;
+      }
+      
+      if (count) {
+        html += `<div><span class="text-slate-400">Times Verified:</span> <span class="text-slate-300">${count}</span></div>`;
+      }
+      
+      html += '</div>';
+      
+      if (html === '<div class="space-y-1 text-xs"></div>') {
+        container.innerHTML = '<p class="text-sm text-slate-400">No verification history available</p>';
+      } else {
+        container.innerHTML = html;
+      }
+    }
+
+    function getStatusClass(result) {
+      const mediaType = result.metadata?.format?.toLowerCase() || '';
+      const isVideo = mediaType.includes('video') || mediaType.includes('mp4') || mediaType.includes('mov') || mediaType.includes('avi');
+      const isAudio = mediaType.includes('audio') || mediaType.includes('mp3') || mediaType.includes('wav') || mediaType.includes('ogg');
+      
+      if (isVideo) {
+        const aiPercent = result.videoAnalysis?.aiPercentage || 0;
+        const hasDeepfake = result.videoAnalysis?.deepfakeDetected || false;
+        if (hasDeepfake && aiPercent > 30) return 'status-deepfake';
+        if (aiPercent >= 70) return 'status-ai-video';
+        if (aiPercent >= 30) return 'status-mixed-content';
+        if (aiPercent >= 5) return 'status-ai-content';
+        return 'status-verified-video';
+      }
+      
+      if (isAudio) {
+        const hasAiVoice = result.audioAnalysis?.syntheticVoice || false;
+        const aiConfidence = result.audioAnalysis?.aiConfidence || 0;
+        if (aiConfidence >= 90) return 'status-fully-ai-audio';
+        if (hasAiVoice) return 'status-synthetic-voice';
+        if (aiConfidence >= 30) return 'status-natural-voice';
+        return 'status-verified-audio';
+      }
+      
+      const confidence = result.overallConfidence || 0;
+      const hasAi = result.aiDetection?.isAiGenerated || false;
+      const isModified = result.duplicateDetection?.isDuplicate || false;
+      
+      if (hasAi) return 'status-ai-image';
+      if (confidence >= 75) return 'status-verified-photo';
+      if (confidence >= 50 && isModified) return 'status-modified';
+      if (confidence >= 50) return 'status-likely-camera';
+      if (confidence >= 25) return 'status-manipulation';
+      return 'status-heavily-manipulated';
+    }
+
+    function getStatusText(result) {
+      const mediaType = result.metadata?.format?.toLowerCase() || '';
+      const isVideo = mediaType.includes('video') || mediaType.includes('mp4') || mediaType.includes('mov') || mediaType.includes('avi');
+      const isAudio = mediaType.includes('audio') || mediaType.includes('mp3') || mediaType.includes('wav') || mediaType.includes('ogg');
+      
+      if (isVideo) {
+        const aiPercent = result.videoAnalysis?.aiPercentage || 0;
+        const hasDeepfake = result.videoAnalysis?.deepfakeDetected || false;
+        if (hasDeepfake && aiPercent > 30) return '🚨 DEEPFAKE INDICATORS DETECTED';
+        if (aiPercent >= 70) return '🤖 PRIMARILY AI-GENERATED VIDEO';
+        if (aiPercent >= 30) return '⚠️ SIGNIFICANT MIX OF VIDEO AND AI CONTENT';
+        if (aiPercent >= 5) return '⚡ AI-GENERATED CONTENT DETECTED';
+        return '✅ VERIFIED VIDEO';
+      }
+      
+      if (isAudio) {
+        const hasAiVoice = result.audioAnalysis?.syntheticVoice || false;
+        const aiConfidence = result.audioAnalysis?.aiConfidence || 0;
+        if (aiConfidence >= 90) return '🤖 FULLY AI-GENERATED AUDIO';
+        if (hasAiVoice) return '🎙️ SYNTHETIC VOICE DETECTED';
+        if (aiConfidence >= 30) return '🎵 NATURAL VOICE WITH AI AUDIO';
+        return '✅ VERIFIED AUDIO RECORDING';
+      }
+      
+      const confidence = result.overallConfidence || 0;
+      const hasAi = result.aiDetection?.isAiGenerated || false;
+      const isModified = result.duplicateDetection?.isDuplicate || false;
+      
+      if (hasAi) return '🤖 AI-GENERATED IMAGE';
+      if (confidence >= 75) return '✅ VERIFIED PHOTOGRAPH';
+      if (confidence >= 50 && isModified) return '📝 MODIFIED VERSION DETECTED';
+      if (confidence >= 50) return '📷 LIKELY CAMERA-CAPTURED';
+      if (confidence >= 25) return '⚠️ MANIPULATION DETECTED';
+      return '🚫 HEAVILY MANIPULATED';
+    }
+    
+    function getDefaultIcon(result) {
+  // Default fallback icons if API doesn't provide one
+  const confidence = result.overallConfidence || 0;
+  
+  if (confidence >= 75) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+  } else if (confidence >= 50) {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+  } else {
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+  }
+}
+    // Load report on page load
+    window.addEventListener('DOMContentLoaded', loadReport);
+  </script>
+
+</body>
+</html>

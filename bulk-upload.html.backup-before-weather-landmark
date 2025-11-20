@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulk Upload - VeriSource™</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+    
+    /* Image status classes */
+    .status-verified-photo { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .status-likely-camera { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+    .status-modified { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
+    .status-manipulation { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    .status-heavily-manipulated { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+    .status-ai-image { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+    
+    /* Video status classes */
+    .status-verified-video { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .status-ai-content { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+    .status-mixed-content { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+    .status-ai-video { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); }
+    .status-deepfake { background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%); }
+    
+    /* Audio status classes */
+    .status-verified-audio { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .status-natural-voice { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+    .status-synthetic-voice { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+    .status-fully-ai-audio { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+    
+    .duplicate-banner {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border-left: 4px solid #b45309;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-slate-950 font-bold text-xl">
+            V
+          </div>
+          <div>
+            <div class="text-lg font-semibold tracking-tight">
+              VeriSource<span class="align-top text-xs ml-0.5">™</span>
+            </div>
+            <p class="text-xs text-slate-400">Bulk Upload</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <a href="index.html" class="text-sm text-slate-400 hover:text-blue-400 transition">← Back to Home</a>
+          <a href="single-upload.html" class="text-sm px-4 py-2 rounded-lg border border-slate-700 hover:border-blue-500 hover:bg-slate-900 transition">
+            Try Single Upload
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-10">
+    
+    <div class="text-center mb-10 fade-in">
+      <h1 class="text-3xl md:text-4xl font-bold mb-3">Bulk File Verification</h1>
+      <p class="text-slate-400 max-w-2xl mx-auto">
+        Upload multiple images and videos simultaneously for batch processing with comprehensive analysis
+      </p>
+    </div>
+
+    <div class="space-y-8">
+      
+      <!-- Upload Section -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-6 fade-in">
+        <div>
+          <h2 class="text-xl font-semibold mb-2">Select Multiple Files</h2>
+          <p class="text-sm text-slate-400">
+            Choose multiple images or videos to verify in a single batch. Supports JPG, PNG, GIF, WEBP, MP4, MOV, AVI (max 200MB each, up to 100 files)
+          </p>
+        </div>
+
+        <div id="dropZone" class="border-2 border-dashed border-slate-700 rounded-lg p-12 text-center hover:border-blue-500 hover:bg-slate-900/50 transition cursor-pointer">
+          <div class="space-y-4">
+            <div class="text-5xl">📁</div>
+            <div>
+              <p class="text-lg font-medium">Drop files here or click to browse</p>
+              <p class="text-sm text-slate-400 mt-2">Images: JPG, PNG, GIF, WEBP | Videos: MP4, MOV, AVI</p>
+              <p class="text-xs text-slate-500 mt-1">Max 200MB per file | Up to 100 files</p>
+            </div>
+          </div>
+          <input type="file" id="fileInput" multiple accept="image/*,video/*" class="hidden">
+        </div>
+
+        <!-- Selected Files List -->
+        <div id="selectedFiles" class="hidden space-y-2">
+          <div class="flex items-center justify-between">
+            <h3 class="font-medium">Selected Files (<span id="fileCount">0</span>)</h3>
+            <button id="clearFiles" class="text-sm text-red-400 hover:text-red-300">Clear All</button>
+          </div>
+          <div id="filesList" class="space-y-2 max-h-60 overflow-y-auto"></div>
+        </div>
+
+        <button id="uploadBtn" disabled class="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 disabled:from-slate-700 disabled:to-slate-700 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition">
+          Upload & Verify Files
+        </button>
+      </div>
+
+      <!-- Progress Section -->
+      <div id="progressSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">Processing Files...</h3>
+          <span id="progressText" class="text-sm text-slate-400">0 / 0</span>
+        </div>
+        <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden">
+          <div id="progressBar" class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-300" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div id="resultsSection" class="hidden space-y-6">
+        <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold">Verification Results</h2>
+            <button id="downloadReport" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition">
+              Download CSV Report
+            </button>
+          </div>
+          
+          <!-- Summary Stats -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-2xl font-bold text-blue-400" id="totalFiles">0</div>
+              <div class="text-sm text-slate-400">Total Files</div>
+            </div>
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-2xl font-bold text-green-400" id="authenticFiles">0</div>
+              <div class="text-sm text-slate-400">Verified</div>
+            </div>
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-2xl font-bold text-red-400" id="aiFiles">0</div>
+              <div class="text-sm text-slate-400">Manipulated</div>
+            </div>
+            <div class="bg-slate-800/50 rounded-lg p-4">
+              <div class="text-2xl font-bold text-yellow-400" id="duplicateFiles">0</div>
+              <div class="text-sm text-slate-400">Duplicates</div>
+            </div>
+          </div>
+
+          <!-- Individual Results -->
+          <div id="resultsContainer" class="space-y-4"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    const API_URL = 'https://api.verisource.io';
+    let selectedFiles = [];
+    let verificationResults = [];
+
+    // DOM Elements
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const selectedFilesDiv = document.getElementById('selectedFiles');
+    const filesList = document.getElementById('filesList');
+    const fileCount = document.getElementById('fileCount');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const clearFilesBtn = document.getElementById('clearFiles');
+    const progressSection = document.getElementById('progressSection');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const resultsSection = document.getElementById('resultsSection');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const downloadReport = document.getElementById('downloadReport');
+
+    // Drag and Drop Handlers
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('border-blue-500', 'bg-slate-900/50');
+    });
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('border-blue-500', 'bg-slate-900/50');
+    });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-blue-500', 'bg-slate-900/50');
+      handleFiles(Array.from(e.dataTransfer.files));
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      handleFiles(Array.from(e.target.files));
+    });
+
+    clearFilesBtn.addEventListener('click', () => {
+      selectedFiles = [];
+      updateFilesList();
+    });
+
+    uploadBtn.addEventListener('click', uploadAndVerifyFiles);
+    downloadReport.addEventListener('click', downloadCSVReport);
+
+    function handleFiles(files) {
+      const validFiles = files.filter(file => {
+        const isImage = file.type.startsWith('image/');
+        const isVideo = file.type.startsWith('video/');
+        const isValidSize = file.size <= 200 * 1024 * 1024; // 200MB
+        return (isImage || isVideo) && isValidSize;
+      });
+
+      if (validFiles.length + selectedFiles.length > 100) {
+        alert('Maximum 100 files allowed');
+        return;
+      }
+
+      selectedFiles = [...selectedFiles, ...validFiles];
+      updateFilesList();
+    }
+
+    function updateFilesList() {
+      if (selectedFiles.length === 0) {
+        selectedFilesDiv.classList.add('hidden');
+        uploadBtn.disabled = true;
+        return;
+      }
+
+      selectedFilesDiv.classList.remove('hidden');
+      uploadBtn.disabled = false;
+      fileCount.textContent = selectedFiles.length;
+
+      filesList.innerHTML = selectedFiles.map((file, index) => `
+        <div class="flex items-center justify-between bg-slate-800/50 rounded-lg p-3">
+          <div class="flex items-center gap-3">
+            <div class="text-2xl">${file.type.startsWith('image/') ? '🖼️' : '🎬'}</div>
+            <div>
+              <div class="font-medium text-sm">${file.name}</div>
+              <div class="text-xs text-slate-400">${formatFileSize(file.size)}</div>
+            </div>
+          </div>
+          <button onclick="removeFile(${index})" class="text-red-400 hover:text-red-300 text-sm">Remove</button>
+        </div>
+      `).join('');
+    }
+
+    function removeFile(index) {
+      selectedFiles.splice(index, 1);
+      updateFilesList();
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    async function uploadAndVerifyFiles() {
+      uploadBtn.disabled = true;
+      progressSection.classList.remove('hidden');
+      resultsSection.classList.add('hidden');
+      verificationResults = [];
+
+      const total = selectedFiles.length;
+      let completed = 0;
+
+      for (const file of selectedFiles) {
+        try {
+          const result = await verifyFile(file);
+          console.log('Verification result for', file.name, ':', result); // Debug logging
+          verificationResults.push({ filename: file.name, ...result });
+        } catch (error) {
+          console.error('Error verifying', file.name, ':', error);
+          verificationResults.push({ 
+            filename: file.name, 
+            error: error.message,
+            overallConfidence: 0
+          });
+        }
+
+        completed++;
+        const percentage = (completed / total) * 100;
+        progressBar.style.width = percentage + '%';
+        progressText.textContent = `${completed} / ${total}`;
+      }
+
+      console.log('All verification results:', verificationResults); // Debug logging
+      displayResults();
+    }
+
+    async function verifyFile(file) {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(`${API_URL}/verify`, {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) throw new Error('Verification failed');
+      
+      const data = await response.json();
+      
+      console.log('Raw API response:', data);
+      
+      // Map API response using ACTUAL field names from VeriSource API
+      return {
+        fileId: data.verification?.previous_uploads?.[0]?.verification_id || 'N/A',
+        filename: file.name,
+        
+        overallConfidence: data.confidence?.percentage || 0,
+        confidenceLevel: data.confidence?.level,
+        confidenceLabel: data.confidence?.label,
+        confidenceColor: data.confidence?.color,
+        
+        confidenceBreakdown: data.confidence?.factors ? 
+          data.confidence.factors.reduce((acc, factor) => {
+            acc[factor.name] = factor.percentage;
+            return acc;
+          }, {}) : null,
+        
+        fingerprint: {
+          sha256: data.fingerprint?.hash || 'N/A',
+          pHash: data.phash || 'N/A'
+        },
+        
+        metadata: {
+          format: data.kind?.toUpperCase() || 'N/A',
+          size: formatFileSize(data.size_bytes || 0),
+          dimensions: data.ai_detection?.metadata_check?.dimensions || 'N/A',
+          uploadDate: data.verification?.first_seen || new Date().toISOString()
+        },
+        
+        aiDetection: {
+          isAiGenerated: data.ai_detection?.likely_ai_generated || false,
+          confidence: data.ai_detection?.ai_confidence || 0,
+          label: data.confidence?.label
+        },
+        
+        duplicateDetection: {
+          isDuplicate: data.verification?.times_verified > 1,
+          originalFileId: data.verification?.previous_uploads?.[0]?.verification_id,
+          firstSeen: data.verification?.first_seen,
+          timesVerified: data.verification?.times_verified
+        },
+        
+        timestamps: {
+          created: data.verification?.first_seen,
+          updated: data.verification?.previous_uploads?.[data.verification.previous_uploads.length - 1]?.date
+        },
+        
+        verificationCount: data.verification?.times_verified || 1,
+        
+        _rawResponse: data
+      };
+    }
+    
+    function formatFileSize(bytes) {
+      if (!bytes) return 'N/A';
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function displayResults() {
+      progressSection.classList.add('hidden');
+      resultsSection.classList.remove('hidden');
+
+      // Calculate stats
+      const total = verificationResults.length;
+      const verified = verificationResults.filter(r => {
+        if (r.error) return false;
+        const mediaType = r.metadata?.format?.toLowerCase() || '';
+        const isVideo = mediaType.includes('video') || mediaType.includes('mp4') || mediaType.includes('mov');
+        const isAudio = mediaType.includes('audio') || mediaType.includes('mp3') || mediaType.includes('wav');
+        
+        if (isVideo) return (r.videoAnalysis?.aiPercentage || 0) < 5;
+        if (isAudio) return (r.audioAnalysis?.aiConfidence || 0) < 30 && !r.audioAnalysis?.syntheticVoice;
+        return (r.overallConfidence || 0) >= 75 && !r.aiDetection?.isAiGenerated;
+      }).length;
+      
+      const likelyAuthentic = verificationResults.filter(r => {
+        if (r.error) return false;
+        const mediaType = r.metadata?.format?.toLowerCase() || '';
+        const isVideo = mediaType.includes('video') || mediaType.includes('mp4') || mediaType.includes('mov');
+        const isAudio = mediaType.includes('audio') || mediaType.includes('mp3') || mediaType.includes('wav');
+        
+        if (isVideo) return (r.videoAnalysis?.aiPercentage || 0) >= 5 && (r.videoAnalysis?.aiPercentage || 0) < 30;
+        if (isAudio) return (r.audioAnalysis?.aiConfidence || 0) >= 30 && (r.audioAnalysis?.aiConfidence || 0) < 90;
+        return (r.overallConfidence || 0) >= 50 && (r.overallConfidence || 0) < 75 && !r.aiDetection?.isAiGenerated;
+      }).length;
+      
+      const manipulated = verificationResults.filter(r => {
+        if (r.error) return false;
+        const mediaType = r.metadata?.format?.toLowerCase() || '';
+        const isVideo = mediaType.includes('video') || mediaType.includes('mp4') || mediaType.includes('mov');
+        const isAudio = mediaType.includes('audio') || mediaType.includes('mp3') || mediaType.includes('wav');
+        
+        if (isVideo) return (r.videoAnalysis?.aiPercentage || 0) >= 30;
+        if (isAudio) return (r.audioAnalysis?.aiConfidence || 0) >= 90 || r.audioAnalysis?.syntheticVoice;
+        return (r.overallConfidence || 0) < 50 || r.aiDetection?.isAiGenerated;
+      }).length;
+      
+      const duplicates = verificationResults.filter(r => !r.error && r.duplicateDetection?.isDuplicate === true).length;
+
+      document.getElementById('totalFiles').textContent = total;
+      document.getElementById('authenticFiles').textContent = verified;
+      document.getElementById('aiFiles').textContent = manipulated;
+      document.getElementById('duplicateFiles').textContent = duplicates;
+
+      // Display individual results
+      resultsContainer.innerHTML = verificationResults.map((result, index) => 
+        createResultCard(result, index)
+      ).join('');
+    }
+
+    function createResultCard(result, index) {
+      if (result.error) {
+        return `
+          <div class="bg-slate-800/50 border border-red-500/30 rounded-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="font-semibold text-lg">${result.filename}</h3>
+              <span class="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-sm">Error</span>
+            </div>
+            <p class="text-red-400 text-sm">${result.error}</p>
+          </div>
+        `;
+      }
+
+      const statusClass = getStatusClass(result);
+      const statusText = getStatusText(result);
+      const confidenceScore = Math.round(result.overallConfidence || 0);
+
+      return `
+        <div class="bg-slate-800/50 border border-slate-700 rounded-lg p-6 space-y-4 hover:border-blue-500 transition-all cursor-pointer" onclick="openDetailedReport(${index})">
+          
+          <!-- Header -->
+          <div class="flex items-start justify-between" onclick="event.stopPropagation()">
+            <div class="flex-1">
+              <h3 class="font-semibold text-lg mb-2">${result.filename}</h3>
+              <div class="flex items-center gap-3">
+                <span class="${statusClass} px-4 py-2 rounded-lg text-white font-medium text-sm">
+                  ${statusText}
+                </span>
+                <div class="text-sm">
+                  <span class="text-slate-400">Confidence:</span>
+                  <span class="font-semibold ml-1">${confidenceScore}%</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="openDetailedReport(${index}); event.stopPropagation();" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition">
+                View Full Report
+              </button>
+              <button onclick="toggleDetails(${index}); event.stopPropagation();" class="text-blue-400 hover:text-blue-300 text-sm">
+                Toggle Details
+              </button>
+            </div>
+          </div>
+
+          <!-- Duplicate Warning -->
+          ${result.duplicateDetection?.isDuplicate ? `
+            <div class="duplicate-banner rounded-lg p-4 text-white">
+              <div class="flex items-start gap-3">
+                <div class="text-2xl">⚠️</div>
+                <div>
+                  <div class="font-semibold mb-1">Duplicate Detected</div>
+                  <div class="text-sm opacity-90">
+                    This file was previously verified on ${new Date(result.duplicateDetection.firstSeen).toLocaleDateString()}
+                    <br>File ID: ${result.duplicateDetection.originalFileId || 'N/A'}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- AI Detection -->
+          ${result.aiDetection ? `
+            <div class="bg-slate-900/50 rounded-lg p-4">
+              <div class="flex items-center justify-between mb-2">
+                <h4 class="font-medium">AI Content Analysis</h4>
+                <span class="text-sm ${result.aiDetection.isAiGenerated ? 'text-red-400' : 'text-green-400'}">
+                  ${result.aiDetection.isAiGenerated ? 'AI-Generated' : 'Likely Authentic'}
+                </span>
+              </div>
+              <div class="text-sm text-slate-400">
+                Confidence: ${Math.round(result.aiDetection.confidence || 0)}%
+              </div>
+            </div>
+          ` : ''}
+
+          <!-- Detailed Results (Hidden by default) -->
+          <div id="details-${index}" class="hidden space-y-4 mt-4 pt-4 border-t border-slate-700">
+            
+            <!-- Confidence Score Breakdown -->
+            <div class="bg-slate-900/50 rounded-lg p-4">
+              <h4 class="font-medium mb-3">Confidence Score Breakdown</h4>
+              <div class="space-y-3">
+                ${result.confidenceBreakdown && Object.keys(result.confidenceBreakdown).length > 0 ? 
+                  Object.entries(result.confidenceBreakdown)
+                    .filter(([key, value]) => value > 0)
+                    .map(([key, value]) => `
+                      <div>
+                        <div class="flex justify-between text-sm mb-1">
+                          <span class="text-slate-400">${key}</span>
+                          <span class="font-semibold">${Math.round(value)}%</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
+                          <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all" style="width: ${value}%"></div>
+                        </div>
+                      </div>
+                    `).join('') 
+                  : '<p class="text-sm text-slate-400">Confidence breakdown not available from API</p>'
+                }
+              </div>
+            </div>
+            
+            <!-- Fingerprint Details -->
+            <div class="bg-slate-900/50 rounded-lg p-4">
+              <h4 class="font-medium mb-3">Fingerprint Details</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-slate-400">File ID:</span>
+                  <span class="font-mono">${result.fileId || result.verification_id || 'N/A'}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">SHA-256:</span>
+                  <span class="font-mono text-xs break-all">${result.fingerprint?.sha256 || result.sha256 || 'N/A'}</span>
+                </div>
+                ${result.fingerprint?.pHash || result.phash ? `
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">pHash:</span>
+                    <span class="font-mono text-xs">${result.fingerprint?.pHash || result.phash}</span>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- Metadata -->
+            <div class="bg-slate-900/50 rounded-lg p-4">
+              <h4 class="font-medium mb-3">Metadata</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Format:</span>
+                  <span>${result.metadata?.format || result.file_format || 'N/A'}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">File Size:</span>
+                  <span>${result.metadata?.size || result.file_size || 'N/A'}</span>
+                </div>
+                ${result.metadata?.dimensions || result.dimensions ? `
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Dimensions:</span>
+                    <span>${result.metadata?.dimensions || result.dimensions}</span>
+                  </div>
+                ` : ''}
+                ${result.metadata?.duration || result.duration ? `
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Duration:</span>
+                    <span>${result.metadata?.duration || result.duration}</span>
+                  </div>
+                ` : ''}
+                ${result.metadata?.uploadDate || result.created_at ? `
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Upload Date:</span>
+                    <span>${new Date(result.metadata?.uploadDate || result.created_at).toLocaleDateString()}</span>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+            
+            <!-- Verification History -->
+            <div class="bg-slate-900/50 rounded-lg p-4">
+              <h4 class="font-medium mb-3">Verification History</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-slate-400">First Verified:</span>
+                  <span>${result.timestamps?.created || result.created_at ? new Date(result.timestamps?.created || result.created_at).toLocaleString() : 'N/A'}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Last Updated:</span>
+                  <span>${result.timestamps?.updated || result.updated_at ? new Date(result.timestamps?.updated || result.updated_at).toLocaleString() : 'N/A'}</span>
+                </div>
+                ${result.verificationCount || result.verification_count ? `
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Times Verified:</span>
+                    <span>${result.verificationCount || result.verification_count}</span>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+
+            <!-- External Verification -->
+            ${result.externalVerification ? `
+              <div class="bg-slate-900/50 rounded-lg p-4">
+                <h4 class="font-medium mb-3">External Verification</h4>
+                <div class="space-y-3 text-sm">
+                  ${result.externalVerification.virusTotal ? `
+                    <div>
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="text-slate-400">VirusTotal:</span>
+                        <span class="${result.externalVerification.virusTotal.malicious > 0 ? 'text-red-400' : 'text-green-400'}">
+                          ${result.externalVerification.virusTotal.malicious > 0 ? 'Threats Detected' : 'Clean'}
+                        </span>
+                      </div>
+                      <div class="text-xs text-slate-500">
+                        ${result.externalVerification.virusTotal.malicious} / ${result.externalVerification.virusTotal.total} scanners flagged
+                      </div>
+                    </div>
+                  ` : ''}
+                  ${result.externalVerification.googleVision?.labels?.length > 0 ? `
+                    <div>
+                      <div class="text-slate-400 mb-2">Detected Labels:</div>
+                      <div class="flex flex-wrap gap-2">
+                        ${result.externalVerification.googleVision.labels.map(label => 
+                          `<span class="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-xs">${label}</span>`
+                        ).join('')}
+                      </div>
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Video Frame Analysis -->
+            ${result.videoAnalysis ? `
+              <div class="bg-slate-900/50 rounded-lg p-4">
+                <h4 class="font-medium mb-3">Video Frame Analysis</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Frames Analyzed:</span>
+                    <span>${result.videoAnalysis.totalFrames || 0}</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">AI Frames Detected:</span>
+                    <span class="${result.videoAnalysis.aiFrames > 0 ? 'text-red-400' : 'text-green-400'}">
+                      ${result.videoAnalysis.aiFrames || 0}
+                    </span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-slate-400">Average Frame Score:</span>
+                    <span>${Math.round(result.videoAnalysis.avgConfidence || 0)}%</span>
+                  </div>
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Verification History -->
+            <div class="bg-slate-900/50 rounded-lg p-4">
+              <h4 class="font-medium mb-3">Verification History</h4>
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-slate-400">First Verified:</span>
+                  <span>${result.timestamps?.created ? new Date(result.timestamps.created).toLocaleString() : 'N/A'}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">Last Updated:</span>
+                  <span>${result.timestamps?.updated ? new Date(result.timestamps.updated).toLocaleString() : 'N/A'}</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      `;
+    }
+
+    function getStatusClass(result) {
+      const mediaType = result.metadata?.format?.toLowerCase() || '';
+      const isVideo = mediaType.includes('video') || mediaType.includes('mp4') || mediaType.includes('mov') || mediaType.includes('avi');
+      const isAudio = mediaType.includes('audio') || mediaType.includes('mp3') || mediaType.includes('wav') || mediaType.includes('ogg');
+      
+      if (isVideo) {
+        // Video categories
+        const aiPercent = result.videoAnalysis?.aiPercentage || 0;
+        const hasDeepfake = result.videoAnalysis?.deepfakeDetected || false;
+        
+        if (hasDeepfake && aiPercent > 30) return 'status-deepfake';
+        if (aiPercent >= 70) return 'status-ai-video';
+        if (aiPercent >= 30) return 'status-mixed-content';
+        if (aiPercent >= 5) return 'status-ai-content';
+        return 'status-verified-video';
+      }
+      
+      if (isAudio) {
+        // Audio categories
+        const hasAiVoice = result.audioAnalysis?.syntheticVoice || false;
+        const aiConfidence = result.audioAnalysis?.aiConfidence || 0;
+        
+        if (aiConfidence >= 90) return 'status-fully-ai-audio';
+        if (hasAiVoice) return 'status-synthetic-voice';
+        if (aiConfidence >= 30) return 'status-natural-voice';
+        return 'status-verified-audio';
+      }
+      
+      // Image categories
+      const confidence = result.overallConfidence || 0;
+      const hasAi = result.aiDetection?.isAiGenerated || false;
+      const isModified = result.duplicateDetection?.isDuplicate || false;
+      
+      if (hasAi) return 'status-ai-image';
+      if (confidence >= 75) return 'status-verified-photo';
+      if (confidence >= 50 && isModified) return 'status-modified';
+      if (confidence >= 50) return 'status-likely-camera';
+      if (confidence >= 25) return 'status-manipulation';
+      return 'status-heavily-manipulated';
+    }
+
+    function getStatusText(result) {
+      const mediaType = result.metadata?.format?.toLowerCase() || '';
+      const isVideo = mediaType.includes('video') || mediaType.includes('mp4') || mediaType.includes('mov') || mediaType.includes('avi');
+      const isAudio = mediaType.includes('audio') || mediaType.includes('mp3') || mediaType.includes('wav') || mediaType.includes('ogg');
+      
+      if (isVideo) {
+        // Video labels
+        const aiPercent = result.videoAnalysis?.aiPercentage || 0;
+        const hasDeepfake = result.videoAnalysis?.deepfakeDetected || false;
+        
+        if (hasDeepfake && aiPercent > 30) return '🚨 DEEPFAKE INDICATORS DETECTED';
+        if (aiPercent >= 70) return '🤖 PRIMARILY AI-GENERATED VIDEO';
+        if (aiPercent >= 30) return '⚠️ SIGNIFICANT MIX OF VIDEO AND AI CONTENT';
+        if (aiPercent >= 5) return '⚡ AI-GENERATED CONTENT DETECTED';
+        return '✅ VERIFIED VIDEO';
+      }
+      
+      if (isAudio) {
+        // Audio labels
+        const hasAiVoice = result.audioAnalysis?.syntheticVoice || false;
+        const aiConfidence = result.audioAnalysis?.aiConfidence || 0;
+        
+        if (aiConfidence >= 90) return '🤖 FULLY AI-GENERATED AUDIO';
+        if (hasAiVoice) return '🎙️ SYNTHETIC VOICE DETECTED';
+        if (aiConfidence >= 30) return '🎵 NATURAL VOICE WITH AI AUDIO';
+        return '✅ VERIFIED AUDIO RECORDING';
+      }
+      
+      // Image labels
+      const confidence = result.overallConfidence || 0;
+      const hasAi = result.aiDetection?.isAiGenerated || false;
+      const isModified = result.duplicateDetection?.isDuplicate || false;
+      
+      if (hasAi) return '🤖 AI-GENERATED IMAGE';
+      if (confidence >= 75) return '✅ VERIFIED PHOTOGRAPH';
+      if (confidence >= 50 && isModified) return '📝 MODIFIED VERSION DETECTED';
+      if (confidence >= 50) return '📷 LIKELY CAMERA-CAPTURED';
+      if (confidence >= 25) return '⚠️ MANIPULATION DETECTED';
+      return '🚫 HEAVILY MANIPULATED';
+    }
+
+    function toggleDetails(index) {
+      const details = document.getElementById(`details-${index}`);
+      details.classList.toggle('hidden');
+    }
+
+    function openDetailedReport(index) {
+      const result = verificationResults[index];
+      
+      // Store the verification data in sessionStorage so the report page can access it
+      sessionStorage.setItem('verificationData', JSON.stringify(result));
+      
+      // Open the report page in a new tab
+      window.open('report.html?v=' + Date.now(), '_blank');
+    }
+
+    function formatConfidenceKey(key) {
+      // Convert camelCase or snake_case keys to readable labels
+      const labels = {
+        'aiAuthenticity': 'AI Authenticity',
+        'metadataQuality': 'Metadata Quality',
+        'externalVerification': 'External Verification',
+        'forensicAnalysis': 'Forensic Analysis',
+        'duplicateCheck': 'Duplicate Check',
+        'overall': 'Overall Confidence',
+        'ai_authenticity': 'AI Authenticity',
+        'metadata_quality': 'Metadata Quality',
+        'external_verification': 'External Verification',
+        'forensic_analysis': 'Forensic Analysis',
+        'duplicate_check': 'Duplicate Check'
+      };
+      
+      return labels[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace(/_/g, ' ');
+    }
+
+    function downloadCSVReport() {
+      const headers = ['Filename', 'Status', 'Confidence', 'AI Generated', 'Duplicate', 'File ID', 'SHA-256'];
+      const rows = verificationResults.map(r => [
+        r.filename,
+        getStatusText(r),
+        Math.round(r.overallConfidence || 0) + '%',
+        r.aiDetection?.isAiGenerated ? 'Yes' : 'No',
+        r.duplicateDetection?.isDuplicate ? 'Yes' : 'No',
+        r.fileId || 'N/A',
+        r.fingerprint?.sha256 || 'N/A'
+      ]);
+
+      const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `verisource-bulk-report-${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+
+</body>
+</html>

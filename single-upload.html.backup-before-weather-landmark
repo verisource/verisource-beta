@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Single Upload - VeriSource™</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+  
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-slate-950 font-bold text-xl">
+            V
+          </div>
+          <div>
+            <div class="text-lg font-semibold tracking-tight">
+              VeriSource<span class="align-top text-xs ml-0.5">™</span>
+            </div>
+            <p class="text-xs text-slate-400">Single Upload</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <a href="index.html" class="text-sm text-slate-400 hover:text-blue-400 transition">← Back to Home</a>
+          <a href="bulk-upload.html" class="text-sm px-4 py-2 rounded-lg border border-slate-700 hover:border-blue-500 hover:bg-slate-900 transition">
+            Try Bulk Upload
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-10">
+    
+    <div class="text-center mb-10 fade-in">
+      <h1 class="text-3xl md:text-4xl font-bold mb-3">Single File Verification</h1>
+      <p class="text-slate-400 max-w-2xl mx-auto">
+        Upload a single image to generate a cryptographic fingerprint and receive a comprehensive verification report
+      </p>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-8">
+      
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 space-y-6 fade-in">
+        <div>
+          <h2 class="text-xl font-semibold mb-2">Upload Image</h2>
+          <p class="text-sm text-slate-400">
+            Select an image or video file to verify. Images: JPG, PNG, GIF, WebP | Videos: MP4, MOV, AVI, WEBM
+          </p>
+        </div>
+
+        <div class="border-2 border-dashed border-slate-700 rounded-xl p-8 text-center hover:border-blue-500/50 transition cursor-pointer bg-slate-900/30" id="dropzone">
+          <div class="space-y-4">
+            <div class="mx-auto h-16 w-16 rounded-full bg-blue-500/10 flex items-center justify-center">
+              <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-slate-200">Drop your image or video here or click to browse</p>
+              <p class="text-xs text-slate-500 mt-1">Maximum file size: 200MB</p>
+            </div>
+            <input type="file" id="fileInput" accept="image/*,video/*" class="hidden" onchange="handleFileSelect(this.files[0])">
+          </div>
+        </div>
+
+        <div id="fileInfo" class="hidden bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium" id="fileName"></p>
+                <p class="text-xs text-slate-400" id="fileSize"></p>
+              </div>
+            </div>
+            <button onclick="clearFile()" class="text-slate-400 hover:text-red-400 transition">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <button onclick="uploadFile()" id="uploadBtn" disabled class="w-full py-3 px-6 rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-400 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-500">
+          Verify File
+        </button>
+
+        <div id="loading" class="hidden text-center py-4">
+          <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-500 border-r-transparent"></div>
+          <p class="text-sm text-slate-400 mt-2">Processing your file...</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
+        <h2 class="text-xl font-semibold mb-4">Verification Results</h2>
+        
+        <div id="resultsPlaceholder" class="text-center py-12">
+          <div class="mx-auto h-16 w-16 rounded-full bg-slate-800/50 flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <p class="text-sm text-slate-500">Upload a file to see verification results</p>
+        </div>
+
+        <div id="results" class="hidden space-y-4">
+          <div id="statusCard" class="rounded-lg border p-4"></div>
+
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-3">
+            <h3 class="text-sm font-semibold text-slate-300">Fingerprint Details</h3>
+            <div class="space-y-2 text-xs font-mono">
+              <div>
+                <span class="text-slate-500">File ID:</span>
+                <p class="text-slate-300 break-all" id="fileId"></p>
+              </div>
+              <div>
+                <span class="text-slate-500">SHA-256:</span>
+                <p class="text-slate-300 break-all" id="sha256"></p>
+              </div>
+              <div>
+                <span class="text-slate-500">pHash:</span>
+                <p class="text-slate-300 break-all" id="phash"></p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2">
+            <h3 class="text-sm font-semibold text-slate-300">Metadata</h3>
+            <div class="text-xs space-y-1" id="metadata"></div>
+          </div>
+
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="aiDetectionSection">
+            <h3 class="text-sm font-semibold text-slate-300">AI Content Analysis</h3>
+            <div class="text-xs space-y-1" id="aiDetection"></div>
+          </div>
+
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2" id="duplicateSection">
+            <h3 class="text-sm font-semibold text-slate-300">Duplicate Detection</h3>
+            <div class="text-xs space-y-1" id="duplicateResults"></div>
+          </div>
+
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2" id="externalSection">
+            <h3 class="text-sm font-semibold text-slate-300">External Verification</h3>
+            <div class="text-xs space-y-1" id="externalVerification"></div>
+          </div>
+
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="videoSection">
+            <h3 class="text-sm font-semibold text-slate-300">Video Frame Analysis</h3>
+            <div class="text-xs space-y-1" id="videoAnalysis"></div>
+          </div>
+
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4">
+            <div class="text-xs text-slate-500 text-center" id="verificationTimestamp"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const API_URL = 'https://api.verisource.io';
+    let selectedFile = null;
+
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('border-blue-500');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('border-blue-500');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('border-blue-500');
+      if (e.dataTransfer.files.length) {
+        handleFileSelect(e.dataTransfer.files[0]);
+      }
+    });
+
+    function handleFileSelect(file) {
+      if (!file) return;
+      selectedFile = file;
+      
+      document.getElementById('fileInfo').classList.remove('hidden');
+      document.getElementById('fileName').textContent = file.name;
+      document.getElementById('fileSize').textContent = formatFileSize(file.size);
+      document.getElementById('uploadBtn').disabled = false;
+    }
+
+    function clearFile() {
+      selectedFile = null;
+      fileInput.value = '';
+      document.getElementById('fileInfo').classList.add('hidden');
+      document.getElementById('uploadBtn').disabled = true;
+      document.getElementById('results').classList.add('hidden');
+      document.getElementById('resultsPlaceholder').classList.remove('hidden');
+    }
+
+    async function uploadFile() {
+      if (!selectedFile) return;
+
+      const loading = document.getElementById('loading');
+      const uploadBtn = document.getElementById('uploadBtn');
+      const results = document.getElementById('results');
+      const placeholder = document.getElementById('resultsPlaceholder');
+
+      loading.classList.remove('hidden');
+      uploadBtn.disabled = true;
+      results.classList.add('hidden');
+      placeholder.classList.add('hidden');
+
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+
+      try {
+        const res = await fetch(`${API_URL}/verify`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const data = await res.json();
+        
+        // DEBUG: Log what we're getting from the API
+        console.log('=== VeriSource API Response ===');
+        console.log('Full response:', data);
+        console.log('Google Vision:', data.google_vision);
+        console.log('Web Detection:', data.google_vision?.web_detection);
+        console.log('Matching Pages:', data.google_vision?.web_detection?.pages_with_matching_images);
+        console.log('VirusTotal:', data.virustotal);
+        console.log('AI Detection:', data.ai_detection);
+        console.log('==============================');
+        
+        displayResults(data);
+      } catch (e) {
+        alert('Upload failed: ' + e.message);
+      } finally {
+        loading.classList.add('hidden');
+        uploadBtn.disabled = false;
+      }
+    }
+
+    // Map API response to match report.html expected structure
+    function mapApiResponseForReport(data, filename) {
+      return {
+        fileId: data.verification?.previous_uploads?.[0]?.verification_id || "N/A",
+        filename: filename,
+        overallConfidence: data.confidence?.percentage || 0,
+        confidenceLevel: data.confidence?.level,
+        confidenceLabel: data.confidence?.label,
+        confidenceColor: data.confidence?.color,
+        confidenceBreakdown: data.confidence?.factors ? 
+          data.confidence.factors.reduce((acc, factor) => {
+            acc[factor.name] = factor.percentage;
+            return acc;
+          }, {}) : null,
+        fingerprint: {
+          sha256: data.fingerprint?.hash || "N/A",
+          pHash: data.phash || "N/A"
+        },
+        metadata: {
+          format: data.kind?.toUpperCase() || "N/A",
+          size: formatFileSize(data.size_bytes || 0),
+          dimensions: data.ai_detection?.metadata_check?.dimensions || "N/A",
+          uploadDate: data.verification?.first_seen || new Date().toISOString()
+        },
+        aiDetection: {
+          isAiGenerated: data.ai_detection?.likely_ai_generated || false,
+          confidence: data.ai_detection?.ai_confidence || 0,
+          label: data.confidence?.label
+        },
+        duplicateDetection: {
+          isDuplicate: data.verification?.times_verified > 1,
+          originalFileId: data.verification?.previous_uploads?.[0]?.verification_id,
+          firstSeen: data.verification?.first_seen,
+          timesVerified: data.verification?.times_verified
+        },
+        externalVerification: {
+          virusTotal: data.virustotal ? {
+            malicious: 0,
+            total: data.virustotal.upload_count || 0,
+            found: data.virustotal.found
+          } : null,
+          googleVision: data.google_vision?.labels ? {
+            labels: data.google_vision.labels.slice(0, 10).map(l => l.description)
+          } : null
+        },
+        timestamps: {
+          created: data.verification?.first_seen,
+          updated: data.verification?.previous_uploads?.[data.verification.previous_uploads.length - 1]?.date
+        },
+        verificationCount: data.verification?.times_verified || 1,
+        _rawResponse: data
+      };
+    }
+    
+    function formatFileSize(bytes) {
+      if (!bytes) return "N/A";
+      if (bytes < 1024) return bytes + " B";
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+      return (bytes / (1024 * 1024)).toFixed(1) + " MB";
+    }
+
+    function displayResults(data) {
+      // Store data globally for easy access
+      window.currentVerificationData = mapApiResponseForReport(data, selectedFile?.name || "uploaded-file");
+      
+      const results = document.getElementById('results');
+      const statusCard = document.getElementById('statusCard');
+
+      const conf = data.confidence || {};
+      const isModified = conf.is_modified || false;
+      
+      // Use API confidence data if available
+      const statusColor = conf.color || '#F59E0B';
+      const statusIcon = conf.iconSvg || '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+      const statusLabel = conf.label || 'VERIFICATION COMPLETE';
+
+      statusCard.className = `rounded-lg border p-4`;
+      statusCard.style.backgroundColor = statusColor + '10';
+      statusCard.style.borderColor = statusColor + '50';
+      
+      statusCard.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="flex items-center justify-center w-12 h-12" style="color: ${statusColor}">
+            ${statusIcon}
+          </div>
+          <div class="flex-1">
+            <p class="font-semibold text-lg" style="color: ${statusColor}">${statusLabel}</p>
+            <a href="javascript:void(0);" onclick="sessionStorage.setItem('verificationData', JSON.stringify(window.currentVerificationData)); window.open('report.html', '_blank'); return false;" class="text-xs text-blue-400 hover:text-blue-300 underline">
+              View Report →
+            </a>
+          </div>
+        </div>
+        ${isModified ? `
+          <div class="mt-3 text-xs bg-amber-500/10 border border-amber-500/30 rounded-lg p-2">
+            <span class="text-amber-300">📝 Modified Content:</span>
+            <span class="text-slate-300"> ${conf.modification_details?.similarity || 'N/A'}% match to original</span>
+          </div>
+        ` : ''}
+      `;
+      // Add click handler for View Report button (data already stored above)
+      setTimeout(() => {
+        const viewReportBtn = document.getElementById('viewReportBtn');
+        console.log('🔍 Looking for View Report Button...');
+        console.log('Button found:', viewReportBtn);
+        console.log('Button HTML:', viewReportBtn ? viewReportBtn.outerHTML : 'NOT FOUND');
+        
+        if (viewReportBtn) {
+          console.log('✅ Attaching click handler to View Report button');
+          
+          viewReportBtn.addEventListener('click', function(e) {
+            console.log('🎯 VIEW REPORT CLICKED!!!');
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Verify data is in sessionStorage
+            const storedData = sessionStorage.getItem('verificationData');
+            console.log('Data in sessionStorage:', storedData ? 'YES ✅' : 'NO ❌');
+            
+            // Try multiple methods to open the report
+            console.log('Attempting to open report.html...');
+            
+            // Method 1: window.open with specific features
+            try {
+              const reportWindow = window.open('report.html', '_blank', 'noopener,noreferrer');
+              console.log('Method 1 (window.open) result:', reportWindow);
+              if (reportWindow) {
+                console.log('✅ Report opened in new window');
+                return;
+              }
+            } catch (err) {
+              console.error('Method 1 failed:', err);
+            }
+            
+            // Method 2: Create and click a temporary link
+            try {
+              console.log('Trying Method 2: temporary link...');
+              const tempLink = document.createElement('a');
+              tempLink.href = 'report.html';
+              tempLink.target = '_blank';
+              tempLink.rel = 'noopener noreferrer';
+              document.body.appendChild(tempLink);
+              tempLink.click();
+              document.body.removeChild(tempLink);
+              console.log('✅ Method 2 executed');
+              return;
+            } catch (err) {
+              console.error('Method 2 failed:', err);
+            }
+            
+            // Method 3: Open in same tab as last resort
+            try {
+              console.log('Trying Method 3: same tab navigation...');
+              window.location.href = 'report.html';
+              console.log('✅ Navigating in same tab');
+            } catch (err) {
+              console.error('Method 3 failed:', err);
+              alert('Unable to open report. Please check browser console for errors.');
+            }
+          });
+          
+          console.log('✅ Click handler attached successfully');
+        } else {
+          console.error('❌ View Report button NOT FOUND in DOM!');
+          console.log('Status card HTML:', document.getElementById('statusCard').innerHTML);
+        }
+      }, 150);
+      
+      // Fingerprint Details - cryptographic identifiers only
+      document.getElementById('fileId').textContent = data.verification?.previous_uploads?.[0]?.verification_id || 'New Upload';
+      document.getElementById('sha256').textContent = data.fingerprint?.hash || 'N/A';
+      document.getElementById('phash').textContent = data.phash || 'N/A';
+
+      // Metadata - file properties and attributes
+      const metadataDiv = document.getElementById('metadata');
+      metadataDiv.innerHTML = `
+        <div class="flex justify-between"><span class="text-slate-500">Filename:</span><span class="text-slate-300">${data.filename || 'N/A'}</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">Format:</span><span class="text-slate-300">${(data.kind || 'unknown').toUpperCase()}</span></div>
+        <div class="flex justify-between"><span class="text-slate-500">Size:</span><span class="text-slate-300">${formatFileSize(data.size_bytes || 0)}</span></div>
+      `;
+
+      // AI Content Analysis - only show if data exists
+      const aiDetectionSection = document.getElementById('aiDetectionSection');
+      const aiDetectionDiv = document.getElementById('aiDetection');
+      const aiData = data.ai_detection || data.google_vision || {};
+      const aiVerdict = aiData.verdict || aiData.label;
+      
+      if (aiVerdict && aiVerdict !== 'PENDING') {
+        const aiGenProb = aiData.ai_generated_probability || aiData.confidence || 0;
+        const aiMethod = aiData.detection_method || 'Google Vision API';
+        
+        aiDetectionSection.classList.remove('hidden');
+        aiDetectionDiv.innerHTML = `
+          <div class="flex justify-between">
+            <span class="text-slate-500">AI Generated Probability:</span>
+            <span class="text-slate-300 font-semibold">${Math.round(aiGenProb)}%</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Detection Method:</span>
+            <span class="text-slate-300">${aiMethod}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Verdict:</span>
+            <span class="text-slate-300 font-semibold ${aiVerdict === 'AUTHENTIC' ? 'text-green-400' : aiVerdict === 'SUSPICIOUS' ? 'text-yellow-400' : 'text-red-400'}">${aiVerdict}</span>
+          </div>
+        `;
+      } else {
+        aiDetectionSection.classList.add('hidden');
+      }
+
+      // Duplicate Detection
+      const duplicateDiv = document.getElementById('duplicateResults');
+      const previousUploads = data.verification?.previous_uploads || [];
+      const similarImages = data.similar_images || [];
+      const firstSeen = previousUploads[0]?.upload_date || data.first_seen || null;
+      
+      // Helper function to safely format date
+      const formatDate = (dateValue) => {
+        if (!dateValue) return null;
+        try {
+          const date = new Date(dateValue);
+          // Check if date is valid
+          if (isNaN(date.getTime())) return null;
+          return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        } catch (e) {
+          return null;
+        }
+      };
+      
+      const formattedDate = formatDate(firstSeen);
+      
+      duplicateDiv.innerHTML = `
+        <div class="flex justify-between">
+          <span class="text-slate-500">Exact Matches:</span>
+          <span class="text-slate-300 font-semibold">${previousUploads.length > 0 ? previousUploads.length + ' found' : 'None found'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Similar Images:</span>
+          <span class="text-slate-300 font-semibold">${similarImages.length > 0 ? similarImages.length + ' found' : 'None found'}</span>
+        </div>
+        ${formattedDate ? `
+        <div class="flex justify-between">
+          <span class="text-slate-500">First Uploaded:</span>
+          <span class="text-slate-300">${formattedDate}</span>
+        </div>
+        ` : ''}
+        ${previousUploads.length > 0 ? `
+        <div class="mt-2 pt-2 border-t border-slate-700">
+          <p class="text-amber-300 text-xs">⚠️ This file was previously verified</p>
+          <p class="text-slate-400 text-xs mt-1">Total verifications: ${previousUploads.length}</p>
+        </div>
+        ` : ''}
+      `;
+
+      // External Verification
+      const externalDiv = document.getElementById('externalVerification');
+      const virusTotal = data.virustotal || data.external_checks?.virustotal || {};
+      const googleVision = data.google_vision || data.external_checks?.google_vision || {};
+      const webMatches = googleVision.web_detection?.pages_with_matching_images?.length || 0;
+      
+      externalDiv.innerHTML = `
+        <div class="flex justify-between">
+          <span class="text-slate-500">VirusTotal:</span>
+          <span class="text-slate-300">${virusTotal.found ? `Found (${virusTotal.upload_count || 'multiple'} uploads)` : 'Not found'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Google Vision:</span>
+          <span class="text-slate-300">${googleVision.safe_search_detection ? 'Safe content' : 'Analyzed'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">Web Matches:</span>
+          ${webMatches > 0 
+            ? `<a href="#" id="webMatchesBtn" class="text-blue-400 hover:text-blue-300 underline font-semibold">${webMatches} results found →</a>`
+            : `<span class="text-slate-300">None found</span>`
+          }
+        </div>
+        ${googleVision.labels ? `
+        <div class="mt-2 pt-2 border-t border-slate-700">
+          <span class="text-slate-500">Detected Labels:</span>
+          <div class="flex flex-wrap gap-1 mt-1">
+            ${googleVision.labels.slice(0, 5).map(label => 
+              `<span class="text-xs bg-slate-700/50 text-slate-300 px-2 py-0.5 rounded">${label.description || label}</span>`
+            ).join('')}
+          </div>
+        </div>
+        ` : ''}
+      `;
+      
+      // Add click handler for Web Matches button if it exists
+      if (webMatches > 0) {
+        setTimeout(() => {
+          const webMatchesBtn = document.getElementById('webMatchesBtn');
+          if (webMatchesBtn) {
+            webMatchesBtn.onclick = function(e) {
+              e.preventDefault();
+              sessionStorage.setItem('verificationData', JSON.stringify(data));
+              window.open('web-matches.html', '_blank');
+              return false;
+            };
+          }
+        }, 100);
+      }
+
+      // Video Frame Analysis (only show if video)
+      const videoSection = document.getElementById('videoSection');
+      const videoAnalysisDiv = document.getElementById('videoAnalysis');
+      
+      if (data.video_analysis || data.frames_analyzed) {
+        const videoData = data.video_analysis || {};
+        const framesAnalyzed = videoData.frames_analyzed || data.frames_analyzed || 0;
+        const suspiciousFrames = videoData.suspicious_frames_percentage || 0;
+        const aiGeneratedFrames = videoData.ai_generated_frames_percentage || 0;
+        
+        videoSection.classList.remove('hidden');
+        videoAnalysisDiv.innerHTML = `
+          <div class="flex justify-between">
+            <span class="text-slate-500">Frames Analyzed:</span>
+            <span class="text-slate-300 font-semibold">${framesAnalyzed}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Suspicious Frames:</span>
+            <span class="text-slate-300 ${suspiciousFrames > 10 ? 'text-red-400' : 'text-green-400'}">${suspiciousFrames.toFixed(1)}%</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">AI Generated Frames:</span>
+            <span class="text-slate-300 ${aiGeneratedFrames > 10 ? 'text-red-400' : 'text-green-400'}">${aiGeneratedFrames.toFixed(1)}%</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Overall Verdict:</span>
+            <span class="text-slate-300 font-semibold ${suspiciousFrames < 10 ? 'text-green-400' : 'text-amber-400'}">${suspiciousFrames < 10 ? 'AUTHENTIC' : 'SUSPICIOUS'}</span>
+          </div>
+        `;
+      } else {
+        videoSection.classList.add('hidden');
+      }
+
+      // Verification Timestamp
+      const timestampDiv = document.getElementById('verificationTimestamp');
+      const verificationDate = new Date();
+      timestampDiv.textContent = `Verified on: ${verificationDate.toLocaleDateString()} at ${verificationDate.toLocaleTimeString()}`;
+
+      results.classList.remove('hidden');
+      
+      // Store data immediately for report access
+      try {
+        sessionStorage.setItem('verificationData', JSON.stringify(data));
+        console.log('✅ Data stored in sessionStorage for report access');
+      } catch (err) {
+        console.error('❌ Error storing data:', err);
+      }
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+  </script>
+</body>
+</html>

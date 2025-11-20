@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VeriSource - Access Beta</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-4">
+  
+  <div class="max-w-md w-full">
+    <!-- Logo Section -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 mb-4">
+        <div class="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-slate-950 font-bold text-2xl">
+          V
+        </div>
+      </div>
+      <h1 class="text-3xl font-bold mb-2">
+        VeriSource
+        <span class="inline-block ml-2 px-3 py-1 text-xs font-semibold bg-gradient-to-r from-blue-400 to-cyan-400 text-slate-950 rounded-full">BETA</span>
+      </h1>
+      <p class="text-slate-400">Content Verification Platform</p>
+    </div>
+
+    <!-- Login Card -->
+    <div class="bg-slate-900 border border-slate-800 rounded-xl p-8 shadow-2xl">
+      
+      <!-- Error Message -->
+      <div id="error" class="hidden mb-6 p-4 bg-red-950 border border-red-800 rounded-lg text-red-200 text-sm flex items-center gap-2">
+        <span>⚠️</span>
+        <span>Incorrect password. Please try again.</span>
+      </div>
+
+      <!-- Form -->
+      <form id="authForm">
+        <div class="mb-6">
+          <label for="password" class="block text-sm font-semibold text-slate-200 mb-2">
+            Beta Access Password
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500">
+              🔑
+            </div>
+            <input
+              type="password"
+              id="password"
+              placeholder="Enter your access password"
+              required
+              autofocus
+              class="w-full pl-12 pr-4 py-3 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
+            >
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full py-3 px-4 bg-gradient-to-r from-blue-400 to-cyan-400 text-slate-950 font-semibold rounded-lg hover:from-blue-500 hover:to-cyan-500 transition transform hover:scale-[1.02] active:scale-100 shadow-lg"
+        >
+          Access Beta Platform →
+        </button>
+      </form>
+
+      <!-- Security Note -->
+      <div class="mt-6 pt-6 border-t border-slate-800">
+        <div class="flex items-center justify-center gap-2 text-xs text-slate-500">
+          <span>🛡️</span>
+          <span>Session expires after 24 hours</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Info -->
+    <div class="mt-6 text-center text-sm text-slate-400">
+      <p>This is a private beta test.</p>
+      <p class="mt-1">
+        Need access? Contact <a href="mailto:beta@verisource.io" class="text-blue-400 hover:text-cyan-400 transition">beta@verisource.io</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const CORRECT_PASSWORD = 'verisource-beta-2024';
+    const AUTH_KEY = 'verisource_auth';
+    const AUTH_EXPIRY = 24 * 60 * 60 * 1000;
+
+    function isAuthenticated() {
+      const auth = localStorage.getItem(AUTH_KEY);
+      if (!auth) return false;
+      
+      const { timestamp } = JSON.parse(auth);
+      const now = Date.now();
+      
+      if (now - timestamp > AUTH_EXPIRY) {
+        localStorage.removeItem(AUTH_KEY);
+        return false;
+      }
+      
+      return true;
+    }
+
+    if (isAuthenticated()) {
+      window.location.href = '/verisource-beta/index.html';
+    }
+
+    document.getElementById('authForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('error');
+      
+      if (password === CORRECT_PASSWORD) {
+        localStorage.setItem(AUTH_KEY, JSON.stringify({
+          timestamp: Date.now()
+        }));
+        window.location.href = '/verisource-beta/index.html';
+      } else {
+        errorDiv.classList.remove('hidden');
+        document.getElementById('password').value = '';
+        document.getElementById('password').focus();
+        
+        setTimeout(() => {
+          errorDiv.classList.add('hidden');
+        }, 3000);
+      }
+    });
+  </script>
+</body>
+</html>
