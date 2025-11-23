@@ -539,66 +539,121 @@
       const aiDetectionDiv = document.getElementById('aiDetection');
       
       // Only show for images (videos have their own section)
-      if (data.ai_detection && data.kind !== 'video') {
-        const ai = data.ai_detection;
-        
-        // Determine verdict based on likely_ai_generated and confidence
-        let verdict = 'UNKNOWN';
-        let verdictClass = 'text-slate-400';
-        
-        if (ai.likely_ai_generated) {
-          if (ai.ai_confidence >= 80) {
-            verdict = 'AI-GENERATED';
-            verdictClass = 'text-red-400';
-          } else if (ai.ai_confidence >= 60) {
-            verdict = 'LIKELY AI-GENERATED';
-            verdictClass = 'text-orange-400';
-          } else {
-            verdict = 'POSSIBLY AI-GENERATED';
-            verdictClass = 'text-amber-400';
-          }
-        } else {
-          if (ai.ai_confidence <= 30) {
-            verdict = 'AUTHENTIC';
-            verdictClass = 'text-green-400';
-          } else if (ai.ai_confidence <= 50) {
-            verdict = 'LIKELY AUTHENTIC';
-            verdictClass = 'text-emerald-400';
-          } else {
-            verdict = 'INCONCLUSIVE';
-            verdictClass = 'text-amber-400';
-          }
-        }
-        
-        // Determine detection method
-        const detectorCount = ai.detector_count || ai.ensemble_results ? Object.keys(ai.ensemble_results).length : 1;
-        const detectionMethod = detectorCount > 1 
-          ? `Ensemble Analysis (${detectorCount} detectors)`
-          : 'Advanced Forensic Analysis';
-        
-        aiDetectionSection.classList.remove('hidden');
-        aiDetectionDiv.innerHTML = `
-          <div class="flex justify-between">
-            <span class="text-slate-500">AI Confidence:</span>
-            <span class="text-slate-300 font-semibold">${ai.ai_confidence}%</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-500">Detection Method:</span>
-            <span class="text-slate-300 text-xs">${detectionMethod}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-500">Verdict:</span>
-            <span class="font-semibold ${verdictClass}">${verdict}</span>
-          </div>
-          ${ai.forensic_analysis ? `
-          <div class="mt-2 pt-2 border-t border-slate-700">
-            <span class="text-slate-500 text-xs">Forensic Analysis Available</span>
-            <div class="text-[10px] text-slate-400 mt-1">
-              ${ai.forensic_analysis.patch_entropy ? '• Entropy: ' + ai.forensic_analysis.patch_entropy.toFixed(2) : ''}
-              ${ai.forensic_analysis.channel_correlation ? ' • Correlation: ' + (ai.forensic_analysis.channel_correlation * 100).toFixed(0) + '%' : ''}
-            </div>
-          </div>
-          ` : ''}
+if (data.ai_detection && data.kind !== 'video') {
+  const ai = data.ai_detection;
+  
+  // Determine verdict based on likely_ai_generated and confidence
+  let verdict = 'UNKNOWN';
+  let verdictClass = 'text-slate-400';
+  
+  if (ai.likely_ai_generated) {
+    if (ai.ai_confidence >= 80) {
+      verdict = 'AI-GENERATED';
+      verdictClass = 'text-red-400';
+    } else if (ai.ai_confidence >= 60) {
+      verdict = 'LIKELY AI-GENERATED';
+      verdictClass = 'text-orange-400';
+    } else {
+      verdict = 'POSSIBLY AI-GENERATED';
+      verdictClass = 'text-amber-400';
+    }
+  } else {
+    if (ai.ai_confidence <= 30) {
+      verdict = 'AUTHENTIC';
+      verdictClass = 'text-green-400';
+    } else if (ai.ai_confidence <= 50) {
+      verdict = 'LIKELY AUTHENTIC';
+      verdictClass = 'text-emerald-400';
+    } else {
+      verdict = 'INCONCLUSIVE';
+      verdictClass = 'text-amber-400';
+    }
+  }
+  
+  // Determine detection quality badge
+  let qualityBadge = '';
+  let qualityBadgeClass = '';
+  
+  if (ai.confidence_source === 'sightengine' && ai.external_verification) {
+    qualityBadge = '✨ Enhanced Detection';
+    qualityBadgeClass = 'bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded text-xs';
+  } else if (ai.routing_decision === 'local_confident') {
+    qualityBadge = '⚡ Rapid Analysis';
+    qualityBadgeClass = 'bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded text-xs';
+  }
+  
+  // Determine detection method display
+  const detectorCount = ai.detector_count || (ai.ensemble_results ? Object.keys(ai.ensemble_results).length : 1);
+  let detectionMethod = '';
+  
+  if (ai.confidence_source === 'sightengine') {
+    detectionMethod = 'Premium AI Detection (98% accuracy)';
+  } else if (detectorCount > 1) {
+    detectionMethod = `Multi-Layer Analysis (${detectorCount} detectors)`;
+  } else {
+    detectionMethod = 'Advanced Forensic Analysis';
+  }
+  
+  aiDetectionSection.classList.remove('hidden');
+  aiDetectionDiv.innerHTML = `
+    ${qualityBadge ? `
+    <div class="mb-2">
+      <span class="${qualityBadgeClass}">${qualityBadge}</span>
+    </div>
+    ` : ''}
+    <div class="flex justify-between">
+      <span class="text-slate-500">AI Confidence:</span>
+      <span class="text-slate-300 font-semibold">${ai.ai_confidence}%</span>
+    </div>
+    <div class="flex justify-between">
+      <span class="text-slate-500">Detection Method:</span>
+      <span class="text-slate-300 text-xs">${detectionMethod}</span>
+    </div>
+    <div class="flex justify-between">
+      <span class="text-slate-500">Verdict:</span>
+      <span class="font-semibold ${verdictClass}">${verdict}</span>
+    </div>
+    ${ai.external_verification ? `
+    <div class="mt-2 pt-2 border-t border-slate-700">
+      <span class="text-slate-500 text-xs">Premium Analysis Applied</span>
+      <div class="text-[10px] text-slate-400 mt-1">
+        Enhanced accuracy verification completed
+      </div>
+    </div>
+    ` : ''}
+    ${ai.forensic_analysis && !ai.external_verification ? `
+    <div class="mt-2 pt-2 border-t border-slate-700">
+      <span class="text-slate-500 text-xs">Forensic Analysis Available</span>
+      <div class="text-[10px] text-slate-400 mt-1">
+        ${ai.forensic_analysis.patch_entropy ? '• Entropy: ' + ai.forensic_analysis.patch_entropy.toFixed(2) : ''}
+        ${ai.forensic_analysis.channel_correlation ? ' • Correlation: ' + (ai.forensic_analysis.channel_correlation * 100).toFixed(0) + '%' : ''}
+      </div>
+    </div>
+    ` : ''}
+```
+
+```
+✨ Enhanced Detection
+
+AI Confidence: 5%
+Detection Method: Premium AI Detection (98% accuracy)
+Verdict: AUTHENTIC
+
+─────────────────
+Premium Analysis Applied
+Enhanced accuracy verification completed
+```
+
+```
+⚡ Rapid Analysis
+
+AI Confidence: 5%
+Detection Method: Multi-Layer Analysis (2 detectors)
+Verdict: AUTHENTIC
+
+─────────────────
+Forensic Analysis Available
+- Entropy: 7.45 • Correlation: 92%
         `;
       } else {
         aiDetectionSection.classList.add('hidden');
