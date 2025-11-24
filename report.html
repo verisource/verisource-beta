@@ -172,6 +172,108 @@
         </div>
       </section>
     </section>
+    <section id="blockchainSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-sky-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">Blockchain Verification</h2>
+          <p class="text-[11px] text-slate-400">Immutable timestamp proof on Bitcoin & Polygon</p>
+        </div>
+      </header>
+      
+      <!-- OpenTimestamps (Bitcoin) -->
+      <div id="opentimestampsCard" class="hidden bg-slate-950/50 p-4 rounded-xl mb-4">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">₿</span>
+            <div>
+              <h4 class="font-semibold text-slate-300">Bitcoin Blockchain</h4>
+              <p class="text-[10px] text-slate-400">Via OpenTimestamps</p>
+            </div>
+          </div>
+          <span id="otsStatus" class="px-2 py-1 pill text-[10px] font-semibold">
+            <!-- Status badge -->
+          </span>
+        </div>
+        
+        <div class="space-y-2">
+          <div class="flex justify-between">
+            <span class="text-slate-400">Status</span>
+            <span id="otsStatusText" class="font-semibold">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Submitted</span>
+            <span id="otsSubmitted">-</span>
+          </div>
+          <div id="otsBlockRow" class="hidden flex justify-between">
+            <span class="text-slate-400">Bitcoin Block</span>
+            <span id="otsBlock" class="font-mono">-</span>
+          </div>
+          <div id="otsTimestampRow" class="hidden flex justify-between">
+            <span class="text-slate-400">Confirmed</span>
+            <span id="otsTimestamp">-</span>
+          </div>
+        </div>
+        
+        <div id="otsProof" class="mt-3 pt-3 border-t border-slate-800">
+          <a id="otsVerifyLink" href="#" target="_blank" class="text-sky-400 hover:text-sky-300 text-[10px] flex items-center gap-1">
+            <span>Verify independently →</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Polygon -->
+      <div id="polygonCard" class="hidden bg-slate-950/50 p-4 rounded-xl">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-purple-400" viewBox="0 0 38.4 33.5" fill="currentColor">
+              <path d="M29,10.2c-0.7-0.4-1.6-0.4-2.4,0L21,13.5l-3.8,2.1l-5.5,3.3c-0.7,0.4-1.6,0.4-2.4,0L5,16.3c-0.7-0.4-1.2-1.2-1.2-2.1v-5c0-0.8,0.4-1.6,1.2-2.1l4.3-2.5c0.7-0.4,1.6-0.4,2.4,0L16,7.2c0.7,0.4,1.2,1.2,1.2,2.1v3.3l3.8-2.2V7c0-0.8-0.4-1.6-1.2-2.1l-8-4.7c-0.7-0.4-1.6-0.4-2.4,0L1.2,5C0.4,5.4,0,6.2,0,7v9.4c0,0.8,0.4,1.6,1.2,2.1l8.1,4.7c0.7,0.4,1.6,0.4,2.4,0l5.5-3.2l3.8-2.2l5.5-3.2c0.7-0.4,1.6-0.4,2.4,0l4.3,2.5c0.7,0.4,1.2,1.2,1.2,2.1v5c0,0.8-0.4,1.6-1.2,2.1L29,28.8c-0.7,0.4-1.6,0.4-2.4,0l-4.3-2.5c-0.7-0.4-1.2-1.2-1.2-2.1V21l-3.8,2.2v3.3c0,0.8,0.4,1.6,1.2,2.1l8.1,4.7c0.7,0.4,1.6,0.4,2.4,0l8.1-4.7c0.7-0.4,1.2-1.2,1.2-2.1V17c0-0.8-0.4-1.6-1.2-2.1L29,10.2z"/>
+            </svg>
+            <div>
+              <h4 class="font-semibold text-slate-300">Polygon Network</h4>
+              <p class="text-[10px] text-slate-400">Instant verification</p>
+            </div>
+          </div>
+          <span class="px-2 py-1 pill text-[10px] font-semibold bg-emerald-500/10 border border-emerald-500/40 text-emerald-300">
+            ✓ CONFIRMED
+          </span>
+        </div>
+        
+        <div class="space-y-2">
+          <div class="flex justify-between">
+            <span class="text-slate-400">Transaction</span>
+            <a id="polygonTxLink" href="#" target="_blank" class="font-mono text-[10px] text-sky-400 hover:text-sky-300">-</a>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Block Number</span>
+            <span id="polygonBlock" class="font-mono">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Confirmed</span>
+            <span id="polygonTimestamp">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Gas Cost</span>
+            <span id="polygonGasCost">-</span>
+          </div>
+        </div>
+        
+        <div class="mt-3 pt-3 border-t border-slate-800">
+          <a id="polygonExplorer" href="#" target="_blank" class="text-sky-400 hover:text-sky-300 text-[10px] flex items-center gap-1">
+            <span>View on PolygonScan →</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- No blockchain verification -->
+      <div id="noBlockchainCard" class="bg-slate-950/50 p-4 rounded-xl text-center text-slate-400">
+        <p class="text-xs">No blockchain verification performed for this file</p>
+      </div>
+    </section>
 
     <!-- 5. AI GENERATOR DETECTION + AI CONTENT ANALYSIS -->
     <section id="aiAnalysisSection" class="hidden grid grid-cols-1 xl:grid-cols-3 gap-6 fade-in">
@@ -573,199 +675,175 @@
 
   <!-- 12B. REVERSE IMAGE SEARCH DETAILS -->
     <section id="reverseSearchSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
-      <header class="flex items-center gap-2 mb-4">
-        <div class="h-8 w-8 rounded-xl bg-indigo-500/15 flex items-center justify-center">
-          <svg class="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      <header class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-xl bg-indigo-500/15 flex items-center justify-center">
+            <svg class="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-sm font-semibold">Reverse Image Search Analysis</h2>
+            <p class="text-[11px] text-slate-400">Cross-referenced across TinEye, Bing & Google</p>
+          </div>
+        </div>
+        <button onclick="exportReverseSearchReport()" class="px-3 py-1.5 bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/40 rounded-lg text-[10px] text-indigo-300 transition flex items-center gap-1">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
           </svg>
-        </div>
-        <div>
-          <h2 class="text-sm font-semibold">Reverse Image Search Results</h2>
-          <p class="text-[11px] text-slate-400">TinEye & other reverse search services</p>
-        </div>
+          Export Report
+        </button>
       </header>
-      
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="tineyeMatches" class="text-2xl font-bold text-indigo-300">0</p>
-          <p class="text-[10px] text-slate-400 mt-1">Total Matches</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="imageAge" class="text-sm font-bold">-</p>
-          <p class="text-[10px] text-slate-400 mt-1">First Seen</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="topDomain" class="text-sm font-bold">-</p>
-          <p class="text-[10px] text-slate-400 mt-1">Top Domain</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="newsCount" class="text-2xl font-bold">0</p>
-          <p class="text-[10px] text-slate-400 mt-1">News Sites</p>
+
+      <!-- Warnings Banner -->
+      <div id="reverseSearchWarnings" class="hidden mb-4 bg-amber-500/10 border border-amber-500/30 rounded-xl p-3">
+        <div class="flex items-start gap-2">
+          <svg class="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+          <div id="reverseSearchWarningsList" class="text-[11px] text-amber-200 space-y-1"></div>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-slate-950/50 p-4 rounded-xl">
-          <h4 class="font-semibold mb-3 text-slate-300">First Appearance</h4>
-          <div id="firstAppearance" class="space-y-2 text-slate-400">
-            <p>No data available</p>
+      <!-- Match Summary Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+        <div class="bg-slate-950/50 p-3 rounded-xl text-center">
+          <p id="totalMatchCount" class="text-2xl font-bold text-indigo-300">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">Total Matches</p>
+        </div>
+        <div class="bg-slate-950/50 p-3 rounded-xl text-center">
+          <p id="firstSeenDate" class="text-sm font-bold text-slate-200">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">First Seen</p>
+        </div>
+        <div class="bg-slate-950/50 p-3 rounded-xl text-center">
+          <p id="imageAgeDisplay" class="text-sm font-bold text-slate-200">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Image Age</p>
+        </div>
+        <div class="bg-slate-950/50 p-3 rounded-xl text-center">
+          <p id="contentTypeDisplay" class="text-sm font-bold text-slate-200">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Content Type</p>
+        </div>
+        <div class="bg-slate-950/50 p-3 rounded-xl text-center">
+          <p id="originalConfidence" class="text-2xl font-bold text-emerald-300">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Originality</p>
+        </div>
+      </div>
+
+      <!-- Source Category Breakdown -->
+      <div class="bg-slate-950/50 p-4 rounded-xl mb-4">
+        <h4 class="font-semibold mb-3 text-slate-300 flex items-center gap-2">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+          Source Category Breakdown
+        </h4>
+        <div id="sourceCategoryBreakdown" class="space-y-2">
+          <!-- Stock Photo Sites -->
+          <div class="flex items-center gap-3">
+            <span class="w-24 text-[10px] text-slate-400">Stock Photos</span>
+            <div class="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
+              <div id="stockPhotoBar" class="h-full bg-red-400 transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="stockPhotoCount" class="w-8 text-right text-[10px] text-slate-300">0</span>
+          </div>
+          <!-- News Sites -->
+          <div class="flex items-center gap-3">
+            <span class="w-24 text-[10px] text-slate-400">News Sites</span>
+            <div class="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
+              <div id="newsBar" class="h-full bg-blue-400 transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="newsCount" class="w-8 text-right text-[10px] text-slate-300">0</span>
+          </div>
+          <!-- Social Media -->
+          <div class="flex items-center gap-3">
+            <span class="w-24 text-[10px] text-slate-400">Social Media</span>
+            <div class="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
+              <div id="socialBar" class="h-full bg-purple-400 transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="socialCount" class="w-8 text-right text-[10px] text-slate-300">0</span>
+          </div>
+          <!-- E-commerce -->
+          <div class="flex items-center gap-3">
+            <span class="w-24 text-[10px] text-slate-400">E-commerce</span>
+            <div class="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
+              <div id="ecommerceBar" class="h-full bg-amber-400 transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="ecommerceCount" class="w-8 text-right text-[10px] text-slate-300">0</span>
+          </div>
+          <!-- Blogs -->
+          <div class="flex items-center gap-3">
+            <span class="w-24 text-[10px] text-slate-400">Blogs</span>
+            <div class="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
+              <div id="blogsBar" class="h-full bg-green-400 transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="blogsCount" class="w-8 text-right text-[10px] text-slate-300">0</span>
+          </div>
+          <!-- Other -->
+          <div class="flex items-center gap-3">
+            <span class="w-24 text-[10px] text-slate-400">Other</span>
+            <div class="flex-1 bg-slate-800 rounded-full h-2 overflow-hidden">
+              <div id="otherBar" class="h-full bg-slate-400 transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <span id="otherCount" class="w-8 text-right text-[10px] text-slate-300">0</span>
           </div>
         </div>
+      </div>
+
+      <!-- Two Column Layout: Timeline + Found URLs -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        
+        <!-- Timeline of Appearances -->
         <div class="bg-slate-950/50 p-4 rounded-xl">
-          <h4 class="font-semibold mb-3 text-slate-300">Domain Breakdown</h4>
-          <div id="domainBreakdown" class="space-y-1 text-slate-400">
-            <p>No data available</p>
+          <h4 class="font-semibold mb-3 text-slate-300 flex items-center gap-2">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Timeline
+          </h4>
+          <div id="imageTimeline" class="space-y-2 max-h-48 overflow-y-auto">
+            <p class="text-slate-500 text-[10px]">No timeline data available</p>
+          </div>
+        </div>
+
+        <!-- Found URLs List -->
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300 flex items-center gap-2">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+            </svg>
+            Found On These Sites
+            <span id="urlListCount" class="ml-auto text-[10px] text-slate-500">(0 sites)</span>
+          </h4>
+          <div id="foundUrlsList" class="space-y-2 max-h-48 overflow-y-auto">
+            <p class="text-slate-500 text-[10px]">No URLs found</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- First Appearance Detail -->
+      <div id="firstAppearanceDetail" class="hidden mt-4 bg-indigo-500/10 border border-indigo-500/30 rounded-xl p-4">
+        <h4 class="font-semibold mb-2 text-indigo-300 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          First Known Appearance
+        </h4>
+        <div class="grid grid-cols-2 gap-4 text-[11px]">
+          <div>
+            <p class="text-slate-400">Date</p>
+            <p id="firstAppearanceDate" class="text-slate-200 font-medium">-</p>
+          </div>
+          <div>
+            <p class="text-slate-400">Source</p>
+            <p id="firstAppearanceSource" class="text-slate-200 font-medium">-</p>
+          </div>
+          <div class="col-span-2">
+            <p class="text-slate-400">URL</p>
+            <a id="firstAppearanceUrl" href="#" target="_blank" class="text-indigo-300 hover:text-indigo-200 break-all">-</a>
           </div>
         </div>
       </div>
     </section>  
-    <!-- BLOCKCHAIN VERIFICATION -->
-    <section id="blockchainSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
-      <header class="flex items-center gap-2 mb-4">
-        <div class="h-8 w-8 rounded-xl bg-sky-500/15 flex items-center justify-center">
-          <svg class="w-4 h-4 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-          </svg>
-        </div>
-        <div>
-          <h2 class="text-sm font-semibold">Blockchain Verification</h2>
-          <p class="text-[11px] text-slate-400">Immutable timestamp proof on Bitcoin & Polygon</p>
-        </div>
-      </header>
-      
-      <!-- OpenTimestamps (Bitcoin) -->
-      <div id="opentimestampsCard" class="hidden bg-slate-950/50 p-4 rounded-xl mb-4">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <span class="text-xl">₿</span>
-            <div>
-              <h4 class="font-semibold text-slate-300">Bitcoin Blockchain</h4>
-              <p class="text-[10px] text-slate-400">Via OpenTimestamps</p>
-            </div>
-          </div>
-          <span id="otsStatus" class="px-2 py-1 pill text-[10px] font-semibold">
-            <!-- Status badge -->
-          </span>
-        </div>
-        
-        <div class="space-y-2">
-          <div class="flex justify-between">
-            <span class="text-slate-400">Status</span>
-            <span id="otsStatusText" class="font-semibold">-</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-400">Submitted</span>
-            <span id="otsSubmitted">-</span>
-          </div>
-          <div id="otsBlockRow" class="hidden flex justify-between">
-            <span class="text-slate-400">Bitcoin Block</span>
-            <span id="otsBlock" class="font-mono">-</span>
-          </div>
-          <div id="otsTimestampRow" class="hidden flex justify-between">
-            <span class="text-slate-400">Confirmed</span>
-            <span id="otsTimestamp">-</span>
-          </div>
-        </div>
-        
-        <div id="otsProof" class="mt-3 pt-3 border-t border-slate-800">
-          <a id="otsVerifyLink" href="#" target="_blank" class="text-sky-400 hover:text-sky-300 text-[10px] flex items-center gap-1">
-            <span>Verify independently →</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- Polygon -->
-      <div id="polygonCard" class="hidden bg-slate-950/50 p-4 rounded-xl">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <svg class="w-5 h-5 text-purple-400" viewBox="0 0 38.4 33.5" fill="currentColor">
-              <path d="M29,10.2c-0.7-0.4-1.6-0.4-2.4,0L21,13.5l-3.8,2.1l-5.5,3.3c-0.7,0.4-1.6,0.4-2.4,0L5,16.3c-0.7-0.4-1.2-1.2-1.2-2.1v-5c0-0.8,0.4-1.6,1.2-2.1l4.3-2.5c0.7-0.4,1.6-0.4,2.4,0L16,7.2c0.7,0.4,1.2,1.2,1.2,2.1v3.3l3.8-2.2V7c0-0.8-0.4-1.6-1.2-2.1l-8-4.7c-0.7-0.4-1.6-0.4-2.4,0L1.2,5C0.4,5.4,0,6.2,0,7v9.4c0,0.8,0.4,1.6,1.2,2.1l8.1,4.7c0.7,0.4,1.6,0.4,2.4,0l5.5-3.2l3.8-2.2l5.5-3.2c0.7-0.4,1.6-0.4,2.4,0l4.3,2.5c0.7,0.4,1.2,1.2,1.2,2.1v5c0,0.8-0.4,1.6-1.2,2.1L29,28.8c-0.7,0.4-1.6,0.4-2.4,0l-4.3-2.5c-0.7-0.4-1.2-1.2-1.2-2.1V21l-3.8,2.2v3.3c0,0.8,0.4,1.6,1.2,2.1l8.1,4.7c0.7,0.4,1.6,0.4,2.4,0l8.1-4.7c0.7-0.4,1.2-1.2,1.2-2.1V17c0-0.8-0.4-1.6-1.2-2.1L29,10.2z"/>
-            </svg>
-            <div>
-              <h4 class="font-semibold text-slate-300">Polygon Network</h4>
-              <p class="text-[10px] text-slate-400">Instant verification</p>
-            </div>
-          </div>
-          <span class="px-2 py-1 pill text-[10px] font-semibold bg-emerald-500/10 border border-emerald-500/40 text-emerald-300">
-            ✓ CONFIRMED
-          </span>
-        </div>
-        
-        <div class="space-y-2">
-          <div class="flex justify-between">
-            <span class="text-slate-400">Transaction</span>
-            <a id="polygonTxLink" href="#" target="_blank" class="font-mono text-[10px] text-sky-400 hover:text-sky-300">-</a>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-400">Block Number</span>
-            <span id="polygonBlock" class="font-mono">-</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-400">Confirmed</span>
-            <span id="polygonTimestamp">-</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-400">Gas Cost</span>
-            <span id="polygonGasCost">-</span>
-          </div>
-        </div>
-        
-        <div class="mt-3 pt-3 border-t border-slate-800">
-          <a id="polygonExplorer" href="#" target="_blank" class="text-sky-400 hover:text-sky-300 text-[10px] flex items-center gap-1">
-            <span>View on PolygonScan →</span>
-          </a>
-        </div>
-      </div>
-
-      <!-- No blockchain verification -->
-      <div id="noBlockchainCard" class="bg-slate-950/50 p-4 rounded-xl text-center text-slate-400">
-        <p class="text-xs">No blockchain verification performed for this file</p>
-      </div>
-    </section>
-    <!-- 13. ON-CHAIN ANCHOR DETAILS (Blockchain - future feature) -->
-    <section id="blockchainSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
-      <header class="flex items-center justify-between mb-4">
-        <div class="flex items-center gap-2">
-          <div class="h-8 w-8 rounded-xl bg-sky-500/15 flex items-center justify-center">
-            <svg class="w-4 h-4 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linejoin="round" stroke-width="1.5" d="M12 2 19 6v8l-7 4-7-4V6z"/>
-            </svg>
-          </div>
-          <div>
-            <h2 class="text-sm font-semibold">On-Chain Anchor Details</h2>
-            <p class="text-[11px] text-slate-400">Immutable proof of existence</p>
-          </div>
-        </div>
-      </header>
-
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div class="bg-slate-950/50 p-4 rounded-xl">
-          <p class="text-slate-400 mb-1">Chain</p>
-          <p id="anchorChain" class="font-semibold text-sky-300">-</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl">
-          <p class="text-slate-400 mb-1">Block</p>
-          <p id="anchorBlock" class="font-mono">-</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl">
-          <p class="text-slate-400 mb-1">Timestamp</p>
-          <p id="anchorTimestamp" class="font-mono">-</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl">
-          <p class="text-slate-400 mb-1">Txn Hash</p>
-          <p id="anchorTxHash" class="font-mono break-all text-emerald-300">-</p>
-        </div>
-      </div>
-
-      <div class="mt-4 flex justify-end">
-        <a id="blockExplorerLink" href="#" target="_blank"
-           class="px-4 py-2 pill bg-sky-600 hover:bg-sky-500 text-[11px] font-medium transition">
-          View on Block Explorer →
-        </a>
-      </div>
-    </section>
-
-    <!-- 14. RECOMMENDATIONS -->
     <section id="recommendationsSection" class="hidden bg-blue-500/10 border border-blue-500/30 rounded-2xl p-6 text-xs fade-in">
       <header class="flex items-center gap-2 mb-4">
         <div class="h-8 w-8 rounded-xl bg-blue-500/15 flex items-center justify-center">
@@ -821,7 +899,69 @@
     }
 
     // Export CSV
-    function exportCSV() {
+
+    function exportReverseSearchReport() {
+      const data = window.currentVerificationResult;
+      if (!data || !data.reverse_image_search) {
+        alert("No reverse search data available");
+        return;
+      }
+      
+      const rs = data.reverse_image_search;
+      const combined = rs.combined_analysis || {};
+      const bing = rs.bing || {};
+      const domains = combined.spread_analysis?.domain_types || bing.domain_breakdown || {};
+      const pages = bing.pages_with_image || [];
+      
+      let report = "VERISOURCE REVERSE IMAGE SEARCH REPORT\n";
+      report += "==================================================\n\n";
+      report += "Generated: " + new Date().toISOString() + "\n";
+      report += "File: " + (data.filename || "Unknown") + "\n";
+      report += "SHA-256: " + (data.fingerprint?.hash || "N/A") + "\n\n";
+      
+      report += "SUMMARY\n";
+      report += "------------------------------\n";
+      report += "Total Matches: " + (combined.total_matches_found || 0) + "\n";
+      report += "First Seen: " + (combined.age_analysis?.first_seen || "Unknown") + "\n";
+      report += "Image Age: " + (combined.age_analysis?.age_readable || "Unknown") + "\n";
+      report += "Content Type: " + (combined.content_type || "Unknown") + "\n\n";
+      
+      report += "SOURCE BREAKDOWN\n";
+      report += "------------------------------\n";
+      report += "Stock Photos: " + (domains.stock_photo_sites || 0) + "\n";
+      report += "News Sites: " + (domains.news_sites || 0) + "\n";
+      report += "Social Media: " + (domains.social_media || 0) + "\n";
+      report += "E-commerce: " + (domains.ecommerce || 0) + "\n";
+      report += "Blogs: " + (domains.blogs || 0) + "\n";
+      report += "Other: " + (domains.other || 0) + "\n\n";
+      
+      if (pages.length > 0) {
+        report += "FOUND ON THESE URLS\n";
+        report += "------------------------------\n";
+        pages.forEach((p, i) => {
+          report += (i+1) + ". " + p.url + "\n";
+          report += "   Domain: " + (p.domain || "Unknown") + "\n";
+          report += "   Date: " + (p.date_indexed || "Unknown") + "\n\n";
+        });
+      }
+      
+      if (rs.warnings && rs.warnings.length > 0) {
+        report += "WARNINGS\n";
+        report += "------------------------------\n";
+        rs.warnings.forEach(w => {
+          report += "! " + w.type + ": " + w.message + "\n";
+        });
+      }
+      
+      const blob = new Blob([report], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "reverse-search-report-" + Date.now() + ".txt";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
       const data = sessionStorage.getItem('verificationData');
       if (!data) return;
       
@@ -1277,43 +1417,114 @@ if (!result.ai_detection && parsed.aiDetection) {
         }
 
         // NEW: TinEye Reverse Search
-        if (result.reverse_image_search?.tineye?.status === 'found') {
-          document.getElementById('reverseSearchSection').classList.remove('hidden');
-          const tineye = result.reverse_image_search.tineye;
+        // Enhanced Reverse Image Search Display
+        if (result.reverse_image_search) {
+          const rs = result.reverse_image_search;
+          const combined = rs.combined_analysis || {};
+          const bing = rs.bing || {};
+          const tineye = rs.tineye || {};
+          const spread = combined.spread_analysis || {};
+          const domains = spread.domain_types || bing.domain_breakdown || tineye.domain_breakdown || {};
           
-          document.getElementById('tineyeMatches').textContent = tineye.total_results || 0;
-          document.getElementById('imageAge').textContent = tineye.first_appearance?.age?.human_readable || '-';
-          document.getElementById('topDomain').textContent = tineye.top_domains?.[0]?.domain || '-';
-          document.getElementById('newsCount').textContent = tineye.domain_breakdown?.news_sites || 0;
-          
-          if (tineye.first_appearance) {
-            const fa = tineye.first_appearance;
-            document.getElementById('firstAppearance').innerHTML = `
-              <div class="flex justify-between">
-                <span class="text-slate-400">Date</span>
-                <span>${fa.age?.human_readable || '-'}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-400">Source</span>
-                <span class="truncate ml-2">${fa.source_domain || '-'}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-slate-400">Backlinks</span>
-                <span>${fa.backlinks?.length || 0}</span>
-              </div>
-            `;
+          // Show section if we have data
+          if (rs.search_performed || combined.total_matches_found > 0 || bing.total_results > 0 || tineye.total_results > 0) {
+            document.getElementById('reverseSearchSection').classList.remove('hidden');
+            
+            // Match Summary Cards
+            const totalMatches = combined.total_matches_found || bing.total_results || tineye.total_results || 0;
+            document.getElementById('totalMatchCount').textContent = totalMatches;
+            
+            // First Seen Date
+            const firstSeen = combined.first_appearance?.date || combined.age_analysis?.first_seen;
+            if (firstSeen) {
+              const date = new Date(firstSeen);
+              document.getElementById('firstSeenDate').textContent = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+            }
+            
+            // Image Age
+            const ageReadable = combined.age_analysis?.age_readable || rs.summary?.age || '-';
+            document.getElementById('imageAgeDisplay').textContent = ageReadable;
+            
+            // Content Type
+            const contentType = combined.content_type || rs.summary?.content_type || 'Unknown';
+            const contentTypeFormatted = contentType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            document.getElementById('contentTypeDisplay').textContent = contentTypeFormatted;
+            
+            // Originality Score
+            const isOriginal = combined.is_original;
+            const origScore = isOriginal ? '✓' : (totalMatches > 0 ? `${totalMatches}` : '?');
+            document.getElementById('originalConfidence').textContent = origScore;
+            document.getElementById('originalConfidence').className = `text-2xl font-bold ${isOriginal ? 'text-emerald-300' : (totalMatches > 50 ? 'text-red-300' : 'text-amber-300')}`;
+            
+            // Source Category Breakdown with Visual Bars
+            const maxCount = Math.max(
+              domains.stock_photo_sites || 0,
+              domains.news_sites || 0,
+              domains.social_media || 0,
+              domains.ecommerce || 0,
+              domains.blogs || 0,
+              domains.other || 0,
+              1
+            );
+            
+            const setBar = (barId, countId, value) => {
+              document.getElementById(countId).textContent = value || 0;
+              document.getElementById(barId).style.width = `${((value || 0) / maxCount) * 100}%`;
+            };
+            
+            setBar('stockPhotoBar', 'stockPhotoCount', domains.stock_photo_sites);
+            setBar('newsBar', 'newsCount', domains.news_sites);
+            setBar('socialBar', 'socialCount', domains.social_media);
+            setBar('ecommerceBar', 'ecommerceCount', domains.ecommerce);
+            setBar('blogsBar', 'blogsCount', domains.blogs);
+            setBar('otherBar', 'otherCount', domains.other);
+            
+            // Warnings
+            if (rs.warnings && rs.warnings.length > 0) {
+              document.getElementById('reverseSearchWarnings').classList.remove('hidden');
+              document.getElementById('reverseSearchWarningsList').innerHTML = rs.warnings.map(w => 
+                `<p><strong>${w.type.replace(/_/g, ' ')}:</strong> ${w.message}</p>`
+              ).join('');
+            }
+            
+            // Timeline
+            const pages = bing.pages_with_image || tineye.top_matches || [];
+            if (pages.length > 0) {
+              const timelineHtml = pages.slice(0, 10).map(p => {
+                const date = p.date_indexed ? new Date(p.date_indexed).toLocaleDateString() : '-';
+                return `
+                  <div class="flex items-center gap-2 text-[10px] py-1 border-b border-slate-800 last:border-0">
+                    <span class="text-slate-500 w-20">${date}</span>
+                    <span class="text-slate-300 truncate flex-1">${p.domain || new URL(p.url).hostname}</span>
+                  </div>
+                `;
+              }).join('');
+              document.getElementById('imageTimeline').innerHTML = timelineHtml || '<p class="text-slate-500 text-[10px]">No timeline data</p>';
+            }
+            
+            // Found URLs List
+            if (pages.length > 0) {
+              document.getElementById('urlListCount').textContent = `(${pages.length} sites)`;
+              const urlsHtml = pages.slice(0, 15).map(p => `
+                <a href="${p.url}" target="_blank" class="block text-[10px] py-1.5 px-2 bg-slate-900/50 rounded hover:bg-slate-800 transition truncate text-indigo-300 hover:text-indigo-200">
+                  ${p.domain || new URL(p.url).hostname} ${p.title ? '- ' + p.title.substring(0, 40) : ''}
+                </a>
+              `).join('');
+              document.getElementById('foundUrlsList').innerHTML = urlsHtml;
+            }
+            
+            // First Appearance Detail
+            const firstAppearance = combined.first_appearance || bing.first_indexed;
+            if (firstAppearance && firstAppearance.date) {
+              document.getElementById('firstAppearanceDetail').classList.remove('hidden');
+              document.getElementById('firstAppearanceDate').textContent = new Date(firstAppearance.date).toLocaleDateString();
+              document.getElementById('firstAppearanceSource').textContent = firstAppearance.source_domain || firstAppearance.domain || '-';
+              const urlEl = document.getElementById('firstAppearanceUrl');
+              urlEl.href = firstAppearance.source_url || firstAppearance.url || '#';
+              urlEl.textContent = firstAppearance.source_url || firstAppearance.url || '-';
+            }
           }
-          
-          if (tineye.domain_breakdown) {
-            const db = tineye.domain_breakdown;
-            document.getElementById('domainBreakdown').innerHTML = `
-              <div class="flex justify-between"><span>News Sites</span><span>${db.news_sites || 0}</span></div>
-              <div class="flex justify-between"><span>Social Media</span><span>${db.social_media || 0}</span></div>
-              <div class="flex justify-between"><span>Stock Photos</span><span>${db.stock_photo_sites || 0}</span></div>
-              <div class="flex justify-between"><span>Blogs</span><span>${db.blogs || 0}</span></div>
-              <div class="flex justify-between"><span>Other</span><span>${db.other || 0}</span></div>
-            `;
-          }
+        }
         }
 // NEW: Blockchain Verification Display
         if (result.blockchain_verification) {
