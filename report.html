@@ -1449,7 +1449,16 @@
             }
             
             // Timeline
-            const pages = bing.pages_with_image || tineye.top_matches || [];
+            const tineyePages = (tineye.top_matches || []).flatMap(match => 
+              (match.backlinks || []).map(bl => ({
+                url: bl.backlink,
+                domain: match.domain,
+                title: match.domain,
+                date_indexed: bl.crawl_date
+              }))
+            );
+            const bingPages = bing.pages_with_image || [];
+            const pages = [...tineyePages, ...bingPages];
             if (pages.length > 0) {
               const timelineHtml = pages.slice(0, 10).map(p => {
                 const date = p.date_indexed ? new Date(p.date_indexed).toLocaleDateString() : '-';
