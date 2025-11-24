@@ -1014,6 +1014,7 @@ if (!result.ai_detection && parsed.aiDetection) {
 
         const parsed = JSON.parse(data);
         const result = parsed._rawResponse || parsed;
+        window.currentVerificationResult = result;
 
         // 1. File name & confidence
         document.getElementById('fileName').textContent = result.filename || 'Unknown File';
