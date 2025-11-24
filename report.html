@@ -961,46 +961,6 @@
       a.click();
       URL.revokeObjectURL(url);
     }
-
-      const data = sessionStorage.getItem('verificationData');
-      if (!data) return;
-      
-      const parsed = JSON.parse(data);
-      const result = parsed._rawResponse || parsed;
-      // Merge outer AI detection data if _rawResponse doesn't have it
-if (!result.ai_detection && parsed.aiDetection) {
-  result.ai_detection = {
-    likely_ai_generated: parsed.aiDetection.isAiGenerated,
-    ai_confidence: parsed.aiDetection.confidence
-  };
-}
-      let csv = 'Field,Value\n';
-      csv += `Filename,${result.filename || '-'}\n`;
-      csv += `File Size,${result.size_bytes || 0}\n`;
-      csv += `Media Kind,${result.kind || '-'}\n`;
-      csv += `SHA-256,${result.fingerprint?.hash || '-'}\n`;
-      csv += `Overall Confidence,${result.confidence?.percentage || 0}%\n`;
-      csv += `Confidence Level,${result.confidence?.level || '-'}\n`;
-      
-      if (result.ai_detection) {
-        csv += `AI Generated,${result.ai_detection.likely_ai_generated}\n`;
-        csv += `AI Confidence,${result.ai_detection.ai_confidence}%\n`;
-      }
-      
-      if (result.generator_detection) {
-        csv += `Likely Generator,${result.generator_detection.likelyGenerator}\n`;
-        csv += `Generator Confidence,${result.generator_detection.confidence}%\n`;
-      }
-      
-      const blob = new Blob([csv], { type: 'text/csv' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `verisource-report-${Date.now()}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
     // Load and display report
    document.addEventListener('DOMContentLoaded', function() {
     try {
