@@ -1396,14 +1396,19 @@
             document.getElementById('totalMatchCount').textContent = totalMatches;
             
             // First Seen Date
-            const firstSeen = combined.first_appearance?.date || combined.age_analysis?.first_seen;
+            // Check Wayback for earlier date
+            const waybackDate = rs.wayback?.earliest_appearance?.timestamp;
+            const combinedDate = combined.first_appearance?.date || combined.age_analysis?.first_seen;
+            const firstSeen = (waybackDate && combinedDate) 
+              ? (new Date(waybackDate) < new Date(combinedDate) ? waybackDate : combinedDate)
+              : (waybackDate || combinedDate);
             if (firstSeen) {
               const date = new Date(firstSeen);
               document.getElementById('firstSeenDate').textContent = date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
             }
             
             // Image Age
-            const ageReadable = combined.age_analysis?.age_readable || rs.summary?.age || '-';
+            const ageReadable = rs.wayback?.earliest_appearance?.age?.human_readable || combined.age_analysis?.age_readable || rs.summary?.age || '-';
             document.getElementById('imageAgeDisplay').textContent = ageReadable;
             
             // Content Type
