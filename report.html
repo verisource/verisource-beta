@@ -562,7 +562,7 @@
         }
         
         // Determine detection method
-        const detectorCount = ai.detector_count || ai.ensemble_results ? Object.keys(ai.ensemble_results).length : 1;
+        const detectorCount = ai.detector_count || (ai.ensemble_results ? Object.keys(ai.ensemble_results).length : 1);
         const detectionMethod = detectorCount > 1 
           ? `Ensemble Analysis (${detectorCount} detectors)`
           : 'Advanced Forensic Analysis';
