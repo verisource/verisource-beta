@@ -1425,6 +1425,13 @@ if (!result.ai_detection && parsed.aiDetection) {
               otsStatusBadge.textContent = '⏳ PENDING';
               otsStatusBadge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-amber-500/10 border border-amber-500/40 text-amber-300';
               document.getElementById('otsStatusText').textContent = 'Bitcoin confirmation pending';
+            } else if (ots.status === 'previously_timestamped') {
+              otsStatusBadge.textContent = '✓ VERIFIED';
+              otsStatusBadge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-emerald-500/10 border border-emerald-500/40 text-emerald-300';
+              document.getElementById('otsStatusText').textContent = 'Previously timestamped';
+              if (ots.first_timestamped) {
+                document.getElementById('otsSubmitted').textContent = formatDate(ots.first_timestamped);
+              }
             } else {
               otsStatusBadge.textContent = 'SUBMITTED';
               otsStatusBadge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-blue-500/10 border border-blue-500/40 text-blue-300';
@@ -1440,17 +1447,24 @@ if (!result.ai_detection && parsed.aiDetection) {
             document.getElementById('polygonCard').classList.remove('hidden');
             const poly = result.polygon_verification;
             
-            const txShort = poly.transaction_hash ? 
-              poly.transaction_hash.substring(0, 10) + '...' + poly.transaction_hash.substring(poly.transaction_hash.length - 8) : 
-              '-';
-            
-            document.getElementById('polygonTxLink').textContent = txShort;
-            document.getElementById('polygonTxLink').href = poly.explorer_url || '#';
-            document.getElementById('polygonBlock').textContent = poly.block_number || '-';
-            document.getElementById('polygonTimestamp').textContent = formatDate(poly.timestamp);
-            document.getElementById('polygonGasCost').textContent = 
-              poly.gas_cost_usd ? `$${poly.gas_cost_usd} (${parseFloat(poly.gas_cost_matic).toFixed(4)} MATIC)` : '-';
-            document.getElementById('polygonExplorer').href = poly.explorer_url || '#';
+            if (poly.status === 'previously_timestamped') {
+              document.getElementById('polygonTxLink').textContent = 'Previously verified';
+              document.getElementById('polygonBlock').textContent = '-';
+              document.getElementById('polygonTimestamp').textContent = formatDate(poly.first_timestamped);
+              document.getElementById('polygonGasCost').textContent = '-';
+            } else {
+              const txShort = poly.transaction_hash ? 
+                poly.transaction_hash.substring(0, 10) + '...' + poly.transaction_hash.substring(poly.transaction_hash.length - 8) : 
+                '-';
+              
+              document.getElementById('polygonTxLink').textContent = txShort;
+              document.getElementById('polygonTxLink').href = poly.explorer_url || '#';
+              document.getElementById('polygonBlock').textContent = poly.block_number || '-';
+              document.getElementById('polygonTimestamp').textContent = formatDate(poly.timestamp);
+              document.getElementById('polygonGasCost').textContent = 
+                poly.gas_cost_usd ? '$' + poly.gas_cost_usd + ' (' + parseFloat(poly.gas_cost_matic).toFixed(4) + ' MATIC)' : '-';
+              document.getElementById('polygonExplorer').href = poly.explorer_url || '#';
+            }
           }
         }
         // 13. Blockchain (future - hidden for now)
