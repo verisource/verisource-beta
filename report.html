@@ -154,6 +154,11 @@
             <div class="text-xs space-y-1" id="aiDetection"></div>
           </div>
 
+         <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="platformDetectionSection">
+            <h3 class="text-sm font-semibold text-slate-300">Platform Detection</h3>
+            <div class="text-xs space-y-1" id="platformDetection"></div>
+          </div>
+
           <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2" id="duplicateSection">
             <h3 class="text-sm font-semibold text-slate-300">Duplicate Detection</h3>
             <div class="text-xs space-y-1" id="duplicateResults"></div>
@@ -590,6 +595,37 @@
         aiDetectionSection.classList.add('hidden');
       }
       
+       // Platform Detection
+      const platformDetectionSection = document.getElementById('platformDetectionSection');
+      const platformDetectionDiv = document.getElementById('platformDetection');
+      const platform = data.platform_detection;
+      
+      if (platform && platform.detected) {
+        platformDetectionSection.classList.remove('hidden');
+        platformDetectionDiv.innerHTML = `
+          <div class="flex justify-between items-center">
+            <span class="text-slate-500">Platform:</span>
+            <span class="text-blue-400 font-semibold">📱 ${platform.platform.charAt(0).toUpperCase() + platform.platform.slice(1)}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-500">Confidence:</span>
+            <span class="text-slate-300">${platform.confidence}%</span>
+          </div>
+          <div class="mt-2 pt-2 border-t border-slate-700">
+            <span class="text-slate-500">Indicators:</span>
+            <div class="flex flex-wrap gap-1 mt-1">
+              ${platform.indicators.map(ind => 
+                `<span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded">${ind}</span>`
+              ).join('')}
+            </div>
+          </div>
+          <div class="mt-2 text-xs text-slate-400 bg-slate-900/50 p-2 rounded">
+            ℹ️ This image shows compression patterns typical of social media sharing. Missing EXIF data is expected.
+          </div>
+        `;
+      } else {
+        platformDetectionSection.classList.add('hidden');
+      }
       // Advanced Forensic Analysis
       if (response.ai_detection?.forensic_analysis) {
         const forensicSection = document.getElementById('forensicAnalysisSection');

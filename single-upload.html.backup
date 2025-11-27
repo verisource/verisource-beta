@@ -101,7 +101,13 @@
 
         <div id="loading" class="hidden text-center py-4">
           <div class="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-500 border-r-transparent"></div>
-          <p class="text-sm text-slate-400 mt-2">Processing your file...</p>
+          <p class="text-sm text-slate-400 mt-2" id="loadingText">Processing your file...</p>
+          <div class="mt-3 max-w-xs mx-auto">
+            <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+              <div id="uploadProgressBar" class="h-full bg-blue-500 transition-all duration-300" style="width: 0%"></div>
+            </div>
+            <p class="text-xs text-slate-500 mt-1" id="uploadProgress">0%</p>
+          </div>
         </div>
       </div>
 
@@ -153,21 +159,49 @@
             <div class="text-xs space-y-1" id="duplicateResults"></div>
           </div>
 
-          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2" id="externalSection">
+          <!-- Advanced Forensic Analysis -->
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="forensicAnalysisSection">
+            <h3 class="text-sm font-semibold text-slate-300 flex items-center gap-2">
+              <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"/>
+              </svg>
+              Advanced Forensic Analysis
+            </h3>
+            <div id="forensicAnalysisContent" class="text-xs"></div>
+            <p class="text-[9px] text-slate-500 pt-2 border-t border-slate-700">
+              6 AI detection methods: Entropy • Correlation • Texture • Aberration • Hue-Sat • Lens Profile
+            </p>
+          </div>
+
+                    <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2" id="externalSection">
             <h3 class="text-sm font-semibold text-slate-300">External Verification</h3>
             <div class="text-xs space-y-1" id="externalVerification"></div>
           </div>
+          <!-- Deepfake Detection Section -->
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="deepfakeSection">
+            <h3 class="text-sm font-semibold text-slate-300">Deepfake Detection</h3>
+            <div class="text-xs space-y-1" id="deepfakeDetection"></div>
+          </div>
+
+                    <!-- Shadow Physics Verification Section -->
+          <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="shadowPhysicsSection">
+            <h3 class="text-sm font-semibold text-slate-300">Shadow Physics Analysis</h3>
+            <div class="text-xs space-y-1" id="shadowPhysics"></div>
+          </div>
+
           <!-- Weather Verification Section -->
           <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="weatherSection">
             <h3 class="text-sm font-semibold text-slate-300">Weather Verification</h3>
             <div class="text-xs space-y-1" id="weatherVerification"></div>
           </div>
+
           <!-- Landmark Verification Section -->
           <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="landmarkSection">
             <h3 class="text-sm font-semibold text-slate-300">Landmark Verification</h3>
             <div class="text-xs space-y-1" id="landmarkVerification"></div>
           </div>
 
+          <!-- Video Frame Analysis Section -->
           <div class="bg-slate-800/30 rounded-lg border border-slate-700 p-4 space-y-2 hidden" id="videoSection">
             <h3 class="text-sm font-semibold text-slate-300">Video Frame Analysis</h3>
             <div class="text-xs space-y-1" id="videoAnalysis"></div>
@@ -234,40 +268,89 @@
       const uploadBtn = document.getElementById('uploadBtn');
       const results = document.getElementById('results');
       const placeholder = document.getElementById('resultsPlaceholder');
+      const progressBar = document.getElementById('uploadProgressBar');
+      const progressText = document.getElementById('uploadProgress');
+      const loadingText = document.getElementById('loadingText');
 
       loading.classList.remove('hidden');
       uploadBtn.disabled = true;
       results.classList.add('hidden');
       placeholder.classList.add('hidden');
+      
+      // Reset progress
+      progressBar.style.width = '0%';
+      progressText.textContent = '0%';
+      loadingText.textContent = 'Uploading...';
 
       const formData = new FormData();
       formData.append('file', selectedFile);
 
-      try {
-        const res = await fetch(`${API_URL}/verify`, {
-          method: 'POST',
-          body: formData
-        });
-
-        const data = await res.json();
-        
-        // DEBUG: Log what we're getting from the API
-        console.log('=== VeriSource API Response ===');
-        console.log('Full response:', data);
-        console.log('Google Vision:', data.google_vision);
-        console.log('Web Detection:', data.google_vision?.web_detection);
-        console.log('Matching Pages:', data.google_vision?.web_detection?.pages_with_matching_images);
-        console.log('VirusTotal:', data.virustotal);
-        console.log('AI Detection:', data.ai_detection);
-        console.log('==============================');
-        
-        displayResults(data);
-      } catch (e) {
-        alert('Upload failed: ' + e.message);
-      } finally {
+      // Use XMLHttpRequest for upload progress
+      const xhr = new XMLHttpRequest();
+      
+      // Track upload progress
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          const percent = Math.round((e.loaded / e.total) * 100);
+          progressBar.style.width = percent + '%';
+          progressText.textContent = percent + '%';
+          
+          if (percent === 100) {
+            loadingText.textContent = 'Processing your file...';
+          }
+        }
+      });
+      
+      // Handle completion
+      xhr.addEventListener('load', () => {
+        try {
+          if (xhr.status === 200) {
+            const data = JSON.parse(xhr.responseText);
+            
+            // DEBUG: Log what we're getting from the API
+            console.log('=== VeriSource API Response ===');
+            console.log('Full response:', data);
+            console.log('Google Vision:', data.google_vision);
+            console.log('Web Detection:', data.google_vision?.web_detection);
+            console.log('Matching Pages:', data.google_vision?.web_detection?.pages_with_matching_images);
+            console.log('VirusTotal:', data.virustotal);
+            console.log('AI Detection:', data.ai_detection);
+            console.log('==============================');
+            
+            displayResults(data);
+            loading.classList.add('hidden');
+            uploadBtn.disabled = false;
+          } else {
+            throw new Error(`Server error: ${xhr.status}`);
+          }
+        } catch (e) {
+          console.error('Error:', e);
+          alert('Upload failed: ' + e.message);
+          loading.classList.add('hidden');
+          uploadBtn.disabled = false;
+        }
+      });
+      
+      // Handle errors
+      xhr.addEventListener('error', () => {
+        alert('❌ Network error. Please check your connection.');
         loading.classList.add('hidden');
         uploadBtn.disabled = false;
-      }
+      });
+      
+      // Handle timeout
+      xhr.addEventListener('timeout', () => {
+        alert('❌ Upload timeout. File may be too large or connection too slow.');
+        loading.classList.add('hidden');
+        uploadBtn.disabled = false;
+      });
+      
+      // Set timeout to 5 minutes for large files
+      xhr.timeout = 300000;
+      
+      // Send the request
+      xhr.open('POST', `${API_URL}/verify`);
+      xhr.send(formData);
     }
 
     // Map API response to match report.html expected structure
@@ -279,6 +362,7 @@
         confidenceLevel: data.confidence?.level,
         confidenceLabel: data.confidence?.label,
         confidenceColor: data.confidence?.color,
+        confidenceIconSvg: data.confidence?.iconSvg,
         confidenceBreakdown: data.confidence?.factors ? 
           data.confidence.factors.reduce((acc, factor) => {
             acc[factor.name] = factor.percentage;
@@ -450,33 +534,168 @@
         <div class="flex justify-between"><span class="text-slate-500">Size:</span><span class="text-slate-300">${formatFileSize(data.size_bytes || 0)}</span></div>
       `;
 
-      // AI Content Analysis - only show if data exists
+      // AI Content Analysis - Advanced Forensic Detection
       const aiDetectionSection = document.getElementById('aiDetectionSection');
       const aiDetectionDiv = document.getElementById('aiDetection');
-      const aiData = data.ai_detection || data.google_vision || {};
-      const aiVerdict = aiData.verdict || aiData.label;
       
-      if (aiVerdict && aiVerdict !== 'PENDING') {
-        const aiGenProb = aiData.ai_generated_probability || aiData.confidence || 0;
-        const aiMethod = aiData.detection_method || 'Google Vision API';
+      // Only show for images (videos have their own section)
+      if (data.ai_detection && data.kind !== 'video') {
+        const ai = data.ai_detection;
+        
+        // Determine verdict based on likely_ai_generated and confidence
+        let verdict = 'UNKNOWN';
+        let verdictClass = 'text-slate-400';
+        
+        if (ai.likely_ai_generated) {
+          if (ai.ai_confidence >= 80) {
+            verdict = 'AI-GENERATED';
+            verdictClass = 'text-red-400';
+          } else if (ai.ai_confidence >= 60) {
+            verdict = 'LIKELY AI-GENERATED';
+            verdictClass = 'text-orange-400';
+          } else {
+            verdict = 'POSSIBLY AI-GENERATED';
+            verdictClass = 'text-amber-400';
+          }
+        } else {
+          if (ai.ai_confidence <= 30) {
+            verdict = 'AUTHENTIC';
+            verdictClass = 'text-green-400';
+          } else if (ai.ai_confidence <= 50) {
+            verdict = 'LIKELY AUTHENTIC';
+            verdictClass = 'text-emerald-400';
+          } else {
+            verdict = 'INCONCLUSIVE';
+            verdictClass = 'text-amber-400';
+          }
+        }
+        
+        // Determine detection method
+        const detectorCount = ai.detector_count || ai.ensemble_results ? Object.keys(ai.ensemble_results).length : 1;
+        const detectionMethod = detectorCount > 1 
+          ? `Ensemble Analysis (${detectorCount} detectors)`
+          : 'Advanced Forensic Analysis';
         
         aiDetectionSection.classList.remove('hidden');
         aiDetectionDiv.innerHTML = `
           <div class="flex justify-between">
-            <span class="text-slate-500">AI Generated Probability:</span>
-            <span class="text-slate-300 font-semibold">${Math.round(aiGenProb)}%</span>
+            <span class="text-slate-500">AI Confidence:</span>
+            <span class="text-slate-300 font-semibold">${ai.ai_confidence}%</span>
           </div>
           <div class="flex justify-between">
             <span class="text-slate-500">Detection Method:</span>
-            <span class="text-slate-300">${aiMethod}</span>
+            <span class="text-slate-300 text-xs">${detectionMethod}</span>
           </div>
           <div class="flex justify-between">
             <span class="text-slate-500">Verdict:</span>
-            <span class="text-slate-300 font-semibold ${aiVerdict === 'AUTHENTIC' ? 'text-green-400' : aiVerdict === 'SUSPICIOUS' ? 'text-yellow-400' : 'text-red-400'}">${aiVerdict}</span>
+            <span class="font-semibold ${verdictClass}">${verdict}</span>
           </div>
+          ${ai.forensic_analysis ? `
+          <div class="mt-2 pt-2 border-t border-slate-700">
+            <span class="text-slate-500 text-xs">Forensic Analysis Available</span>
+            <div class="text-[10px] text-slate-400 mt-1">
+              ${ai.forensic_analysis.patch_entropy ? '• Entropy: ' + ai.forensic_analysis.patch_entropy.toFixed(2) : ''}
+              ${ai.forensic_analysis.channel_correlation ? ' • Correlation: ' + (ai.forensic_analysis.channel_correlation * 100).toFixed(0) + '%' : ''}
+            </div>
+          </div>
+          ` : ''}
         `;
       } else {
         aiDetectionSection.classList.add('hidden');
+      }
+      
+      // Advanced Forensic Analysis
+      if (data.ai_detection?.forensic_analysis) {
+        const forensicSection = document.getElementById('forensicAnalysisSection');
+        if (forensicSection) {
+          forensicSection.classList.remove('hidden');
+          const fa = data.ai_detection.forensic_analysis;
+          
+          let forensicHTML = '<div class="grid grid-cols-2 md:grid-cols-3 gap-2">';
+          
+          // Patch Entropy
+          if (fa.patch_entropy !== null) {
+            const val = (fa.patch_entropy || 0).toFixed(2);
+            const cls = fa.patch_entropy < 3.5 ? 'text-red-400' : fa.patch_entropy >= 6.0 ? 'text-green-400' : 'text-amber-400';
+            const status = fa.patch_entropy < 3.5 ? 'Low' : fa.patch_entropy >= 6.0 ? 'High' : 'Moderate';
+            forensicHTML += `
+              <div class="bg-slate-800/30 rounded-lg p-2 border border-slate-700">
+                <p class="text-[9px] text-slate-400 mb-0.5">Patch Entropy</p>
+                <p class="text-base font-bold ${cls}">${val}</p>
+                <p class="text-[8px] text-slate-500">${status}</p>
+              </div>
+            `;
+          }
+          
+          // Channel Correlation
+          if (fa.channel_correlation !== null) {
+            const val = (fa.channel_correlation * 100).toFixed(1);
+            const cls = fa.channel_correlation > 0.98 ? 'text-red-400' : fa.channel_correlation <= 0.90 ? 'text-green-400' : 'text-amber-400';
+            forensicHTML += `
+              <div class="bg-slate-800/30 rounded-lg p-2 border border-slate-700">
+                <p class="text-[9px] text-slate-400 mb-0.5">Correlation</p>
+                <p class="text-base font-bold ${cls}">${val}%</p>
+                <p class="text-[8px] text-slate-500">${fa.channel_correlation > 0.98 ? 'High' : 'Normal'}</p>
+              </div>
+            `;
+          }
+          
+          // Texture Repetition
+          if (fa.texture_repetition !== null) {
+            const val = (fa.texture_repetition * 100).toFixed(0);
+            const cls = fa.texture_repetition > 0.70 ? 'text-red-400' : 'text-green-400';
+            forensicHTML += `
+              <div class="bg-slate-800/30 rounded-lg p-2 border border-slate-700">
+                <p class="text-[9px] text-slate-400 mb-0.5">Texture Repeat</p>
+                <p class="text-base font-bold ${cls}">${val}%</p>
+                <p class="text-[8px] text-slate-500">${fa.texture_repetition > 0.70 ? 'High' : 'Low'}</p>
+              </div>
+            `;
+          }
+          
+          // Chromatic Aberration
+          if (fa.chromatic_aberration !== null) {
+            const val = (fa.chromatic_aberration * 1000).toFixed(1);
+            const cls = fa.chromatic_aberration < 0.01 ? 'text-red-400' : fa.chromatic_aberration >= 0.02 ? 'text-green-400' : 'text-amber-400';
+            forensicHTML += `
+              <div class="bg-slate-800/30 rounded-lg p-2 border border-slate-700">
+                <p class="text-[9px] text-slate-400 mb-0.5">Aberration</p>
+                <p class="text-base font-bold ${cls}">${val}‰</p>
+                <p class="text-[8px] text-slate-500">${fa.chromatic_aberration < 0.01 ? 'None' : 'Present'}</p>
+              </div>
+            `;
+          }
+          
+          // Hue-Saturation
+          if (fa.hue_saturation_clustering !== null) {
+            const val = (fa.hue_saturation_clustering * 100).toFixed(0);
+            const cls = fa.hue_saturation_clustering > 0.90 ? 'text-red-400' : 'text-green-400';
+            forensicHTML += `
+              <div class="bg-slate-800/30 rounded-lg p-2 border border-slate-700">
+                <p class="text-[9px] text-slate-400 mb-0.5">Hue-Sat</p>
+                <p class="text-base font-bold ${cls}">${val}%</p>
+                <p class="text-[8px] text-slate-500">${fa.hue_saturation_clustering > 0.90 ? 'High' : 'Normal'}</p>
+              </div>
+            `;
+          }
+          
+          // Optical Lens
+          if (fa.optical_profile_match !== null) {
+            const val = fa.optical_profile_match ? '✓' : '✗';
+            const cls = fa.optical_profile_match ? 'text-green-400' : 'text-red-400';
+            forensicHTML += `
+              <div class="bg-slate-800/30 rounded-lg p-2 border border-slate-700">
+                <p class="text-[9px] text-slate-400 mb-0.5">Lens Profile</p>
+                <p class="text-base font-bold ${cls}">${val}</p>
+                <p class="text-[8px] text-slate-500">${fa.optical_profile_match ? 'Found' : 'Missing'}</p>
+              </div>
+            `;
+          }
+          
+          forensicHTML += '</div>';
+          
+          document.getElementById('forensicAnalysisContent').innerHTML = forensicHTML;
+        }
       }
 
       // Duplicate Detection
@@ -528,6 +747,7 @@
       const virusTotal = data.virustotal || data.external_checks?.virustotal || {};
       const googleVision = data.google_vision || data.external_checks?.google_vision || {};
       const webMatches = googleVision.web_detection?.pages_with_matching_images?.length || 0;
+      const tineye = data.externalVerification?.tineye || data.tineye || {};
       
       externalDiv.innerHTML = `
         <div class="flex justify-between">
@@ -537,6 +757,10 @@
         <div class="flex justify-between">
           <span class="text-slate-500">Google Vision:</span>
           <span class="text-slate-300">${googleVision.safe_search_detection ? 'Safe content' : 'Analyzed'}</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-500">TinEye:</span>
+          <span class="text-slate-300">${tineye.totalResults ? tineye.totalResults.toLocaleString() : '0'} matches</span>
         </div>
         <div class="flex justify-between">
           <span class="text-slate-500">Web Matches:</span>
@@ -555,6 +779,26 @@
           </div>
         </div>
         ` : ''}
+        ${tineye.totalResults && tineye.totalResults > 0 ? `
+        <div class="mt-2 pt-2 border-t border-slate-700">
+          <span class="text-slate-500 text-xs">TinEye Matches (${tineye.totalResults}):</span>
+          <div class="mt-1 space-y-1">
+            ${tineye.matches?.slice(0, 3).map(match => `
+              <div class="bg-slate-700/30 rounded p-1.5">
+                <a href="${match.backlink}" target="_blank" class="text-xs text-blue-400 hover:underline block truncate">
+                  ${match.domain || 'View Match'}
+                </a>
+                <p class="text-[10px] text-slate-500 mt-0.5">
+                  ${match.width}×${match.height} • Crawled: ${new Date(match.crawl_date).toLocaleDateString()}
+                </p>
+              </div>
+            `).join('') || ''}
+            ${tineye.totalResults > 3 ? `
+              <p class="text-[10px] text-slate-500 text-center">... and ${tineye.totalResults - 3} more</p>
+            ` : ''}
+          </div>
+        </div>
+        ` : ''}
       `;
       
       // Add click handler for Web Matches button if it exists
@@ -567,6 +811,10 @@
               sessionStorage.setItem('verificationData', JSON.stringify(data));
               window.open('web-matches.html', '_blank');
               return false;
+            };
+          }
+        }, 100);
+      }
 
       // Weather Verification
       const weatherSection = document.getElementById('weatherSection');
@@ -679,10 +927,112 @@
         landmarkDiv.innerHTML = landmarkHTML;
       } else {
         landmarkSection.classList.add('hidden');
+      }// Shadow Physics Verification
+      const shadowPhysicsSection = document.getElementById('shadowPhysicsSection');
+      const shadowPhysicsDiv = document.getElementById('shadowPhysics');
+      const shadowPhysics = data.shadow_physics;
+      
+      if (shadowPhysics && shadowPhysics.physics_valid !== null) {
+        shadowPhysicsSection.classList.remove('hidden');
+        
+        const isValid = shadowPhysics.physics_valid;
+        let shadowHTML = `
+          <div class="flex justify-between">
+            <span class="text-slate-500">Physics Validation:</span>
+            <span class="font-semibold ${isValid ? 'text-green-400' : 'text-red-400'}">
+              ${isValid ? '✓ VALID' : '✗ INVALID'}
+            </span>
+          </div>
+        `;
+        
+        if (shadowPhysics.sun_position) {
+          shadowHTML += `
+            <div class="mt-2 pt-2 border-t border-slate-700">
+              <div class="text-slate-500 mb-1">Sun Position:</div>
+              <div class="bg-slate-900/50 p-2 rounded space-y-1">
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-400">Altitude:</span>
+                  <span class="text-slate-300">${shadowPhysics.sun_position.altitude}°</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                  <span class="text-slate-400">Azimuth:</span>
+                  <span class="text-slate-300">${shadowPhysics.sun_position.azimuth}°</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        
+        if (shadowPhysics.violations && shadowPhysics.violations.length > 0) {
+          shadowHTML += `
+            <div class="mt-2 pt-2 border-t border-slate-700">
+              <span class="text-slate-500">Violations:</span>
+              ${shadowPhysics.violations.map(v => 
+                `<div class="text-red-400 text-xs mt-1">⚠ ${v}</div>`
+              ).join('')}
+            </div>
+          `;
+        }
+        
+        shadowPhysicsDiv.innerHTML = shadowHTML;
+      } else {
+        shadowPhysicsSection.classList.add('hidden');
       }
-            };
-          }
-        }, 100);
+
+      // Deepfake Detection
+      const deepfakeSection = document.getElementById('deepfakeSection');
+      const deepfakeDiv = document.getElementById('deepfakeDetection');
+      const deepfake = data.deepfake_detection;
+      
+      if (deepfake && deepfake.face_analysis) {
+        deepfakeSection.classList.remove('hidden');
+        
+        const isDeepfake = deepfake.is_deepfake;
+        let deepfakeHTML = `
+          <div class="flex justify-between">
+            <span class="text-slate-500">Analysis Result:</span>
+            <span class="font-semibold ${isDeepfake ? 'text-red-400' : 'text-green-400'}">
+              ${isDeepfake ? '⚠ DEEPFAKE DETECTED' : '✓ AUTHENTIC FACES'}
+            </span>
+          </div>
+        `;
+        
+        if (deepfake.face_analysis) {
+          deepfakeHTML += `
+            <div class="flex justify-between">
+              <span class="text-slate-500">Faces Detected:</span>
+              <span class="text-slate-300">${deepfake.face_analysis.faces_detected}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-500">Suspicious Faces:</span>
+              <span class="text-slate-300 ${deepfake.face_analysis.suspicious_faces > 0 ? 'text-yellow-400' : ''}">${deepfake.face_analysis.suspicious_faces}</span>
+            </div>
+          `;
+        }
+        
+        if (deepfake.confidence > 0) {
+          deepfakeHTML += `
+            <div class="flex justify-between">
+              <span class="text-slate-500">Confidence:</span>
+              <span class="text-slate-300">${deepfake.confidence}%</span>
+            </div>
+          `;
+        }
+        
+        if (deepfake.indicators && deepfake.indicators.length > 0) {
+          deepfakeHTML += `
+            <div class="mt-2 pt-2 border-t border-slate-700">
+              <span class="text-slate-500">Indicators:</span>
+              ${deepfake.indicators.map(i => 
+                `<div class="text-yellow-400 text-xs mt-1">⚠ ${i}</div>`
+              ).join('')}
+            </div>
+          `;
+        }
+        
+        deepfakeDiv.innerHTML = deepfakeHTML;
+      } else {
+        deepfakeSection.classList.add('hidden');
       }
 
       // Video Frame Analysis (only show if video)
@@ -691,10 +1041,11 @@
       
       if (data.video_analysis || data.frames_analyzed) {
         const videoData = data.video_analysis || {};
-        const framesAnalyzed = videoData.frames_analyzed || data.frames_analyzed || 0;
-        const suspiciousFrames = videoData.suspicious_frames_percentage || 0;
-        const aiGeneratedFrames = videoData.ai_generated_frames_percentage || 0;
-        
+        const analysisData = videoData.analysis || {};
+        const framesAnalyzed = analysisData.framesAnalyzed || videoData.frames_analyzed || 0;
+        const suspiciousFrames = analysisData.suspiciousPercentage || videoData.suspicious_frames_percentage || 0;
+        const aiGeneratedFrames = analysisData.aiPercentage || videoData.ai_generated_frames_percentage || 0;
+        const verdict = analysisData.verdict || 'Unknown';
         videoSection.classList.remove('hidden');
         videoAnalysisDiv.innerHTML = `
           <div class="flex justify-between">
@@ -711,10 +1062,19 @@
           </div>
           <div class="flex justify-between">
             <span class="text-slate-500">Overall Verdict:</span>
-            <span class="text-slate-300 font-semibold ${suspiciousFrames < 10 ? 'text-green-400' : 'text-amber-400'}">${suspiciousFrames < 10 ? 'AUTHENTIC' : 'SUSPICIOUS'}</span>
+            <span class="text-slate-300 font-semibold flex items-center gap-1.5 ${verdict === 'Authentic' || verdict === 'AUTHENTIC' ? 'text-green-400' : verdict === 'LIKELY_AI_GENERATED' || verdict === 'AI_GENERATED' ? 'text-purple-300' : 'text-amber-300'}">
+              ${verdict === 'AUTHENTIC' || verdict === 'Authentic' ? 
+                '<svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>' : 
+                verdict === 'LIKELY_AI_GENERATED' || verdict === 'AI_GENERATED' ?
+                '<svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>' :
+                '<svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+              }
+              ${verdict}
+            </span>
           </div>
         `;
-      } else {
+      } 
+      else {
         videoSection.classList.add('hidden');
       }
 
