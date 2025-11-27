@@ -1137,6 +1137,19 @@
       if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
       return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
     }
+  // Load data on page init
+  window.addEventListener("DOMContentLoaded", function() {
+    const storedData = sessionStorage.getItem("verificationData");
+    if (storedData) {
+      try {
+        const data = JSON.parse(storedData);
+        console.log("Loading verification data from sessionStorage");
+        displayResults(data);
+      } catch (e) {
+        console.error("Error parsing stored data:", e);
+      }
+    }
+  });
   </script>
 </body>
 </html>
