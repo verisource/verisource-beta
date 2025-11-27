@@ -627,11 +627,11 @@
         platformDetectionSection.classList.add('hidden');
       }
       // Advanced Forensic Analysis
-      if (response.ai_detection?.forensic_analysis) {
+      if (data.ai_detection?.forensic_analysis) {
         const forensicSection = document.getElementById('forensicAnalysisSection');
         if (forensicSection) {
           forensicSection.classList.remove('hidden');
-          const fa = response.ai_detection.forensic_analysis;
+          const fa = data.ai_detection.forensic_analysis;
           
           let forensicHTML = '<div class="grid grid-cols-2 md:grid-cols-3 gap-2">';
           
