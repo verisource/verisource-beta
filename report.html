@@ -252,6 +252,43 @@
         </div>
       </article>
     </section>
+
+    <!-- 5C. PLATFORM DETECTION -->
+    <section id="platformDetectionSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-blue-500/15 flex items-center justify-center">
+          <span class="text-lg">📱</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold">Social Media Platform Detection</h3>
+          <p class="text-[11px] text-slate-400">Identifies if image was shared via social media</p>
+        </div>
+      </header>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-slate-400">Detected Platform</span>
+            <span id="platformName" class="font-semibold text-blue-400">Unknown</span>
+          </div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-slate-400">Confidence</span>
+            <span id="platformConfidence" class="font-semibold">0%</span>
+          </div>
+          <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-3">
+            <div id="platformConfidenceBar" class="h-full bg-blue-500 transition-all duration-1000" style="width:0%"></div>
+          </div>
+        </div>
+        <div>
+          <p class="text-slate-400 mb-2">Detection Indicators</p>
+          <div id="platformIndicators" class="flex flex-wrap gap-1">
+            <!-- Populated by JS -->
+          </div>
+          <p class="text-slate-400 mt-3 text-[10px] bg-slate-800/50 p-2 rounded">
+            ℹ️ Images shared via social media lose EXIF data due to platform compression. This is expected behavior.
+          </p>
+        </div>
+      </div>
+    </section>
 <!-- 5B. JPEG FORENSICS ANALYSIS -->
     <section id="jpegForensicsSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
       <header class="flex items-center gap-2 mb-4">
@@ -1107,6 +1144,30 @@ if (!result.ai_detection && parsed.aiDetection) {
           }
         }
 
+
+        // 5C. Platform Detection
+        if (result.platform_detection && result.platform_detection.detected) {
+          document.getElementById('platformDetectionSection').classList.remove('hidden');
+          const pd = result.platform_detection;
+          
+          const platformNames = {
+            instagram: 'Instagram',
+            whatsapp: 'WhatsApp',
+            twitter: 'Twitter/X',
+            facebook: 'Facebook',
+            tiktok: 'TikTok'
+          };
+          
+          document.getElementById('platformName').textContent = platformNames[pd.platform] || pd.platform;
+          document.getElementById('platformConfidence').textContent = `${pd.confidence}%`;
+          document.getElementById('platformConfidenceBar').style.width = `${pd.confidence}%`;
+          
+          if (pd.indicators && pd.indicators.length > 0) {
+            document.getElementById('platformIndicators').innerHTML = pd.indicators.map(ind => 
+              `<span class="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-[10px]">${ind}</span>`
+            ).join('');
+          }
+        }
         // 6. Video Analysis
         if (result.kind === 'video' && result.video_analysis) {
           document.getElementById('videoAnalysisSection').classList.remove('hidden');
