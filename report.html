@@ -408,7 +408,7 @@
 
     function displayResults(data) {
       // Store data globally for easy access
-      window.currentVerificationData = mapApiResponseForReport(data, selectedFile?.name || "uploaded-file");
+      window.currentVerificationData = mapApiResponseForReport(data, data.filename || data._rawResponse?.filename || 'uploaded-file');
       
       const results = document.getElementById('results');
       const statusCard = document.getElementById('statusCard');
