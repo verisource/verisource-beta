@@ -1448,9 +1448,16 @@ if (!result.ai_detection && parsed.aiDetection) {
             const poly = result.polygon_verification;
             
             if (poly.status === 'previously_timestamped') {
-              document.getElementById('polygonTxLink').textContent = 'Previously verified';
-              document.getElementById('polygonBlock').textContent = '-';
-              document.getElementById('polygonTimestamp').textContent = formatDate(poly.first_timestamped);
+              // Show stored data if available, otherwise show "Previously verified"
+              if (poly.transaction_hash) {
+                const txShort = poly.transaction_hash.substring(0, 10) + '...' + poly.transaction_hash.substring(poly.transaction_hash.length - 8);
+                document.getElementById('polygonTxLink').textContent = txShort;
+                document.getElementById('polygonTxLink').href = 'https://polygonscan.com/tx/' + poly.transaction_hash;
+              } else {
+                document.getElementById('polygonTxLink').textContent = 'Previously verified';
+              }
+              document.getElementById('polygonBlock').textContent = poly.block_number || '-';
+              document.getElementById('polygonTimestamp').textContent = formatDate(poly.timestamp || poly.first_timestamped);
               document.getElementById('polygonGasCost').textContent = '-';
             } else {
               const txShort = poly.transaction_hash ? 
