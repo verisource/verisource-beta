@@ -297,6 +297,12 @@
           
           if (percent === 100) {
             loadingText.textContent = 'Processing your file...';
+            // Animate dots while processing
+            let dots = 0;
+            const dotAnimation = setInterval(() => {
+              dots = (dots + 1) % 4;
+              loadingText.textContent = 'Analyzing' + '.'.repeat(dots + 1) + ' (this takes 10-15 seconds)';
+            }, 500);
           }
         }
       });
@@ -317,6 +323,7 @@
             console.log('AI Detection:', data.ai_detection);
             console.log('==============================');
             
+            clearInterval(dotAnimation);
             displayResults(data);
             loading.classList.add('hidden');
             uploadBtn.disabled = false;
@@ -324,6 +331,7 @@
             throw new Error(`Server error: ${xhr.status}`);
           }
         } catch (e) {
+          clearInterval(dotAnimation);
           console.error('Error:', e);
           alert('Upload failed: ' + e.message);
           loading.classList.add('hidden');
@@ -333,6 +341,7 @@
       
       // Handle errors
       xhr.addEventListener('error', () => {
+        clearInterval(dotAnimation);
         alert('❌ Network error. Please check your connection.');
         loading.classList.add('hidden');
         uploadBtn.disabled = false;
