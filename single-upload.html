@@ -282,6 +282,7 @@
       progressText.textContent = '0%';
       loadingText.textContent = 'Uploading...';
 
+      let dotAnimation = null;
       const formData = new FormData();
       formData.append('file', selectedFile);
 
@@ -299,7 +300,7 @@
             loadingText.textContent = 'Processing your file...';
             // Animate dots while processing
             let dots = 0;
-            const dotAnimation = setInterval(() => {
+            dotAnimation = setInterval(() => {
               dots = (dots + 1) % 4;
               loadingText.textContent = 'Analyzing' + '.'.repeat(dots + 1) + ' (this takes 10-15 seconds)';
             }, 500);
