@@ -62,8 +62,8 @@
       <h2 id="fileName" class="text-2xl font-semibold">Loading...</h2>
       <div class="flex items-center gap-4 mt-4 sm:mt-0">
         <div class="flex items-center gap-3">
-          <p id="overallConfidence" class="text-4xl font-bold text-blue-400 leading-none">
-            0<span class="text-xl align-top">%</span>
+          <p id="overallConfidence" class="text-6xl font-bold text-blue-400 leading-none">
+            0<span class="text-3xl align-top">%</span>
           </p>
           <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">
             Trust<br/>Score
@@ -84,7 +84,7 @@
       <div id="verdictBadge" class="inline-flex items-center gap-2 px-4 py-2 pill border text-sm font-medium">
         <!-- Populated by JS -->
       </div>
-      <div id="confidenceLevel" class="text-xs text-slate-400">
+      <div id="confidenceLevel" class="hidden text-xs text-slate-400">
         <!-- Populated by JS: "HIGH CONFIDENCE" etc -->
       </div>
     </section>
@@ -916,8 +916,8 @@ if (!result.ai_detection && parsed.aiDetection) {
         document.getElementById('fileName').textContent = result.filename || 'Unknown File';
         const confidence = result.confidence?.percentage || 0;
         const trustColor = confidence >= 70 ? 'text-green-400' : confidence >= 40 ? 'text-amber-400' : 'text-red-400';
-        document.getElementById('overallConfidence').innerHTML = `${confidence}<span class="text-xl align-top">%</span>`;
-        document.getElementById('overallConfidence').className = `text-4xl font-bold ${trustColor} leading-none`;
+        document.getElementById('overallConfidence').innerHTML = `${confidence}<span class="text-3xl align-top">%</span>`;
+        document.getElementById('overallConfidence').className = `text-6xl font-bold ${trustColor} leading-none`;
 
         // Confidence level text
         document.getElementById('confidenceLevel').textContent = 
