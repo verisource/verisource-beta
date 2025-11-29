@@ -912,8 +912,8 @@ if (!result.ai_detection && parsed.aiDetection) {
         document.getElementById('overallConfidence').className = `text-6xl font-bold ${trustColor} leading-none`;
 
         // Confidence level text
-        document.getElementById('confidenceLevel').textContent = 
-          `${result.confidence?.level || 'UNKNOWN'} CONFIDENCE`;
+        // document.getElementById('confidenceLevel').textContent = 
+          // `${result.confidence?.level || 'UNKNOWN'} CONFIDENCE`;
 
         // 2. Verdict badge
         const verdictBadge = document.getElementById('verdictBadge');
