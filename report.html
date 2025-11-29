@@ -1439,7 +1439,7 @@ if (!result.ai_detection && parsed.aiDetection) {
 
         // 14. Recommendations
         const recommendations = [];
-        if (aiConf >= 70) {
+        if ((result.ai_detection?.ai_confidence || 0) >= 70) {
           recommendations.push('High AI probability detected. Consider additional manual review.');
           recommendations.push('Check for signs of manipulation or editing.');
         }
