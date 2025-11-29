@@ -77,7 +77,7 @@
         <div id="fileInfo" class="hidden bg-slate-800/50 border border-slate-700 rounded-lg p-4">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-3">
-              <div class="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+              <div id="fileThumbnail" class="h-12 w-12 rounded-lg bg-blue-500/10 flex items-center justify-center overflow-hidden">
                 <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
@@ -242,6 +242,96 @@
       }
     });
 
+    // Generate thumbnail for file preview
+    function generateThumbnail(file) {
+      return new Promise((resolve) => {
+        const thumbnail = document.getElementById('fileThumbnail');
+        const fileType = file.type.split('/')[0];
+        
+        if (fileType === 'image') {
+          // For images: create direct preview
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            thumbnail.innerHTML = `<img src="${e.target.result}" class="h-full w-full object-cover" alt="Preview">`;
+            // Store for report page
+            sessionStorage.setItem('fileThumbnail', e.target.result);
+            resolve(e.target.result);
+          };
+          reader.readAsDataURL(file);
+        } else if (fileType === 'video') {
+          // For videos: capture first frame
+          const video = document.createElement('video');
+          video.preload = 'metadata';
+          video.muted = true;
+          video.playsInline = true;
+          
+          video.onloadeddata = () => {
+            video.currentTime = Math.min(1, video.duration / 2); // 1 second in or middle
+          };
+          
+          video.onseeked = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 120;
+            canvas.height = 120;
+            const ctx = canvas.getContext('2d');
+            
+            // Calculate crop to square
+            const size = Math.min(video.videoWidth, video.videoHeight);
+            const x = (video.videoWidth - size) / 2;
+            const y = (video.videoHeight - size) / 2;
+            
+            ctx.drawImage(video, x, y, size, size, 0, 0, 120, 120);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+            
+            thumbnail.innerHTML = `
+              <div class="relative h-full w-full">
+                <img src="${dataUrl}" class="h-full w-full object-cover" alt="Preview">
+                <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+                  <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </div>
+              </div>
+            `;
+            sessionStorage.setItem('fileThumbnail', dataUrl);
+            URL.revokeObjectURL(video.src);
+            resolve(dataUrl);
+          };
+          
+          video.onerror = () => {
+            // Fallback to video icon
+            thumbnail.innerHTML = `
+              <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+              </svg>
+            `;
+            resolve(null);
+          };
+          
+          video.src = URL.createObjectURL(file);
+        } else if (fileType === 'audio') {
+          // For audio: show audio icon
+          thumbnail.innerHTML = `
+            <div class="relative h-full w-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center">
+              <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+              </svg>
+            </div>
+          `;
+          sessionStorage.setItem('fileThumbnail', 'audio');
+          resolve('audio');
+        } else {
+          // Fallback: generic file icon
+          thumbnail.innerHTML = `
+            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+          `;
+          resolve(null);
+        }
+      });
+    }
+
     function handleFileSelect(file) {
       if (!file) return;
       selectedFile = file;
@@ -250,6 +340,7 @@
       document.getElementById('fileName').textContent = file.name;
       document.getElementById('fileSize').textContent = formatFileSize(file.size);
       document.getElementById('uploadBtn').disabled = false;
+      generateThumbnail(file);
     }
 
     function clearFile() {
@@ -259,6 +350,13 @@
       document.getElementById('uploadBtn').disabled = true;
       document.getElementById('results').classList.add('hidden');
       document.getElementById('resultsPlaceholder').classList.remove('hidden');
+      // Reset thumbnail
+      document.getElementById('fileThumbnail').innerHTML = `
+        <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+      `;
+      sessionStorage.removeItem('fileThumbnail');
     }
 
     async function uploadFile() {
