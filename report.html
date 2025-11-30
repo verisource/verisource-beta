@@ -106,6 +106,50 @@
       </ul>
     </section>
 
+    <!-- 3B. SCREENSHOT DETECTION ALERT -->
+    <section id="screenshotAlertSection" class="hidden bg-amber-500/10 border border-amber-500/40 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+       <div class="h-8 w-8 rounded-xl bg-amber-500/15 flex items-center justify-center">
+        <span class="text-lg">📱</span>
+       </div>
+       <div>
+         <h2 class="text-sm font-semibold text-amber-300">Screenshot Detected</h2>
+         <p id="screenshotDevice" class="text-[11px] text-amber-200/70">Device detected</p>
+       </div>
+      <div class="ml-auto">
+        <span id="screenshotConfidenceBadge" class="px-2 py-1 pill text-[10px] font-semibold bg-amber-500/20 border border-amber-500/40 text-amber-300">
+         0% confidence
+        </span>
+      </div>
+     </header>
+  
+     <div class="bg-amber-950/30 rounded-xl p-4 mb-4">
+     <p class="text-amber-200 text-xs leading-relaxed">
+       <strong>⚠️ Important:</strong> This image appears to be a screenshot. AI detection results analyze the 
+        <em>screenshot itself</em>, not the original content displayed within it. For accurate authenticity 
+        verification, obtain and verify the original source media.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+       <div>
+         <p class="text-slate-400 mb-2 text-[11px]">Detection Indicators</p>
+         <ul id="screenshotIndicators" class="space-y-1 text-amber-200/80">
+          <!-- Populated by JS -->
+         </ul>
+       </div>
+       <div>
+         <p class="text-slate-400 mb-2 text-[11px]">What This Means</p>
+         <ul class="space-y-1 text-amber-200/80 text-[11px]">
+         <li>• Original content authenticity unknown</li>
+         <li>• EXIF/metadata reflects screenshot, not source</li>
+         <li>• AI detection may show false positives</li>
+          <li>• Verify at original source when possible</li>
+         </ul>
+       </div>
+      </div>
+    </section>
+
     <!-- 4. QUICK STATS + CRYPTOGRAPHIC FINGERPRINT -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 fade-in">
       <!-- Quick Stats -->
@@ -1140,7 +1184,38 @@ if (!result.ai_detection && parsed.aiDetection) {
             ).join('');
           }
         }
-
+          // 3B. Screenshot Detection Alert
+if (result.screenshot_detection && result.screenshot_detection.is_screenshot) {
+  document.getElementById('screenshotAlertSection').classList.remove('hidden');
+  const sd = result.screenshot_detection;
+  
+  // Device name
+  document.getElementById('screenshotDevice').textContent = 
+    sd.detected_device ? `Detected: ${sd.detected_device}` : 'Screen capture detected';
+  
+  // Confidence badge
+  const confBadge = document.getElementById('screenshotConfidenceBadge');
+  confBadge.textContent = `${sd.confidence}% confidence`;
+  
+  // Color based on severity
+  if (sd.confidence >= 80) {
+    confBadge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-red-500/20 border border-red-500/40 text-red-300';
+  } else if (sd.confidence >= 60) {
+    confBadge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-amber-500/20 border border-amber-500/40 text-amber-300';
+  } else {
+    confBadge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-yellow-500/20 border border-yellow-500/40 text-yellow-300';
+  }
+  
+  // Indicators
+  if (sd.indicators && sd.indicators.length > 0) {
+    document.getElementById('screenshotIndicators').innerHTML = sd.indicators.map(ind => 
+      `<li class="flex items-start gap-2 text-[11px]">
+        <span class="text-amber-400">•</span>
+        <span>${ind}</span>
+      </li>`
+    ).join('');
+  }
+}
 
         // 5C. Platform Detection
         if (result.platform_detection && result.platform_detection.detected) {
