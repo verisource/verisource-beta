@@ -1041,7 +1041,7 @@ if (!result.ai_detection && parsed.aiDetection) {
         if (result.confidence?.warnings?.length > 0) {
           document.getElementById('warningsSection').classList.remove('hidden');
           const warningsList = document.getElementById('warningsList');
-          warningsList.innerHTML = result.confidence.warnings.map(w => 
+          warningsList.innerHTML = ((result.confidence?.warnings) || []).map(w => 
             `<li class="flex items-start gap-2">
               <span class="text-amber-400 mt-0.5">⚠</span>
               <span>${w}</span>
@@ -1086,7 +1086,7 @@ if (!result.ai_detection && parsed.aiDetection) {
 
           // Indicators
           if (gd.indicators?.length > 0) {
-            document.getElementById('generatorIndicators').innerHTML = gd.indicators.map(ind => 
+            document.getElementById('generatorIndicators').innerHTML = ((gd.indicators) || []).map(ind => 
               `<li class="flex items-start gap-2">
                 <span class="text-purple-400">•</span>
                 <span>${ind}</span>
@@ -1176,7 +1176,7 @@ if (!result.ai_detection && parsed.aiDetection) {
 
           // AI indicators
           if (ai.indicators?.length > 0) {
-            document.getElementById('aiIndicators').innerHTML = ai.indicators.slice(0, 5).map(ind => 
+            document.getElementById('aiIndicators').innerHTML = ((ai.indicators) || []).slice(0, 5).map(ind => 
               `<li class="flex items-start gap-2">
                 <span class="text-red-300 mt-0.5">⚠</span>
                 <span>${ind}</span>
@@ -1208,7 +1208,7 @@ if (result.screenshot_detection && result.screenshot_detection.is_screenshot) {
   
   // Indicators
   if (sd.indicators && sd.indicators.length > 0) {
-    document.getElementById('screenshotIndicators').innerHTML = sd.indicators.map(ind => 
+    document.getElementById('screenshotIndicators').innerHTML = ((sd.indicators) || []).map(ind => 
       `<li class="flex items-start gap-2 text-[11px]">
         <span class="text-amber-400">•</span>
         <span>${ind}</span>
@@ -1235,7 +1235,7 @@ if (result.screenshot_detection && result.screenshot_detection.is_screenshot) {
           document.getElementById('platformConfidenceBar').style.width = `${pd.confidence}%`;
           
           if (pd.indicators && pd.indicators.length > 0) {
-            document.getElementById('platformIndicators').innerHTML = pd.indicators.map(ind => 
+            document.getElementById('platformIndicators').innerHTML = ((pd.indicators) || []).map(ind => 
               `<span class="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-[10px]">${ind}</span>`
             ).join('');
           }
@@ -1308,22 +1308,39 @@ if (result.screenshot_detection && result.screenshot_detection.is_screenshot) {
         }
 
         // 9. Confidence Breakdown
-        if (result.confidence?.factors) {
-          const factorsHtml = result.confidence.factors.map(factor => `
-            <div class="bg-slate-950/50 p-4 rounded-xl">
-              <div class="flex justify-between items-center mb-2">
-                <span class="font-semibold">${factor.name}</span>
-                <span class="text-xs text-slate-400">${factor.score}/${factor.max}</span>
+        if (result.confidence?.factors && Array.isArray(result.confidence.factors) && result.confidence.factors.length > 0) {
+          document.getElementById('confidenceBreakdownSection').classList.remove('hidden');
+          let factorsHtml = '';
+          
+          // Check if factors are objects or strings
+          if (typeof result.confidence.factors[0] === 'object' && result.confidence.factors[0] !== null) {
+            // Object format with name, score, max, percentage, details
+            factorsHtml = result.confidence.factors.map(factor => `
+              <div class="bg-slate-950/50 p-4 rounded-xl">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="font-semibold">${factor.name || 'Factor'}</span>
+                  <span class="text-xs text-slate-400">${factor.score || 0}/${factor.max || 100}</span>
+                </div>
+                <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-3">
+                  <div class="h-full bg-gradient-to-r from-indigo-400 to-purple-400 transition-all duration-1000" 
+                       style="width: ${factor.percentage || 0}%"></div>
+                </div>
+                <div class="space-y-1">
+                  ${(factor.details || []).map(d => `<p class="text-[10px] text-slate-400">• ${d}</p>`).join('')}
+                </div>
               </div>
-              <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-3">
-                <div class="h-full bg-gradient-to-r from-indigo-400 to-purple-400 transition-all duration-1000" 
-                     style="width: ${factor.percentage}%"></div>
+            `).join('');
+          } else {
+            // String format - simple list
+            factorsHtml = `
+              <div class="bg-slate-950/50 p-4 rounded-xl col-span-2">
+                <h4 class="font-semibold mb-3 text-slate-300">Score Factors</h4>
+                <ul class="space-y-2">
+                  ${result.confidence.factors.map(f => `<li class="flex items-start gap-2"><span class="text-indigo-400">•</span><span>${f}</span></li>`).join('')}
+                </ul>
               </div>
-              <div class="space-y-1">
-                ${factor.details.map(d => `<p class="text-[10px] text-slate-400">• ${d}</p>`).join('')}
-              </div>
-            </div>
-          `).join('');
+            `;
+          }
           document.getElementById('confidenceFactors').innerHTML = factorsHtml;
         }
 
@@ -1400,7 +1417,7 @@ if (result.screenshot_detection && result.screenshot_detection.is_screenshot) {
           document.getElementById('qualityEstimate').textContent = fa.compression_quality ? `${fa.compression_quality}%` : '-';
           
           if (result.ai_detection.indicators?.length > 0) {
-            document.getElementById('forensicIndicators').innerHTML = result.ai_detection.indicators.slice(0, 5).map(ind => 
+            document.getElementById('forensicIndicators').innerHTML = ((result.ai_detection?.indicators) || []).slice(0, 5).map(ind => 
               `<li class="flex items-start gap-2">
                 <span class="text-cyan-300">•</span>
                 <span>${ind}</span>
