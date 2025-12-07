@@ -67,8 +67,8 @@
               </svg>
             </div>
             <div>
-              <p class="text-sm font-medium text-slate-200">Drop your image or video here or click to browse</p>
-              <p class="text-xs text-slate-500 mt-1">Maximum file size: 200MB</p>
+              <p class="text-sm font-medium text-slate-200">Drop your file or paste a URL</p>
+            <p class="text-xs text-slate-500 mt-1">Supports: Images, Videos, YouTube, TikTok, and more</p>  
             </div>
             <input type="file" id="fileInput" accept="image/*,video/*" class="hidden" onchange="handleFileSelect(this.files[0])">
           </div>
@@ -235,13 +235,27 @@
     });
 
     dropzone.addEventListener('drop', (e) => {
-      e.preventDefault();
-      dropzone.classList.remove('border-blue-500');
-      if (e.dataTransfer.files.length) {
-        handleFileSelect(e.dataTransfer.files[0]);
-      }
-    });
+  e.preventDefault();
+  dropzone.classList.remove('border-blue-500');
+  
+  // Check for URL first (dragged link)
+  const url = e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain');
+  
+  if (url && url.startsWith('http')) {
+    handleUrlSelect(url);
+  } else if (e.dataTransfer.files.length) {
+    handleFileSelect(e.dataTransfer.files[0]);
+  }
+});
 
+// Handle paste events for URLs
+document.addEventListener('paste', (e) => {
+  const text = e.clipboardData?.getData('text');
+  if (text && text.startsWith('http')) {
+    e.preventDefault();
+    handleUrlSelect(text);
+  }
+});
     // Generate thumbnail for file preview
     function generateThumbnail(file) {
       return new Promise((resolve) => {
@@ -345,6 +359,8 @@
 
     function clearFile() {
       selectedFile = null;
+      selectedUrl = null;
+      document.getElementById('uploadBtn').textContent = 'Verify File';
       fileInput.value = '';
       document.getElementById('fileInfo').classList.add('hidden');
       document.getElementById('uploadBtn').disabled = true;
@@ -359,8 +375,121 @@
       sessionStorage.removeItem('fileThumbnail');
     }
 
-    async function uploadFile() {
-      if (!selectedFile) return;
+let selectedUrl = null;
+
+function handleUrlSelect(url) {
+  selectedUrl = url;
+  selectedFile = null; // Clear any file selection
+  
+  // Detect platform
+  let platform = 'Unknown';
+  if (url.includes('youtube.com') || url.includes('youtu.be')) platform = 'YouTube';
+  else if (url.includes('tiktok.com')) platform = 'TikTok';
+  else if (url.includes('twitter.com') || url.includes('x.com')) platform = 'Twitter/X';
+  else if (url.includes('reddit.com')) platform = 'Reddit';
+  else if (url.includes('vimeo.com')) platform = 'Vimeo';
+  else if (url.includes('instagram.com')) platform = 'Instagram';
+  else if (url.includes('facebook.com')) platform = 'Facebook';
+  else platform = 'Direct URL';
+  
+  document.getElementById('fileInfo').classList.remove('hidden');
+  document.getElementById('fileName').textContent = url.length > 50 ? url.substring(0, 50) + '...' : url;
+  document.getElementById('fileSize').textContent = platform;
+  document.getElementById('uploadBtn').disabled = false;
+  document.getElementById('uploadBtn').textContent = 'Verify URL';
+  
+  // Update thumbnail to show URL icon
+  document.getElementById('fileThumbnail').innerHTML = `
+    <div class="h-full w-full bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+      <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+      </svg>
+    </div>
+  `;
+}
+
+function clearUrl() {
+  selectedUrl = null;
+  document.getElementById('uploadBtn').textContent = 'Verify File';
+}
+
+async function verifyUrl(url) {
+  const loading = document.getElementById('loading');
+  const uploadBtn = document.getElementById('uploadBtn');
+  const results = document.getElementById('results');
+  const placeholder = document.getElementById('resultsPlaceholder');
+  const progressBar = document.getElementById('uploadProgressBar');
+  const progressText = document.getElementById('uploadProgress');
+  const loadingText = document.getElementById('loadingText');
+
+  loading.classList.remove('hidden');
+  uploadBtn.disabled = true;
+  results.classList.add('hidden');
+  placeholder.classList.add('hidden');
+  
+  progressBar.style.width = '30%';
+  progressText.textContent = 'Downloading...';
+  loadingText.textContent = 'Downloading video from URL...';
+
+  let dotAnimation = setInterval(() => {
+    const dots = (parseInt(progressText.textContent) || 0) % 4;
+    loadingText.textContent = 'Analyzing video' + '.'.repeat(dots + 1) + ' (this may take 30-60 seconds)';
+  }, 500);
+
+  try {
+    const response = await fetch(`${API_URL}/verify-url`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url })
+    });
+
+    clearInterval(dotAnimation);
+    progressBar.style.width = '100%';
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'URL verification failed');
+    }
+
+    const data = await response.json();
+    
+    console.log('=== URL Verification Response ===');
+    console.log('Full response:', data);
+    console.log('================================');
+
+    // Transform URL response to match file upload format
+    const transformedData = {
+      ...data,
+      filename: data.source?.title || url,
+      size_bytes: 0,
+      verification: {
+        ...data.verification,
+        previous_uploads: [],
+        times_verified: data.verification?.times_verified || 1,
+        first_seen: data.verification?.first_seen
+      },
+      url_source: data.source
+    };
+
+    displayResults(transformedData);
+    loading.classList.add('hidden');
+    uploadBtn.disabled = false;
+
+  } catch (error) {
+    clearInterval(dotAnimation);
+    console.error('URL verification error:', error);
+    alert('❌ ' + error.message);
+    loading.classList.add('hidden');
+    uploadBtn.disabled = false;
+  }
+} 
+async function uploadFile() {
+  // Handle URL verification
+  if (selectedUrl) {
+    return verifyUrl(selectedUrl);
+  }
+  
+  if (!selectedFile) return;
 
       const loading = document.getElementById('loading');
       const uploadBtn = document.getElementById('uploadBtn');
