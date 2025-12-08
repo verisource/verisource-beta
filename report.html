@@ -651,7 +651,102 @@
       </div>
     </section>
 
-  <!-- 12B. REVERSE IMAGE SEARCH DETAILS -->
+    <!-- CROSS-REFERENCE ANALYSIS -->
+    <section id="crossReferenceSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-orange-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">Cross-Reference Analysis</h2>
+          <p class="text-[11px] text-slate-400">Fingerprint index matching and fraud detection</p>
+        </div>
+        <div class="ml-auto">
+          <span id="crossRefRiskBadge" class="px-2 py-1 pill text-[10px] font-semibold bg-slate-500/10 border border-slate-500/40 text-slate-300">ANALYZING</span>
+        </div>
+      </header>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="indexOccurrences" class="text-2xl font-bold text-orange-300">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">Times Seen</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="indexFirstSeen" class="text-sm font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">First Indexed</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="nearDuplicates" class="text-2xl font-bold text-amber-300">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">Near Duplicates</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="relatedByLabel" class="text-2xl font-bold text-blue-300">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">Related Content</p>
+        </div>
+      </div>
+      <div id="fraudIndicatorsCard" class="hidden bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-4">
+        <h4 class="font-semibold mb-3 text-red-300 flex items-center gap-2"><span>⚠</span> Fraud Indicators</h4>
+        <ul id="fraudFlags" class="space-y-2 text-slate-300"></ul>
+        <div id="fraudRecommendation" class="mt-3 pt-3 border-t border-red-500/20 text-slate-400 text-[11px]"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">Index Status</h4>
+          <div class="space-y-2">
+            <div class="flex justify-between"><span class="text-slate-400">Fingerprint ID</span><span id="fingerprintId" class="font-mono text-[10px]">-</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Status</span><span id="isNewToIndex" class="text-emerald-300">-</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">Total in Index</span><span id="totalInIndex">-</span></div>
+          </div>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">Cached Labels</h4>
+          <div id="cachedLabels" class="flex flex-wrap gap-1"><span class="text-slate-500 text-[10px]">No labels cached</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEMPORAL VALIDATION -->
+    <section id="temporalValidationSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-purple-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">Temporal Validation</h2>
+          <p class="text-[11px] text-slate-400">Timeline consistency and date verification</p>
+        </div>
+        <div class="ml-auto">
+          <span id="temporalRiskBadge" class="px-2 py-1 pill text-[10px] font-semibold bg-slate-500/10 border border-slate-500/40 text-slate-300">CHECKING</span>
+        </div>
+      </header>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="exifDateDisplay" class="text-sm font-bold text-purple-300">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">EXIF Date</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="contentAgeDays" class="text-2xl font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Days Old</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="firstIndexedDate" class="text-sm font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">First Indexed</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="temporalRiskLevel" class="text-sm font-bold capitalize">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Risk Level</p>
+        </div>
+      </div>
+      <div id="temporalFlagsCard" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
+        <h4 class="font-semibold mb-3 text-amber-300 flex items-center gap-2"><span>📅</span> Timeline Issues Detected</h4>
+        <ul id="temporalFlags" class="space-y-2 text-slate-300"></ul>
+      </div>
+    </section>
+
+    <!-- 12B. REVERSE IMAGE SEARCH DETAILS -->
     <section id="reverseSearchSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
       <header class="flex items-center gap-2 mb-4">
         <div class="h-8 w-8 rounded-xl bg-indigo-500/15 flex items-center justify-center">
@@ -664,13 +759,10 @@
           <p class="text-[11px] text-slate-400">TinEye, Google, Bing & cached source analysis</p>
         </div>
         <div class="ml-auto">
-          <span id="credibilityBadge" class="px-2 py-1 pill text-[10px] font-semibold bg-slate-500/10 border border-slate-500/40 text-slate-300">
-            ANALYZING
-          </span>
+          <span id="credibilityBadge" class="px-2 py-1 pill text-[10px] font-semibold bg-slate-500/10 border border-slate-500/40 text-slate-300">ANALYZING</span>
         </div>
       </header>
       
-      <!-- Stats Grid -->
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
         <div class="bg-slate-950/50 p-4 rounded-xl text-center">
           <p id="tineyeMatches" class="text-2xl font-bold text-indigo-300">0</p>
@@ -694,7 +786,6 @@
         </div>
       </div>
 
-      <!-- First Appearance & Domain Breakdown -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div class="bg-slate-950/50 p-4 rounded-xl">
           <h4 class="font-semibold mb-3 text-slate-300">First Appearance</h4>
@@ -710,7 +801,6 @@
         </div>
       </div>
 
-      <!-- Top Matches with Links -->
       <div id="topMatchesCard" class="hidden bg-slate-950/50 p-4 rounded-xl mb-4">
         <h4 class="font-semibold mb-3 text-slate-300 flex items-center gap-2">
           <svg class="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -718,167 +808,31 @@
           </svg>
           Found On These Sites
         </h4>
-        <div id="topMatchesList" class="space-y-2 max-h-60 overflow-y-auto">
-          <!-- Populated by JS -->
-        </div>
+        <div id="topMatchesList" class="space-y-2 max-h-60 overflow-y-auto"></div>
       </div>
 
-      <!-- Stock Photo Alert -->
       <div id="stockPhotoAlert" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-4">
         <div class="flex items-start gap-3">
           <span class="text-xl">📸</span>
           <div>
             <h4 class="font-semibold text-amber-300 mb-1">Stock Photo Detected</h4>
-            <p class="text-amber-200/80 text-[11px]">This image appears on stock photo websites. It may be commercially licensed content being misrepresented as original.</p>
-            <div id="stockPhotoSources" class="mt-2 flex flex-wrap gap-1">
-              <!-- Populated by JS -->
-            </div>
+            <p class="text-amber-200/80 text-[11px]">This image appears on stock photo websites.</p>
+            <div id="stockPhotoSources" class="mt-2 flex flex-wrap gap-1"></div>
           </div>
         </div>
       </div>
 
-      <!-- Fact Check Alert -->
       <div id="factCheckAlert" class="hidden bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4">
         <div class="flex items-start gap-3">
           <span class="text-xl">✓</span>
           <div>
             <h4 class="font-semibold text-emerald-300 mb-1">Appeared on Fact-Check Sites</h4>
-            <p class="text-emerald-200/80 text-[11px]">This image has been reviewed by fact-checking organizations. Check these sources for context.</p>
-            <div id="factCheckSources" class="mt-2 space-y-1">
-              <!-- Populated by JS -->
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>  
-    <!-- CROSS-REFERENCE ANALYSIS -->
-    <section id="crossReferenceSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
-      <header class="flex items-center gap-2 mb-4">
-        <div class="h-8 w-8 rounded-xl bg-orange-500/15 flex items-center justify-center">
-          <svg class="w-4 h-4 text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-          </svg>
-        </div>
-        <div>
-          <h2 class="text-sm font-semibold">Cross-Reference Analysis</h2>
-          <p class="text-[11px] text-slate-400">Fingerprint index matching & fraud detection</p>
-        </div>
-        <div class="ml-auto">
-          <span id="crossRefRiskBadge" class="px-2 py-1 pill text-[10px] font-semibold bg-slate-500/10 border border-slate-500/40 text-slate-300">
-            ANALYZING
-          </span>
-        </div>
-      </header>
-
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="indexOccurrences" class="text-2xl font-bold text-orange-300">0</p>
-          <p class="text-[10px] text-slate-400 mt-1">Times Seen</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="indexFirstSeen" class="text-sm font-bold">-</p>
-          <p class="text-[10px] text-slate-400 mt-1">First Indexed</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="nearDuplicates" class="text-2xl font-bold text-amber-300">0</p>
-          <p class="text-[10px] text-slate-400 mt-1">Near Duplicates</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="relatedByLabel" class="text-2xl font-bold text-blue-300">0</p>
-          <p class="text-[10px] text-slate-400 mt-1">Related Content</p>
-        </div>
-      </div>
-
-      <!-- Fraud Indicators -->
-      <div id="fraudIndicatorsCard" class="hidden bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-4">
-        <h4 class="font-semibold mb-3 text-red-300 flex items-center gap-2">
-          <span>⚠</span> Fraud Indicators
-        </h4>
-        <ul id="fraudFlags" class="space-y-2 text-slate-300">
-          <!-- Populated by JS -->
-        </ul>
-        <div id="fraudRecommendation" class="mt-3 pt-3 border-t border-red-500/20 text-slate-400 text-[11px]">
-          <!-- Populated by JS -->
-        </div>
-      </div>
-
-      <!-- Index Status -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-slate-950/50 p-4 rounded-xl">
-          <h4 class="font-semibold mb-3 text-slate-300">Index Status</h4>
-          <div class="space-y-2">
-            <div class="flex justify-between">
-              <span class="text-slate-400">Fingerprint ID</span>
-              <span id="fingerprintId" class="font-mono text-[10px]">-</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-400">Status</span>
-              <span id="isNewToIndex" class="text-emerald-300">-</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-400">Total in Index</span>
-              <span id="totalInIndex">-</span>
-            </div>
-          </div>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl">
-          <h4 class="font-semibold mb-3 text-slate-300">Cached Labels</h4>
-          <div id="cachedLabels" class="flex flex-wrap gap-1">
-            <span class="text-slate-500 text-[10px]">No labels cached</span>
+            <p class="text-emerald-200/80 text-[11px]">This image has been reviewed by fact-checking organizations.</p>
+            <div id="factCheckSources" class="mt-2 space-y-1"></div>
           </div>
         </div>
       </div>
     </section>
-
-    <!-- TEMPORAL VALIDATION -->
-    <section id="temporalValidationSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
-      <header class="flex items-center gap-2 mb-4">
-        <div class="h-8 w-8 rounded-xl bg-purple-500/15 flex items-center justify-center">
-          <svg class="w-4 h-4 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-        </div>
-        <div>
-          <h2 class="text-sm font-semibold">Temporal Validation</h2>
-          <p class="text-[11px] text-slate-400">Timeline consistency & date verification</p>
-        </div>
-        <div class="ml-auto">
-          <span id="temporalRiskBadge" class="px-2 py-1 pill text-[10px] font-semibold bg-slate-500/10 border border-slate-500/40 text-slate-300">
-            CHECKING
-          </span>
-        </div>
-      </header>
-
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="exifDateDisplay" class="text-sm font-bold text-purple-300">-</p>
-          <p class="text-[10px] text-slate-400 mt-1">EXIF Date</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="contentAgeDays" class="text-2xl font-bold">-</p>
-          <p class="text-[10px] text-slate-400 mt-1">Days Old</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="firstIndexedDate" class="text-sm font-bold">-</p>
-          <p class="text-[10px] text-slate-400 mt-1">First Indexed</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="temporalRiskLevel" class="text-sm font-bold capitalize">-</p>
-          <p class="text-[10px] text-slate-400 mt-1">Risk Level</p>
-        </div>
-      </div>
-
-      <!-- Temporal Flags -->
-      <div id="temporalFlagsCard" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
-        <h4 class="font-semibold mb-3 text-amber-300 flex items-center gap-2">
-          <span>📅</span> Timeline Issues Detected
-        </h4>
-        <ul id="temporalFlags" class="space-y-2 text-slate-300">
-          <!-- Populated by JS -->
-        </ul>
-      </div>
-    </section>
-
     <!-- BLOCKCHAIN VERIFICATION -->
     <section id="blockchainSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
       <header class="flex items-center gap-2 mb-4">
@@ -1690,15 +1644,22 @@ if (result.screenshot_detection && result.screenshot_detection.is_screenshot) {
             document.getElementById('topMatchesCard').classList.remove('hidden');
             document.getElementById('topMatchesList').innerHTML = topMatches.slice(0, 10).map(match => {
               const matchUrl = match.url || match.image_url || '';
-              const matchDomain = match.domain || (matchUrl ? new URL(matchUrl).hostname : 'Unknown');
+              let matchDomain = match.domain || 'Unknown';
+              if (!match.domain && matchUrl) {
+                try {
+                  matchDomain = new URL(matchUrl).hostname;
+                } catch(e) {
+                  matchDomain = matchUrl.split('/')[2] || matchUrl.substring(0, 30) + '...';
+                }
+              }
               const waybackLink = matchUrl ? `https://web.archive.org/web/*/${matchUrl}` : '';
               const crawlDate = match.crawl_date ? new Date(match.crawl_date).toLocaleDateString() : '';
               
               return `
                 <div class="flex items-center justify-between p-2 bg-slate-900/50 rounded-lg hover:bg-slate-800/50 transition">
                   <div class="flex-1 min-w-0">
-                    <a href="${matchUrl}" target="_blank" rel="noopener" class="text-indigo-400 hover:text-indigo-300 text-[11px] truncate block" title="${matchUrl}">
-                      ${matchDomain}
+                    <a href="${matchUrl}" target="_blank" rel="noopener" class="text-indigo-400 hover:text-indigo-300 text-[11px] truncate block max-w-[200px]" title="${matchUrl}">
+                      ${matchDomain.length > 30 ? matchDomain.substring(0, 30) + '...' : matchDomain}
                     </a>
                     <span class="text-[10px] text-slate-500">${crawlDate}</span>
                   </div>
