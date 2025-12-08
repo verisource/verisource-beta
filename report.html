@@ -661,11 +661,17 @@
         </div>
         <div>
           <h2 class="text-sm font-semibold">Reverse Image Search Results</h2>
-          <p class="text-[11px] text-slate-400">TinEye & other reverse search services</p>
+          <p class="text-[11px] text-slate-400">TinEye, Google, Bing & cached source analysis</p>
+        </div>
+        <div class="ml-auto">
+          <span id="credibilityBadge" class="px-2 py-1 pill text-[10px] font-semibold bg-slate-500/10 border border-slate-500/40 text-slate-300">
+            ANALYZING
+          </span>
         </div>
       </header>
       
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
         <div class="bg-slate-950/50 p-4 rounded-xl text-center">
           <p id="tineyeMatches" class="text-2xl font-bold text-indigo-300">0</p>
           <p class="text-[10px] text-slate-400 mt-1">Total Matches</p>
@@ -675,16 +681,21 @@
           <p class="text-[10px] text-slate-400 mt-1">First Seen</p>
         </div>
         <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="topDomain" class="text-sm font-bold">-</p>
-          <p class="text-[10px] text-slate-400 mt-1">Top Domain</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
           <p id="newsCount" class="text-2xl font-bold">0</p>
           <p class="text-[10px] text-slate-400 mt-1">News Sites</p>
         </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="stockCount" class="text-2xl font-bold">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">Stock Photos</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="factCheckCount" class="text-2xl font-bold text-emerald-300">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">Fact Check</p>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- First Appearance & Domain Breakdown -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div class="bg-slate-950/50 p-4 rounded-xl">
           <h4 class="font-semibold mb-3 text-slate-300">First Appearance</h4>
           <div id="firstAppearance" class="space-y-2 text-slate-400">
@@ -698,7 +709,176 @@
           </div>
         </div>
       </div>
+
+      <!-- Top Matches with Links -->
+      <div id="topMatchesCard" class="hidden bg-slate-950/50 p-4 rounded-xl mb-4">
+        <h4 class="font-semibold mb-3 text-slate-300 flex items-center gap-2">
+          <svg class="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+          </svg>
+          Found On These Sites
+        </h4>
+        <div id="topMatchesList" class="space-y-2 max-h-60 overflow-y-auto">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Stock Photo Alert -->
+      <div id="stockPhotoAlert" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-4">
+        <div class="flex items-start gap-3">
+          <span class="text-xl">📸</span>
+          <div>
+            <h4 class="font-semibold text-amber-300 mb-1">Stock Photo Detected</h4>
+            <p class="text-amber-200/80 text-[11px]">This image appears on stock photo websites. It may be commercially licensed content being misrepresented as original.</p>
+            <div id="stockPhotoSources" class="mt-2 flex flex-wrap gap-1">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fact Check Alert -->
+      <div id="factCheckAlert" class="hidden bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4">
+        <div class="flex items-start gap-3">
+          <span class="text-xl">✓</span>
+          <div>
+            <h4 class="font-semibold text-emerald-300 mb-1">Appeared on Fact-Check Sites</h4>
+            <p class="text-emerald-200/80 text-[11px]">This image has been reviewed by fact-checking organizations. Check these sources for context.</p>
+            <div id="factCheckSources" class="mt-2 space-y-1">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
     </section>  
+    <!-- CROSS-REFERENCE ANALYSIS -->
+    <section id="crossReferenceSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-orange-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">Cross-Reference Analysis</h2>
+          <p class="text-[11px] text-slate-400">Fingerprint index matching & fraud detection</p>
+        </div>
+        <div class="ml-auto">
+          <span id="crossRefRiskBadge" class="px-2 py-1 pill text-[10px] font-semibold bg-slate-500/10 border border-slate-500/40 text-slate-300">
+            ANALYZING
+          </span>
+        </div>
+      </header>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="indexOccurrences" class="text-2xl font-bold text-orange-300">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">Times Seen</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="indexFirstSeen" class="text-sm font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">First Indexed</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="nearDuplicates" class="text-2xl font-bold text-amber-300">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">Near Duplicates</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="relatedByLabel" class="text-2xl font-bold text-blue-300">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">Related Content</p>
+        </div>
+      </div>
+
+      <!-- Fraud Indicators -->
+      <div id="fraudIndicatorsCard" class="hidden bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-4">
+        <h4 class="font-semibold mb-3 text-red-300 flex items-center gap-2">
+          <span>⚠</span> Fraud Indicators
+        </h4>
+        <ul id="fraudFlags" class="space-y-2 text-slate-300">
+          <!-- Populated by JS -->
+        </ul>
+        <div id="fraudRecommendation" class="mt-3 pt-3 border-t border-red-500/20 text-slate-400 text-[11px]">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Index Status -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">Index Status</h4>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="text-slate-400">Fingerprint ID</span>
+              <span id="fingerprintId" class="font-mono text-[10px]">-</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Status</span>
+              <span id="isNewToIndex" class="text-emerald-300">-</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Total in Index</span>
+              <span id="totalInIndex">-</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">Cached Labels</h4>
+          <div id="cachedLabels" class="flex flex-wrap gap-1">
+            <span class="text-slate-500 text-[10px]">No labels cached</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TEMPORAL VALIDATION -->
+    <section id="temporalValidationSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-purple-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">Temporal Validation</h2>
+          <p class="text-[11px] text-slate-400">Timeline consistency & date verification</p>
+        </div>
+        <div class="ml-auto">
+          <span id="temporalRiskBadge" class="px-2 py-1 pill text-[10px] font-semibold bg-slate-500/10 border border-slate-500/40 text-slate-300">
+            CHECKING
+          </span>
+        </div>
+      </header>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="exifDateDisplay" class="text-sm font-bold text-purple-300">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">EXIF Date</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="contentAgeDays" class="text-2xl font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Days Old</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="firstIndexedDate" class="text-sm font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">First Indexed</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="temporalRiskLevel" class="text-sm font-bold capitalize">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Risk Level</p>
+        </div>
+      </div>
+
+      <!-- Temporal Flags -->
+      <div id="temporalFlagsCard" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4">
+        <h4 class="font-semibold mb-3 text-amber-300 flex items-center gap-2">
+          <span>📅</span> Timeline Issues Detected
+        </h4>
+        <ul id="temporalFlags" class="space-y-2 text-slate-300">
+          <!-- Populated by JS -->
+        </ul>
+      </div>
+    </section>
+
     <!-- BLOCKCHAIN VERIFICATION -->
     <section id="blockchainSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
       <header class="flex items-center gap-2 mb-4">
@@ -1427,45 +1607,274 @@ if (result.screenshot_detection && result.screenshot_detection.is_screenshot) {
         }
 
         // NEW: TinEye Reverse Search
-        if (result.reverse_image_search?.tineye?.status === 'found') {
+        // Enhanced Reverse Image Search with credibility analysis
+        if (result.reverse_image_search?.tineye?.status === 'found' || result.cross_reference?.external_sources) {
           document.getElementById('reverseSearchSection').classList.remove('hidden');
-          const tineye = result.reverse_image_search.tineye;
+          const tineye = result.reverse_image_search?.tineye || {};
+          const extSources = result.cross_reference?.external_sources || {};
           
-          document.getElementById('tineyeMatches').textContent = tineye.total_results || 0;
+          // Stats
+          document.getElementById('tineyeMatches').textContent = tineye.total_results || extSources.total_external_matches || 0;
           document.getElementById('imageAge').textContent = tineye.first_appearance?.age?.human_readable || '-';
-          document.getElementById('topDomain').textContent = tineye.top_domains?.[0]?.domain || '-';
           document.getElementById('newsCount').textContent = tineye.domain_breakdown?.news_sites || 0;
+          document.getElementById('stockCount').textContent = tineye.domain_breakdown?.stock_photo_sites || 0;
           
-          if (tineye.first_appearance) {
-            const fa = tineye.first_appearance;
+          // Fact check count (from external sources analysis)
+          const factCheckCount = extSources.appeared_on_fact_check_sites ? 
+            (extSources.fact_check_sources?.length || 1) : 0;
+          document.getElementById('factCheckCount').textContent = factCheckCount;
+          
+          // Credibility Badge
+          const credBadge = document.getElementById('credibilityBadge');
+          const credIndicator = extSources.credibility_indicator || 'unknown';
+          const credConfig = {
+            'news_verified': { text: 'NEWS VERIFIED', bg: 'bg-emerald-500/10', border: 'border-emerald-500/40', color: 'text-emerald-300' },
+            'fact_checked': { text: 'FACT CHECKED', bg: 'bg-emerald-500/10', border: 'border-emerald-500/40', color: 'text-emerald-300' },
+            'stock_photo': { text: 'STOCK PHOTO', bg: 'bg-amber-500/10', border: 'border-amber-500/40', color: 'text-amber-300' },
+            'viral_social': { text: 'VIRAL CONTENT', bg: 'bg-red-500/10', border: 'border-red-500/40', color: 'text-red-300' },
+            'found_online': { text: 'FOUND ONLINE', bg: 'bg-blue-500/10', border: 'border-blue-500/40', color: 'text-blue-300' },
+            'unknown': { text: 'NO MATCHES', bg: 'bg-slate-500/10', border: 'border-slate-500/40', color: 'text-slate-300' }
+          };
+          const cred = credConfig[credIndicator] || credConfig['unknown'];
+          credBadge.textContent = cred.text;
+          credBadge.className = `px-2 py-1 pill text-[10px] font-semibold ${cred.bg} ${cred.border} ${cred.color}`;
+          
+          // First Appearance with clickable link
+          if (tineye.first_appearance || extSources.earliest_online) {
+            const fa = tineye.first_appearance || {};
+            const earliest = extSources.earliest_online || {};
+            const sourceUrl = fa.source_url || earliest.url || '';
+            const sourceDomain = fa.source_domain || earliest.domain || '-';
+            const waybackUrl = sourceUrl ? `https://web.archive.org/web/*/${sourceUrl}` : '';
+            
             document.getElementById('firstAppearance').innerHTML = `
               <div class="flex justify-between">
                 <span class="text-slate-400">Date</span>
-                <span>${fa.age?.human_readable || '-'}</span>
+                <span>${fa.age?.human_readable || (earliest.date ? new Date(earliest.date).toLocaleDateString() : '-')}</span>
               </div>
-              <div class="flex justify-between">
+              <div class="flex justify-between items-center">
                 <span class="text-slate-400">Source</span>
-                <span class="truncate ml-2">${fa.source_domain || '-'}</span>
+                <a href="${sourceUrl}" target="_blank" rel="noopener" class="text-indigo-400 hover:text-indigo-300 truncate ml-2 max-w-[150px]" title="${sourceUrl}">
+                  ${sourceDomain}
+                </a>
               </div>
+              ${sourceUrl ? `
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400">Archive</span>
+                <a href="${waybackUrl}" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 text-[10px]">
+                  View on Wayback Machine →
+                </a>
+              </div>` : ''}
               <div class="flex justify-between">
                 <span class="text-slate-400">Backlinks</span>
-                <span>${fa.backlinks?.length || 0}</span>
+                <span>${fa.backlinks || 0}</span>
               </div>
             `;
           }
           
+          // Domain Breakdown
           if (tineye.domain_breakdown) {
             const db = tineye.domain_breakdown;
             document.getElementById('domainBreakdown').innerHTML = `
-              <div class="flex justify-between"><span>News Sites</span><span>${db.news_sites || 0}</span></div>
-              <div class="flex justify-between"><span>Social Media</span><span>${db.social_media || 0}</span></div>
-              <div class="flex justify-between"><span>Stock Photos</span><span>${db.stock_photo_sites || 0}</span></div>
+              <div class="flex justify-between"><span>News Sites</span><span class="${db.news_sites > 0 ? 'text-emerald-300' : ''}">${db.news_sites || 0}</span></div>
+              <div class="flex justify-between"><span>Social Media</span><span class="${db.social_media > 5 ? 'text-amber-300' : ''}">${db.social_media || 0}</span></div>
+              <div class="flex justify-between"><span>Stock Photos</span><span class="${db.stock_photo_sites > 0 ? 'text-amber-300' : ''}">${db.stock_photo_sites || 0}</span></div>
               <div class="flex justify-between"><span>Blogs</span><span>${db.blogs || 0}</span></div>
               <div class="flex justify-between"><span>Other</span><span>${db.other || 0}</span></div>
             `;
           }
+          
+          // Top Matches with clickable links
+          const topMatches = tineye.top_matches || [];
+          if (topMatches.length > 0) {
+            document.getElementById('topMatchesCard').classList.remove('hidden');
+            document.getElementById('topMatchesList').innerHTML = topMatches.slice(0, 10).map(match => {
+              const matchUrl = match.url || match.image_url || '';
+              const matchDomain = match.domain || (matchUrl ? new URL(matchUrl).hostname : 'Unknown');
+              const waybackLink = matchUrl ? `https://web.archive.org/web/*/${matchUrl}` : '';
+              const crawlDate = match.crawl_date ? new Date(match.crawl_date).toLocaleDateString() : '';
+              
+              return `
+                <div class="flex items-center justify-between p-2 bg-slate-900/50 rounded-lg hover:bg-slate-800/50 transition">
+                  <div class="flex-1 min-w-0">
+                    <a href="${matchUrl}" target="_blank" rel="noopener" class="text-indigo-400 hover:text-indigo-300 text-[11px] truncate block" title="${matchUrl}">
+                      ${matchDomain}
+                    </a>
+                    <span class="text-[10px] text-slate-500">${crawlDate}</span>
+                  </div>
+                  <div class="flex items-center gap-2 ml-2">
+                    ${match.match_percentage ? `<span class="text-[10px] text-slate-400">${match.match_percentage}%</span>` : ''}
+                    <a href="${waybackLink}" target="_blank" rel="noopener" class="text-cyan-400 hover:text-cyan-300 text-[10px]" title="View archived version">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              `;
+            }).join('');
+          }
+          
+          // Stock Photo Alert
+          if (tineye.is_stock_photo || (tineye.domain_breakdown?.stock_photo_sites > 0)) {
+            document.getElementById('stockPhotoAlert').classList.remove('hidden');
+            const stockDomains = ['shutterstock.com', 'gettyimages.com', 'istockphoto.com', 'stock.adobe.com', 'dreamstime.com'];
+            const foundStock = topMatches.filter(m => stockDomains.some(sd => m.domain?.includes(sd)));
+            if (foundStock.length > 0) {
+              document.getElementById('stockPhotoSources').innerHTML = foundStock.slice(0, 5).map(m => `
+                <a href="${m.url}" target="_blank" rel="noopener" class="px-2 py-1 bg-amber-500/20 text-amber-300 rounded text-[10px] hover:bg-amber-500/30">
+                  ${m.domain}
+                </a>
+              `).join('');
+            }
+          }
+          
+          // Fact Check Alert
+          if (extSources.appeared_on_fact_check_sites && extSources.fact_check_sources?.length > 0) {
+            document.getElementById('factCheckAlert').classList.remove('hidden');
+            document.getElementById('factCheckSources').innerHTML = extSources.fact_check_sources.map(src => `
+              <a href="${src.url || '#'}" target="_blank" rel="noopener" class="text-emerald-400 hover:text-emerald-300 text-[11px] flex items-center gap-1">
+                <span>→</span> ${src.domain || src}
+              </a>
+            `).join('');
+          }
         }
-// NEW: Blockchain Verification Display
+// NEW: Cross-Reference Analysis
+        if (result.cross_reference) {
+          document.getElementById('crossReferenceSection').classList.remove('hidden');
+          const cr = result.cross_reference;
+          
+          // Stats
+          const occurrences = cr.exact_match?.occurrence_count || cr.index_status?.occurrence_count || 1;
+          document.getElementById('indexOccurrences').textContent = occurrences;
+          
+          const firstSeen = cr.exact_match?.first_seen || cr.index_status?.first_seen;
+          if (firstSeen) {
+            const date = new Date(firstSeen);
+            document.getElementById('indexFirstSeen').textContent = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          }
+          
+          document.getElementById('nearDuplicates').textContent = cr.related_by_phash?.total || 0;
+          document.getElementById('relatedByLabel').textContent = cr.related_by_label?.total || 0;
+          
+          // Index Status
+          document.getElementById('fingerprintId').textContent = cr.index_status?.fingerprint_id || '-';
+          document.getElementById('isNewToIndex').textContent = cr.index_status?.is_new ? 'New to Index' : 'Previously Indexed';
+          document.getElementById('isNewToIndex').className = cr.index_status?.is_new ? 'text-emerald-300' : 'text-amber-300';
+          document.getElementById('totalInIndex').textContent = cr.index_status?.total_in_index?.toLocaleString() || '-';
+          
+          // Cached Labels
+          const labels = cr.exact_match?.labels || [];
+          if (labels.length > 0) {
+            document.getElementById('cachedLabels').innerHTML = labels.map(l => 
+              `<span class="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-[10px]">${l.label || l}</span>`
+            ).join('');
+          }
+          
+          // Fraud Indicators
+          if (cr.fraud_indicators && cr.fraud_indicators.flags?.length > 0) {
+            document.getElementById('fraudIndicatorsCard').classList.remove('hidden');
+            
+            // Risk Badge
+            const riskBadge = document.getElementById('crossRefRiskBadge');
+            const riskLevel = cr.fraud_indicators.risk_level || 'low';
+            const riskConfig = {
+              'critical': { text: 'CRITICAL RISK', bg: 'bg-red-500/10', border: 'border-red-500/40', color: 'text-red-300' },
+              'high': { text: 'HIGH RISK', bg: 'bg-red-500/10', border: 'border-red-500/40', color: 'text-red-300' },
+              'medium': { text: 'MEDIUM RISK', bg: 'bg-amber-500/10', border: 'border-amber-500/40', color: 'text-amber-300' },
+              'low': { text: 'LOW RISK', bg: 'bg-emerald-500/10', border: 'border-emerald-500/40', color: 'text-emerald-300' }
+            };
+            const risk = riskConfig[riskLevel] || riskConfig['low'];
+            riskBadge.textContent = risk.text;
+            riskBadge.className = `px-2 py-1 pill text-[10px] font-semibold ${risk.bg} ${risk.border} ${risk.color}`;
+            
+            // Flags List
+            document.getElementById('fraudFlags').innerHTML = cr.fraud_indicators.flags.map(flag => `
+              <li class="flex items-start gap-2">
+                <span class="text-red-400 mt-0.5">⚠</span>
+                <span>${flag}</span>
+              </li>
+            `).join('');
+            
+            // Recommendation
+            if (cr.fraud_indicators.recommendation) {
+              document.getElementById('fraudRecommendation').innerHTML = `
+                <strong class="text-slate-300">Recommendation:</strong> ${cr.fraud_indicators.recommendation}
+              `;
+            }
+          } else {
+            // No fraud indicators - show green badge
+            const riskBadge = document.getElementById('crossRefRiskBadge');
+            riskBadge.textContent = 'NO ISSUES';
+            riskBadge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-emerald-500/10 border border-emerald-500/40 text-emerald-300';
+          }
+        }
+
+        // NEW: Temporal Validation
+        if (result.cross_reference?.temporal_analysis) {
+          document.getElementById('temporalValidationSection').classList.remove('hidden');
+          const ta = result.cross_reference.temporal_analysis;
+          
+          // EXIF Date
+          if (ta.exif_date) {
+            const exifDate = new Date(ta.exif_date);
+            document.getElementById('exifDateDisplay').textContent = exifDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          } else {
+            document.getElementById('exifDateDisplay').textContent = 'No EXIF';
+            document.getElementById('exifDateDisplay').className = 'text-sm font-bold text-slate-500';
+          }
+          
+          // Age in days
+          if (ta.age_days !== undefined && ta.age_days !== null) {
+            document.getElementById('contentAgeDays').textContent = ta.age_days.toLocaleString();
+            // Color based on age
+            if (ta.age_days > 365) {
+              document.getElementById('contentAgeDays').className = 'text-2xl font-bold text-amber-300';
+            } else if (ta.age_days > 1825) { // 5 years
+              document.getElementById('contentAgeDays').className = 'text-2xl font-bold text-red-300';
+            }
+          }
+          
+          // First indexed
+          if (ta.first_indexed) {
+            const indexed = new Date(ta.first_indexed);
+            document.getElementById('firstIndexedDate').textContent = indexed.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          }
+          
+          // Risk Level
+          const riskLevel = ta.risk_level || 'low';
+          document.getElementById('temporalRiskLevel').textContent = riskLevel.toUpperCase();
+          const riskColors = {
+            'high': 'text-red-300',
+            'medium': 'text-amber-300',
+            'low': 'text-emerald-300'
+          };
+          document.getElementById('temporalRiskLevel').className = `text-sm font-bold capitalize ${riskColors[riskLevel] || 'text-slate-300'}`;
+          
+          // Risk Badge
+          const tempBadge = document.getElementById('temporalRiskBadge');
+          const tempRiskConfig = {
+            'high': { text: 'TIMELINE ISSUES', bg: 'bg-red-500/10', border: 'border-red-500/40', color: 'text-red-300' },
+            'medium': { text: 'CHECK DATES', bg: 'bg-amber-500/10', border: 'border-amber-500/40', color: 'text-amber-300' },
+            'low': { text: 'DATES OK', bg: 'bg-emerald-500/10', border: 'border-emerald-500/40', color: 'text-emerald-300' }
+          };
+          const tempRisk = tempRiskConfig[riskLevel] || tempRiskConfig['low'];
+          tempBadge.textContent = tempRisk.text;
+          tempBadge.className = `px-2 py-1 pill text-[10px] font-semibold ${tempRisk.bg} ${tempRisk.border} ${tempRisk.color}`;
+          
+          // Temporal Flags
+          if (ta.flags && ta.flags.length > 0) {
+            document.getElementById('temporalFlagsCard').classList.remove('hidden');
+            document.getElementById('temporalFlags').innerHTML = ta.flags.map(flag => `
+              <li class="flex items-start gap-2">
+                <span class="text-amber-400 mt-0.5">⏰</span>
+                <span>${flag}</span>
+              </li>
+            `).join('');
+          }
+        }
+
+        // NEW: Blockchain Verification Display
         if (result.blockchain_verification) {
           document.getElementById('blockchainSection').classList.remove('hidden');
 

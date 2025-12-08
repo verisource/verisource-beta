@@ -1,636 +1,1596 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Verification Report - VeriSource™</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VeriSource – Verification Report</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .pill { border-radius: 999px; }
+    @keyframes glowPulse {
+      0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.6); }
+      50% { box-shadow: 0 0 0 9px rgba(56, 189, 248, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+    }
+    .badge-glow { animation: glowPulse 1.8s ease-in-out infinite; }
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
-    }
-    .fade-in { animation: fadeIn 0.6s ease-out forwards; }
-    
-    /* Status badge styles */
-    .status-verified-photo { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-    .status-likely-camera { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
-    .status-modified { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
-    .status-manipulation { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
-    .status-heavily-manipulated { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
-    .status-ai-image { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
-    .status-verified-video { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-    .status-ai-content { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
-    .status-mixed-content { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
-    .status-ai-video { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); }
-    .status-deepfake { background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%); }
-    .status-verified-audio { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-    .status-natural-voice { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
-    .status-synthetic-voice { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
-    .status-fully-ai-audio { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
-    
-    .duplicate-banner {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      border-left: 4px solid #b45309;
-    }
-    
-    /* Toggle button styles */
-    .toggle-btn {
-      transition: transform 0.3s ease;
-    }
-    .toggle-btn.open {
-      transform: rotate(180deg);
     }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen">
-  
-  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto px-4 py-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <div class="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-slate-950 font-bold text-xl">
-            V
-          </div>
-          <div>
-            <div class="text-lg font-semibold tracking-tight">
-              VeriSource<span class="align-top text-xs ml-0.5">™</span>
-            </div>
-            <p class="text-xs text-slate-400">Verification Report</p>
-          </div>
-        </div>
 
-        <div class="flex items-center gap-4">
-          <button onclick="window.close()" class="text-sm text-slate-400 hover:text-blue-400 transition">← Close</button>
-          <button onclick="window.print()" class="text-sm px-4 py-2 rounded-lg border border-slate-700 hover:border-blue-500 hover:bg-slate-900 transition">
-            🖨️ Print Report
-          </button>
+  <!-- HEADER -->
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 lg:px-8 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-400 to-cyan-400 flex items-center justify-center text-slate-950 font-extrabold text-xl shadow">V</div>
+        <div>
+          <h1 class="text-xl font-semibold tracking-tight">VeriSource</h1>
+          <p class="text-[11px] text-slate-400">Comprehensive Media Verification Report</p>
         </div>
+      </div>
+      <div class="hidden sm:flex items-center gap-3 text-xs">
+        <button onclick="exportCSV()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition">Export CSV</button>
+        <button onclick="window.print()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition">Print Report</button>
+        <a href="single-upload.html" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg transition">← Back to Upload</a>
       </div>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 py-10">
-    
-    <div id="noDataMessage" class="hidden text-center py-20">
-      <div class="text-6xl mb-4">⚠️</div>
-      <h2 class="text-2xl font-bold mb-2">No Verification Data Found</h2>
-      <p class="text-slate-400 mb-6">This report requires verification data from a bulk or single upload.</p>
-      <a href="index.html" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg inline-block transition">
-        Return to Home
-      </a>
+  <!-- No Data Message -->
+  <div id="noDataMessage" class="hidden max-w-7xl mx-auto px-4 lg:px-8 py-20 text-center fade-in">
+    <div class="text-6xl mb-4">📋</div>
+    <h2 class="text-2xl font-bold mb-2">No Verification Data</h2>
+    <p class="text-slate-400 mb-6">Please upload a file first to see the verification report.</p>
+    <a href="single-upload.html" class="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-lg transition inline-block">
+      Upload File
+    </a>
+  </div>
+
+  <!-- Main Report Content -->
+  <main id="reportContent" class="max-w-7xl mx-auto px-4 lg:px-8 py-10 space-y-8">
+
+    <!-- 1. FILE NAME + CONFIDENCE + BLOCKCHAIN BADGE -->
+    <section class="flex flex-col sm:flex-row sm:items-center justify-between fade-in">
+      <div class="flex items-center gap-4">
+        <div id="reportThumbnail" class="h-16 w-16 rounded-lg bg-slate-700/50 flex items-center justify-center overflow-hidden flex-shrink-0">
+          <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+        </div>
+        <h2 id="fileName" class="text-2xl font-semibold">Loading...</h2>
+      </div>
+      <div class="flex items-center gap-4 mt-4 sm:mt-0">
+        <div class="flex items-center gap-3">
+          <p id="overallConfidence" class="text-6xl font-bold text-blue-400 leading-none">
+            0<span class="text-3xl align-top">%</span>
+          </p>
+          <p class="text-[11px] uppercase tracking-[0.18em] text-slate-400">
+            Trust<br/>Score
+          </p>
+        </div>
+    </section>
+
+    <!-- 2. VERDICT BADGE -->
+    <section class="flex flex-col sm:flex-row justify-between items-center gap-3 fade-in">
+      <div id="verdictBadge" class="inline-flex items-center gap-2 px-4 py-2 pill border text-sm font-medium">
+        <!-- Populated by JS -->
+      </div>
+      <div id="blockchainBadge" class="hidden flex items-center gap-2 px-4 py-2 pill bg-sky-500/10 border border-sky-500/40 text-sky-300 text-sm font-medium shadow badge-glow">
+        <div class="h-4 w-4 rounded-full bg-sky-400 flex items-center justify-center"><div class="h-2 w-2 bg-slate-900 rounded-full"></div></div><span id="blockchainChainName">Blockchain Verified</span>
+      </div>
+    </section>
+
+    <!-- 3. WARNINGS (if any) -->
+    <section id="warningsSection" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-amber-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold text-amber-300">Warnings</h2>
+          <p class="text-[11px] text-amber-200/70">Issues detected during verification</p>
+        </div>
+      </header>
+      <ul id="warningsList" class="space-y-2 text-amber-200">
+        <!-- Populated by JS -->
+      </ul>
+    </section>
+
+    <!-- 3B. SCREENSHOT DETECTION ALERT -->
+    <section id="screenshotAlertSection" class="hidden bg-amber-500/10 border border-amber-500/40 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+       <div class="h-8 w-8 rounded-xl bg-amber-500/15 flex items-center justify-center">
+        <span class="text-lg">📱</span>
+       </div>
+       <div>
+         <h2 class="text-sm font-semibold text-amber-300">Screenshot Detected</h2>
+         <p id="screenshotDevice" class="text-[11px] text-amber-200/70">Device detected</p>
+       </div>
+      <div class="ml-auto">
+        <span id="screenshotConfidenceBadge" class="px-2 py-1 pill text-[10px] font-semibold bg-amber-500/20 border border-amber-500/40 text-amber-300">
+         0% confidence
+        </span>
+      </div>
+     </header>
+  
+     <div class="bg-amber-950/30 rounded-xl p-4 mb-4">
+     <p class="text-amber-200 text-xs leading-relaxed">
+       <strong>⚠️ Important:</strong> This image appears to be a screenshot. AI detection results analyze the 
+        <em>screenshot itself</em>, not the original content displayed within it. For accurate authenticity 
+        verification, obtain and verify the original source media.
+      </p>
     </div>
 
-    <div id="reportContent" class="space-y-6">
-      
-      <!-- Header Section -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
-        <div class="flex items-start justify-between mb-6">
-          <div class="flex-1">
-            <h1 class="text-3xl font-bold mb-2" id="fileName">Loading...</h1>
-            <div class="flex items-center gap-3 flex-wrap">
-              <span id="statusBadge" class="px-4 py-2 rounded-lg text-white font-medium text-sm">
-                Loading...
-              </span>
-              <div class="text-sm">
-                <span class="text-slate-400">Overall Confidence:</span>
-                <span class="font-semibold ml-1 text-2xl" id="overallConfidence">0%</span>
-              </div>
-            </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+       <div>
+         <p class="text-slate-400 mb-2 text-[11px]">Detection Indicators</p>
+         <ul id="screenshotIndicators" class="space-y-1 text-amber-200/80">
+          <!-- Populated by JS -->
+         </ul>
+       </div>
+       <div>
+         <p class="text-slate-400 mb-2 text-[11px]">What This Means</p>
+         <ul class="space-y-1 text-amber-200/80 text-[11px]">
+         <li>• Original content authenticity unknown</li>
+         <li>• EXIF/metadata reflects screenshot, not source</li>
+         <li>• AI detection may show false positives</li>
+          <li>• Verify at original source when possible</li>
+         </ul>
+       </div>
+      </div>
+    </section>
+
+    <!-- 4. QUICK STATS + CRYPTOGRAPHIC FINGERPRINT -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 fade-in">
+      <!-- Quick Stats -->
+      <aside class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+        <h3 class="text-sm font-semibold mb-4">Quick Stats</h3>
+        <div class="space-y-3 text-xs">
+          <div class="flex justify-between">
+            <span class="text-slate-400">File Type</span>
+            <span id="fileType">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">File Size</span>
+            <span id="fileSize">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Media Kind</span>
+            <span id="mediaKind">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Times Verified</span>
+            <span id="timesVerified">1</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">First Seen</span>
+            <span id="firstSeen">-</span>
           </div>
         </div>
+      </aside>
 
-        <!-- Duplicate Warning -->
-        <div id="duplicateWarning" class="hidden duplicate-banner rounded-lg p-4 text-white mb-6">
-          <div class="flex items-start gap-3">
-            <div class="text-2xl">⚠️</div>
+      <!-- Cryptographic Fingerprint -->
+      <section class="lg:col-span-2 bg-slate-900/60 border border-slate-800 rounded-2xl p-6 relative overflow-hidden">
+        <header class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-sm font-semibold">Cryptographic Fingerprint</h2>
+            <p class="text-[11px] text-slate-400">Content identity & hash verification</p>
+          </div>
+          <button onclick="copyHash()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded text-[10px] transition">
+            Copy Hash
+          </button>
+        </header>
+
+        <!-- Decorative fingerprint icon -->
+        <div class="absolute top-4 right-4 opacity-10 h-28 w-28 pointer-events-none">
+          <svg class="w-full h-full text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"
+              d="M12 11c0 3.6-1.2 7.5-3.6 11.2M9 6.75c0-2.7 3-2.7 3 0 0 5.3-1.2 10.3-3.6 15.3M15 6.75c0-2.7-3-2.7-3 0M18 7.5c0 5.7-1.2 11.3-3.6 17" />
+          </svg>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+          <div>
+            <p class="text-slate-400 mb-1">SHA-256 Hash</p>
+            <p id="sha256Hash" class="font-mono bg-slate-950/70 p-2 rounded-xl break-all text-[10px]">
+              -
+            </p>
+          </div>
+          <div>
+            <p class="text-slate-400 mb-1">Perceptual Hash (pHash)</p>
+            <p id="pHash" class="font-mono bg-slate-950/70 p-2 rounded-xl break-all text-[10px]">
+              -
+            </p>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- 5. AI GENERATOR DETECTION + AI CONTENT ANALYSIS -->
+    <section id="aiAnalysisSection" class="hidden grid grid-cols-1 xl:grid-cols-3 gap-6 fade-in">
+      <!-- AI Generator Detection (2/3 width) -->
+      <article class="xl:col-span-2 bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs">
+        <header class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="h-8 w-8 rounded-xl bg-purple-500/15 flex items-center justify-center">
+              <svg class="w-4 h-4 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17 9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2z"/>
+              </svg>
+            </div>
             <div>
-              <div class="font-semibold mb-1">Duplicate Detected</div>
-              <div class="text-sm opacity-90" id="duplicateMessage"></div>
+              <h3 class="text-sm font-semibold">AI Generator Detection</h3>
+              <p class="text-[11px] text-slate-400">Identifies which AI tool likely created this content</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-[11px] text-slate-400">Likely generator</p>
+            <p id="likelyGenerator" class="text-xs font-semibold text-purple-300">Unknown (0%)</p>
+          </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-slate-400">Generator confidence</span>
+              <span id="generatorConfidence" class="font-semibold">0%</span>
+            </div>
+            <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-3">
+              <div id="generatorConfidenceBar" class="h-full bg-gradient-to-r from-purple-400 via-fuchsia-400 to-rose-400 transition-all duration-1000" style="width:0%"></div>
+            </div>
+            <p id="generatorVerdict" class="text-slate-300 mb-2">
+              Analyzing generator patterns...
+            </p>
+            <ul id="generatorIndicators" class="space-y-1 text-slate-400">
+              <!-- Populated by JS -->
+            </ul>
+          </div>
+
+          <div class="space-y-2">
+            <p class="text-slate-400 mb-1">Generator probability mix</p>
+            <div id="generatorProbabilities" class="space-y-2">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- AI Content Analysis (1/3 width) -->
+      <article class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs flex flex-col justify-between">
+        <header class="flex items-center justify-between mb-3">
+          <div>
+            <h3 class="text-sm font-semibold">AI Content Analysis</h3>
+            <p id="ensembleInfo" class="text-[11px] text-slate-400">Ensemble detection</p>
+          </div>
+          <span id="aiVerdictBadge" class="px-2.5 py-1 pill text-[10px] font-semibold border">
+            ANALYZING
+          </span>
+        </header>
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-400">AI Confidence</span>
+            <span id="aiConfidence" class="text-xl font-semibold">0%</span>
+          </div>
+          <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+            <div id="aiConfidenceBar" class="h-full bg-gradient-to-r from-red-400 via-orange-400 to-amber-400 transition-all duration-1000" style="width:0%"></div>
+          </div>
+
+          <div id="detectorScores" class="grid grid-cols-3 gap-2 mt-3">
+            <!-- Populated by JS -->
+          </div>
+
+          <ul id="aiIndicators" class="mt-3 space-y-1 text-slate-400">
+            <!-- Populated by JS -->
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <!-- 5C. PLATFORM DETECTION -->
+    <section id="platformDetectionSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-blue-500/15 flex items-center justify-center">
+          <span class="text-lg">📱</span>
+        </div>
+        <div>
+          <h3 class="text-sm font-semibold">Social Media Platform Detection</h3>
+          <p class="text-[11px] text-slate-400">Identifies if image was shared via social media</p>
+        </div>
+      </header>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-slate-400">Detected Platform</span>
+            <span id="platformName" class="font-semibold text-blue-400">Unknown</span>
+          </div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-slate-400">Confidence</span>
+            <span id="platformConfidence" class="font-semibold">0%</span>
+          </div>
+          <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-3">
+            <div id="platformConfidenceBar" class="h-full bg-blue-500 transition-all duration-1000" style="width:0%"></div>
+          </div>
+        </div>
+        <div>
+          <p class="text-slate-400 mb-2">Detection Indicators</p>
+          <div id="platformIndicators" class="flex flex-wrap gap-1">
+            <!-- Populated by JS -->
+          </div>
+          <p class="text-slate-400 mt-3 text-[10px] bg-slate-800/50 p-2 rounded">
+            ℹ️ Images shared via social media lose EXIF data due to platform compression. This is expected behavior.
+          </p>
+        </div>
+      </div>
+    </section>
+<!-- 5B. JPEG FORENSICS ANALYSIS -->
+    <section id="jpegForensicsSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-cyan-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">JPEG Forensic Analysis</h2>
+          <p class="text-[11px] text-slate-400">Error Level Analysis, compression artifacts, noise patterns</p>
+        </div>
+      </header>
+      
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="manipulationConfidence" class="text-2xl font-bold text-cyan-300">0%</p>
+          <p class="text-[10px] text-slate-400 mt-1">Manipulation Score</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="compressionQuality" class="text-2xl font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Compression Quality</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="noiseLevel" class="text-sm font-bold capitalize">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Noise Level</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="elaStatus" class="text-sm font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">ELA Status</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">Compression Analysis</h4>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="text-slate-400">Double Compressed</span>
+              <span id="doubleCompressed" class="text-emerald-300">No</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Quality Estimate</span>
+              <span id="qualityEstimate">-</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">Forensic Indicators</h4>
+          <ul id="forensicIndicators" class="space-y-1 text-slate-400">
+            <li>• No forensic analysis performed</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <!-- 6. VIDEO FRAME ANALYSIS (if video) -->
+    <section id="videoAnalysisSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-blue-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">Video Frame Analysis</h2>
+          <p class="text-[11px] text-slate-400">Frame-by-frame AI detection & temporal consistency</p>
+        </div>
+      </header>
+      
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="framesAnalyzed" class="text-2xl font-bold text-blue-300">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">Frames Analyzed</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="aiFrames" class="text-2xl font-bold text-red-300">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">AI Frames</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="suspiciousFrames" class="text-2xl font-bold text-amber-300">0%</p>
+          <p class="text-[10px] text-slate-400 mt-1">Suspicious</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="aiPercentage" class="text-2xl font-bold text-red-300">0%</p>
+          <p class="text-[10px] text-slate-400 mt-1">AI Content</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="videoVerdict" class="text-sm font-bold text-emerald-300">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Verdict</p>
+        </div>
+      </div>
+
+      <!-- Temporal Analysis -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">Temporal Consistency</h4>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="text-slate-400">Inconsistencies Detected</span>
+              <span id="temporalInconsistencies" class="text-emerald-300">None</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Severity</span>
+              <span id="temporalSeverity" class="capitalize">Low</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Morphing Detected</span>
+              <span id="morphingDetected" class="text-emerald-300">No</span>
+            </div>
+          </div>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">Video Metadata</h4>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="text-slate-400">Duration</span>
+              <span id="videoDuration">-</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Resolution</span>
+              <span id="videoResolution">-</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Frame Rate</span>
+              <span id="videoFps">-</span>
             </div>
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- Confidence Score Breakdown (Collapsible) -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden fade-in">
-        <button onclick="toggleSection('confidenceSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-900/80 transition">
-          <h2 class="text-xl font-bold">Confidence Score Breakdown</h2>
-          <svg id="confidenceToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    <!-- 7. AUDIO ANALYSIS (if audio) -->
+    <section id="audioAnalysisSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-green-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
           </svg>
-        </button>
-        <div id="confidenceSection" class="hidden px-6 pb-6">
-          <div id="confidenceBreakdown" class="space-y-3">
-            <p class="text-sm text-slate-400">Loading confidence data...</p>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">Audio Analysis</h2>
+          <p class="text-[11px] text-slate-400">Audio fingerprint & music identification</p>
+        </div>
+      </header>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Duration</p>
+          <p id="audioDuration" class="font-semibold">-</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Chromaprint</p>
+          <p id="chromaprint" class="font-mono text-[10px] break-all">-</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Music Identified</p>
+          <p id="musicIdentified" class="font-semibold">-</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. DEEPFAKE DETECTION -->
+    <section id="deepfakeSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-rose-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-rose-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">Deepfake Detection</h2>
+          <p class="text-[11px] text-slate-400">Face manipulation & synthetic media analysis</p>
+        </div>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Deepfake Detected</p>
+          <p id="deepfakeDetected" class="font-semibold text-emerald-300">No</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Confidence</p>
+          <p id="deepfakeConfidence" class="font-semibold">0%</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Faces Detected</p>
+          <p id="facesDetected" class="font-semibold">0</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Analysis Method</p>
+          <p id="deepfakeMethod" class="font-semibold">-</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. CONFIDENCE SCORE BREAKDOWN -->
+    <section id="confidenceBreakdownSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-indigo-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">Confidence Score Breakdown</h2>
+          <p class="text-[11px] text-slate-400">Detailed factor analysis contributing to overall score</p>
+        </div>
+      </header>
+
+      <div id="confidenceFactors" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- 10. DUPLICATE/SIMILAR DETECTION -->
+    <section id="duplicateSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-orange-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">Duplicate & Similar Detection</h2>
+          <p class="text-[11px] text-slate-400">Previous verifications & perceptually similar content</p>
+        </div>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Exact Matches</p>
+          <p id="exactMatches" class="font-semibold">0</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Similar Images Found</p>
+          <p id="similarImagesCount" class="font-semibold">0</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Total Verifications</p>
+          <p id="totalVerifications" class="font-semibold">1</p>
+        </div>
+      </div>
+
+      <div id="previousVerifications" class="hidden bg-slate-950/50 p-4 rounded-xl">
+        <h4 class="font-semibold mb-3 text-slate-300">Previous Verifications</h4>
+        <div id="verificationHistory" class="space-y-2 max-h-40 overflow-y-auto">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. FORENSIC ANALYSIS -->
+    <section class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-green-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">Forensic Analysis</h2>
+          <p class="text-[11px] text-slate-400">Shadow physics, camera verification & integrity checks</p>
+        </div>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Shadow Consistency</p>
+          <p id="shadowConsistency" class="font-semibold">-</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Camera Make</p>
+          <p id="cameraMake" class="font-semibold">-</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Camera Model</p>
+          <p id="cameraModel" class="font-semibold">-</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Camera Verified</p>
+          <p id="cameraVerified" class="font-semibold">-</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. EXTERNAL VERIFICATION -->
+    <section class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-cyan-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-cyan-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">External Verification</h2>
+          <p class="text-[11px] text-slate-400">Google Vision, C2PA, VirusTotal, weather & landmark checks</p>
+        </div>
+      </header>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Google Vision</p>
+          <p id="googleVisionStatus" class="font-semibold">-</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">C2PA Credentials</p>
+          <p id="c2paStatus" class="font-semibold">-</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">VirusTotal</p>
+          <p id="virusTotalStatus" class="font-semibold">-</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Weather/Landmark</p>
+          <p id="weatherLandmarkStatus" class="font-semibold">-</p>
+        </div>
+      </div>
+    </section>
+
+  <!-- 12B. REVERSE IMAGE SEARCH DETAILS -->
+    <section id="reverseSearchSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-indigo-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">Reverse Image Search Results</h2>
+          <p class="text-[11px] text-slate-400">TinEye & other reverse search services</p>
+        </div>
+      </header>
+      
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="tineyeMatches" class="text-2xl font-bold text-indigo-300">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">Total Matches</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="imageAge" class="text-sm font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">First Seen</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="topDomain" class="text-sm font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Top Domain</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="newsCount" class="text-2xl font-bold">0</p>
+          <p class="text-[10px] text-slate-400 mt-1">News Sites</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">First Appearance</h4>
+          <div id="firstAppearance" class="space-y-2 text-slate-400">
+            <p>No data available</p>
+          </div>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">Domain Breakdown</h4>
+          <div id="domainBreakdown" class="space-y-1 text-slate-400">
+            <p>No data available</p>
           </div>
         </div>
       </div>
-
-      <!-- AI Detection (Collapsible) -->
-      <div id="aiDetectionCard" class="hidden bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden fade-in">
-        <button onclick="toggleSection('aiDetectionSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-900/80 transition">
-          <h2 class="text-xl font-bold">AI Content Analysis</h2>
-          <svg id="aiDetectionToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </section>  
+    <!-- BLOCKCHAIN VERIFICATION -->
+    <section id="blockchainSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-sky-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
           </svg>
-        </button>
-        <div id="aiDetectionSection" class="hidden px-6 pb-6">
-          <div id="aiDetectionContent"></div>
+        </div>
+        <div>
+          <h2 class="text-sm font-semibold">Blockchain Verification</h2>
+          <p class="text-[11px] text-slate-400">Immutable timestamp proof on Bitcoin & Polygon</p>
+        </div>
+      </header>
+      
+      <!-- OpenTimestamps (Bitcoin) -->
+      <div id="opentimestampsCard" class="hidden bg-slate-950/50 p-4 rounded-xl mb-4">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">₿</span>
+            <div>
+              <h4 class="font-semibold text-slate-300">Bitcoin Blockchain</h4>
+              <p class="text-[10px] text-slate-400">Via OpenTimestamps</p>
+            </div>
+          </div>
+          <span id="otsStatus" class="px-2 py-1 pill text-[10px] font-semibold">
+            <!-- Status badge -->
+          </span>
+        </div>
+        
+        <div class="space-y-2">
+          <div class="flex justify-between">
+            <span class="text-slate-400">Status</span>
+            <span id="otsStatusText" class="font-semibold">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Submitted</span>
+            <span id="otsSubmitted">-</span>
+          </div>
+          <div id="otsBlockRow" class="hidden flex justify-between">
+            <span class="text-slate-400">Bitcoin Block</span>
+            <span id="otsBlock" class="font-mono">-</span>
+          </div>
+          <div id="otsTimestampRow" class="hidden flex justify-between">
+            <span class="text-slate-400">Confirmed</span>
+            <span id="otsTimestamp">-</span>
+          </div>
+        </div>
+        
+        <div id="otsProof" class="mt-3 pt-3 border-t border-slate-800">
+          <a id="otsVerifyLink" href="#" target="_blank" class="text-sky-400 hover:text-sky-300 text-[10px] flex items-center gap-1">
+            <span>Verify independently →</span>
+          </a>
         </div>
       </div>
 
-      <!-- Fingerprint Details -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
-        <h2 class="text-xl font-bold mb-4">Fingerprint Details</h2>
-        <div class="space-y-3 text-sm font-mono">
+      <!-- Polygon -->
+      <div id="polygonCard" class="hidden bg-slate-950/50 p-4 rounded-xl">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <svg class="w-5 h-5 text-purple-400" viewBox="0 0 38.4 33.5" fill="currentColor">
+              <path d="M29,10.2c-0.7-0.4-1.6-0.4-2.4,0L21,13.5l-3.8,2.1l-5.5,3.3c-0.7,0.4-1.6,0.4-2.4,0L5,16.3c-0.7-0.4-1.2-1.2-1.2-2.1v-5c0-0.8,0.4-1.6,1.2-2.1l4.3-2.5c0.7-0.4,1.6-0.4,2.4,0L16,7.2c0.7,0.4,1.2,1.2,1.2,2.1v3.3l3.8-2.2V7c0-0.8-0.4-1.6-1.2-2.1l-8-4.7c-0.7-0.4-1.6-0.4-2.4,0L1.2,5C0.4,5.4,0,6.2,0,7v9.4c0,0.8,0.4,1.6,1.2,2.1l8.1,4.7c0.7,0.4,1.6,0.4,2.4,0l5.5-3.2l3.8-2.2l5.5-3.2c0.7-0.4,1.6-0.4,2.4,0l4.3,2.5c0.7,0.4,1.2,1.2,1.2,2.1v5c0,0.8-0.4,1.6-1.2,2.1L29,28.8c-0.7,0.4-1.6,0.4-2.4,0l-4.3-2.5c-0.7-0.4-1.2-1.2-1.2-2.1V21l-3.8,2.2v3.3c0,0.8,0.4,1.6,1.2,2.1l8.1,4.7c0.7,0.4,1.6,0.4,2.4,0l8.1-4.7c0.7-0.4,1.2-1.2,1.2-2.1V17c0-0.8-0.4-1.6-1.2-2.1L29,10.2z"/>
+            </svg>
+            <div>
+              <h4 class="font-semibold text-slate-300">Polygon Network</h4>
+              <p class="text-[10px] text-slate-400">Instant verification</p>
+            </div>
+          </div>
+          <span class="px-2 py-1 pill text-[10px] font-semibold bg-emerald-500/10 border border-emerald-500/40 text-emerald-300">
+            ✓ CONFIRMED
+          </span>
+        </div>
+        
+        <div class="space-y-2">
+          <div class="flex justify-between">
+            <span class="text-slate-400">Transaction</span>
+            <a id="polygonTxLink" href="#" target="_blank" class="font-mono text-[10px] text-sky-400 hover:text-sky-300">-</a>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Block Number</span>
+            <span id="polygonBlock" class="font-mono">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Confirmed</span>
+            <span id="polygonTimestamp">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-slate-400">Gas Cost</span>
+            <span id="polygonGasCost">-</span>
+          </div>
+        </div>
+        
+        <div class="mt-3 pt-3 border-t border-slate-800">
+          <a id="polygonExplorer" href="#" target="_blank" class="text-sky-400 hover:text-sky-300 text-[10px] flex items-center gap-1">
+            <span>View on PolygonScan →</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- No blockchain verification -->
+      <div id="noBlockchainCard" class="bg-slate-950/50 p-4 rounded-xl text-center text-slate-400">
+        <p class="text-xs">No blockchain verification performed for this file</p>
+      </div>
+    </section>
+    <!-- 13. ON-CHAIN ANCHOR DETAILS (Blockchain - future feature) -->
+    <section id="blockchainSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center justify-between mb-4">
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-xl bg-sky-500/15 flex items-center justify-center">
+            <svg class="w-4 h-4 text-sky-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linejoin="round" stroke-width="1.5" d="M12 2 19 6v8l-7 4-7-4V6z"/>
+            </svg>
+          </div>
           <div>
-            <span class="text-slate-400">File ID:</span>
-            <p class="text-slate-300 break-all mt-1" id="fileId">N/A</p>
-          </div>
-          <div>
-            <span class="text-slate-400">SHA-256:</span>
-            <p class="text-slate-300 break-all mt-1" id="sha256">N/A</p>
-          </div>
-          <div id="phashContainer">
-            <span class="text-slate-400">pHash:</span>
-            <p class="text-slate-300 break-all mt-1" id="phash">N/A</p>
+            <h2 class="text-sm font-semibold">On-Chain Anchor Details</h2>
+            <p class="text-[11px] text-slate-400">Immutable proof of existence</p>
           </div>
         </div>
-      </div>
+      </header>
 
-      <!-- Metadata -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
-        <h2 class="text-xl font-bold mb-4">Metadata</h2>
-        <div class="space-y-2 text-sm" id="metadataContainer">
-          <p class="text-sm text-slate-400">Loading metadata...</p>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Chain</p>
+          <p id="anchorChain" class="font-semibold text-sky-300">-</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Block</p>
+          <p id="anchorBlock" class="font-mono">-</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Timestamp</p>
+          <p id="anchorTimestamp" class="font-mono">-</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <p class="text-slate-400 mb-1">Txn Hash</p>
+          <p id="anchorTxHash" class="font-mono break-all text-emerald-300">-</p>
         </div>
       </div>
 
-      <!-- External Verification (Collapsible) -->
-      <div id="externalVerificationCard" class="hidden bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden fade-in">
-        <button onclick="toggleSection('externalVerificationSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-900/80 transition">
-          <h2 class="text-xl font-bold">External Verification</h2>
-          <svg id="externalVerificationToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+      <div class="mt-4 flex justify-end">
+        <a id="blockExplorerLink" href="#" target="_blank"
+           class="px-4 py-2 pill bg-sky-600 hover:bg-sky-500 text-[11px] font-medium transition">
+          View on Block Explorer →
+        </a>
+      </div>
+    </section>
+
+    <!-- 14. RECOMMENDATIONS -->
+    <section id="recommendationsSection" class="hidden bg-blue-500/10 border border-blue-500/30 rounded-2xl p-6 text-xs fade-in">
+      <header class="flex items-center gap-2 mb-4">
+        <div class="h-8 w-8 rounded-xl bg-blue-500/15 flex items-center justify-center">
+          <svg class="w-4 h-4 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-        </button>
-        <div id="externalVerificationSection" class="hidden px-6 pb-6">
-          <div id="externalVerificationContent"></div>
         </div>
-      </div>
-
-      <!-- Video Frame Analysis (Collapsible) -->
-      <div id="videoAnalysisCard" class="hidden bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden fade-in">
-        <button onclick="toggleSection('videoAnalysisSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-900/80 transition">
-          <h2 class="text-xl font-bold">Video Frame Analysis</h2>
-          <svg id="videoAnalysisToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </button>
-        <div id="videoAnalysisSection" class="hidden px-6 pb-6">
-          <div id="videoAnalysisContent"></div>
+        <div>
+          <h2 class="text-sm font-semibold text-blue-300">Recommendations</h2>
+          <p class="text-[11px] text-blue-200/70">Suggested next steps based on analysis</p>
         </div>
-      </div>
+      </header>
+      <ul id="recommendationsList" class="space-y-2 text-blue-200">
+        <!-- Populated by JS -->
+      </ul>
+    </section>
 
-      <!-- Audio Analysis (Collapsible) -->
-      <div id="audioAnalysisCard" class="hidden bg-slate-900/60 border border-slate-800 rounded-xl overflow-hidden fade-in">
-        <button onclick="toggleSection('audioAnalysisSection')" class="w-full p-6 flex items-center justify-between hover:bg-slate-900/80 transition">
-          <h2 class="text-xl font-bold">Audio Analysis</h2>
-          <svg id="audioAnalysisToggle" class="w-6 h-6 toggle-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </button>
-        <div id="audioAnalysisSection" class="hidden px-6 pb-6">
-          <div id="audioAnalysisContent"></div>
-        </div>
-      </div>
+    <!-- 15. REPORT TIMESTAMP -->
+    <section class="bg-slate-900/30 rounded-2xl p-4 text-center text-xs text-slate-500 fade-in">
+      <p id="reportTimestamp">Report generated on -</p>
+    </section>
 
-      <!-- Verification History -->
-      <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-6 fade-in">
-        <h2 class="text-xl font-bold mb-4">Verification History</h2>
-        <div class="space-y-2 text-sm" id="verificationHistory">
-          <p class="text-sm text-slate-400">Loading verification history...</p>
-        </div>
-      </div>
-
-    </div>
   </main>
 
-  <script>
-    // Toggle section function
-    function toggleSection(sectionId) {
-      const section = document.getElementById(sectionId);
-      const toggle = document.getElementById(sectionId.replace('Section', 'Toggle'));
-      
-      if (section.classList.contains('hidden')) {
-        section.classList.remove('hidden');
-        toggle.classList.add('open');
-      } else {
-        section.classList.add('hidden');
-        toggle.classList.remove('open');
-      }
+   <script>
+    // Format file size
+    function formatFileSize(bytes) {
+      if (!bytes) return '-';
+      if (bytes < 1024) return bytes + ' B';
+      if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+      return (bytes / 1048576).toFixed(2) + ' MB';
     }
 
-    // Load verification data from sessionStorage
-    function loadReport() {
-      console.log('=================================================');
-      console.log('REPORT PAGE - LOADING DATA');
-      console.log('=================================================');
-      
+    // Format date
+    function formatDate(dateString) {
+      if (!dateString) return '-';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    // Copy hash to clipboard
+    function copyHash() {
+      const hash = document.getElementById('sha256Hash').textContent;
+      navigator.clipboard.writeText(hash).then(() => {
+        alert('Hash copied to clipboard!');
+      });
+    }
+
+    // Export CSV
+    function exportCSV() {
       const data = sessionStorage.getItem('verificationData');
-      console.log('Raw sessionStorage data:', data);
+      if (!data) return;
       
-      if (!data) {
-        console.error('❌ No verification data found in sessionStorage');
-        document.getElementById('reportContent').classList.add('hidden');
-        document.getElementById('noDataMessage').classList.remove('hidden');
-        return;
+      const parsed = JSON.parse(data);
+      const result = parsed._rawResponse || parsed;
+      // Merge outer AI detection data if _rawResponse doesn't have it
+if (!result.ai_detection && parsed.aiDetection) {
+  result.ai_detection = {
+    likely_ai_generated: parsed.aiDetection.isAiGenerated,
+    ai_confidence: parsed.aiDetection.confidence
+  };
+}
+      let csv = 'Field,Value\n';
+      csv += `Filename,${result.filename || '-'}\n`;
+      csv += `File Size,${result.size_bytes || 0}\n`;
+      csv += `Media Kind,${result.kind || '-'}\n`;
+      csv += `SHA-256,${result.fingerprint?.hash || '-'}\n`;
+      csv += `Overall Confidence,${result.confidence?.percentage || 0}%\n`;
+      csv += `Confidence Level,${result.confidence?.level || '-'}\n`;
+      
+      if (result.ai_detection) {
+        csv += `AI Generated,${result.ai_detection.likely_ai_generated}\n`;
+        csv += `AI Confidence,${result.ai_detection.ai_confidence}%\n`;
       }
+      
+      if (result.generator_detection) {
+        csv += `Likely Generator,${result.generator_detection.likelyGenerator}\n`;
+        csv += `Generator Confidence,${result.generator_detection.confidence}%\n`;
+      }
+      
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `verisource-report-${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
 
-      const result = JSON.parse(data);
-      console.log('✅ Parsed result object:', JSON.stringify(result, null, 2));
-      console.log('');
-      console.log('Result keys:', Object.keys(result));
-      console.log('overallConfidence:', result.overallConfidence);
-      console.log('fingerprint:', result.fingerprint);
-      console.log('metadata:', result.metadata);
-      console.log('==========================================');
+    // Load and display report
+   document.addEventListener('DOMContentLoaded', function() {
+    try {
+     const data = sessionStorage.getItem('verificationData');
+        
+        if (!data) {
+          document.getElementById('reportContent').classList.add('hidden');
+          document.getElementById('noDataMessage').classList.remove('hidden');
+          return;
+        }
 
-      // Display file name
-      document.getElementById('fileName').textContent = result.filename || 'Verification Report';
+        const parsed = JSON.parse(data);
+        const result = parsed._rawResponse || parsed;
 
-      // Display status badge
-      const statusBadge = document.getElementById('statusBadge');
-      const statusClass = getStatusClass(result);
-      const statusText = getStatusText(result);
-      statusBadge.className = `${statusClass} px-4 py-2 rounded-lg text-white font-medium text-sm`;
-      statusBadge.textContent = statusText;
+        // 1. File name & confidence
+        document.getElementById('fileName').textContent = result.filename || 'Unknown File';
+        
+        // Load thumbnail from sessionStorage
+        const thumbnailData = sessionStorage.getItem('fileThumbnail');
+        const reportThumbnail = document.getElementById('reportThumbnail');
+        if (thumbnailData && reportThumbnail) {
+          if (thumbnailData === 'audio') {
+            reportThumbnail.innerHTML = `
+              <div class="h-full w-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center">
+                <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                </svg>
+              </div>
+            `;
+          } else {
+            // Check if it's a video (has play icon overlay in single-upload)
+            const isVideo = result.kind === 'video';
+            if (isVideo) {
+              reportThumbnail.innerHTML = `
+                <div class="relative h-full w-full">
+                  <img src="${thumbnailData}" class="h-full w-full object-cover" alt="Preview">
+                  <div class="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
+                </div>
+              `;
+            } else {
+              reportThumbnail.innerHTML = `<img src="${thumbnailData}" class="h-full w-full object-cover" alt="Preview">`;
+            }
+          }
+        }
+        const confidence = result.confidence?.percentage || 0;
+        const trustColor = confidence >= 70 ? 'text-green-400' : confidence >= 40 ? 'text-amber-400' : 'text-red-400';
+        document.getElementById('overallConfidence').innerHTML = `${confidence}<span class="text-3xl align-top">%</span>`;
+        document.getElementById('overallConfidence').className = `text-6xl font-bold ${trustColor} leading-none`;
 
-      // Display overall confidence
-      const confidence = Math.round(result.overallConfidence || 0);
-      document.getElementById('overallConfidence').textContent = confidence + '%';
+        // Confidence level text
+        // document.getElementById('confidenceLevel').textContent = 
+          // `${result.confidence?.level || 'UNKNOWN'} CONFIDENCE`;
 
-      // Display duplicate warning
-      if (result.duplicateDetection?.isDuplicate) {
-        const duplicateWarning = document.getElementById('duplicateWarning');
-        duplicateWarning.classList.remove('hidden');
-        const firstSeen = result.duplicateDetection.firstSeen ? new Date(result.duplicateDetection.firstSeen).toLocaleDateString() : 'Unknown';
-        const fileId = result.duplicateDetection.originalFileId || 'N/A';
-        document.getElementById('duplicateMessage').innerHTML = `
-          This file was previously verified on ${firstSeen}<br>
-          Original File ID: ${fileId}
+        // 2. Verdict badge
+        const verdictBadge = document.getElementById('verdictBadge');
+        
+        // Use API confidence data for consistent verdict display (same as single-upload.html)
+        const conf = result.confidence || {};
+        const statusColor = conf.color || '#F59E0B';
+        const statusIcon = conf.iconSvg || '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>';
+        const statusLabel = conf.label || 'VERIFICATION COMPLETE';
+        
+        // Map color to Tailwind classes
+        let borderClass, bgClass, textClass;
+        if (statusColor === '#EF4444' || statusColor === '#DC2626') {
+          borderClass = 'border-red-500/40';
+          bgClass = 'bg-red-500/10';
+          textClass = 'text-red-400';
+        } else if (statusColor === '#F59E0B' || statusColor === '#D97706') {
+          borderClass = 'border-amber-500/40';
+          bgClass = 'bg-amber-500/10';
+          textClass = 'text-amber-300';
+        } else if (statusColor === '#10B981' || statusColor === '#22C55E') {
+          borderClass = 'border-green-500/40';
+          bgClass = 'bg-green-500/10';
+          textClass = 'text-green-400';
+        } else if (statusColor === '#A855F7' || statusColor === '#8B5CF6') {
+          borderClass = 'border-purple-500/40';
+          bgClass = 'bg-purple-500/10';
+          textClass = 'text-purple-300';
+        } else {
+          borderClass = 'border-slate-500/40';
+          bgClass = 'bg-slate-500/10';
+          textClass = 'text-slate-300';
+        }
+        
+        verdictBadge.innerHTML = `
+          <span class="w-4 h-4 flex items-center justify-center">${statusIcon}</span>
+          ${statusLabel}
         `;
-      }
+        verdictBadge.className = `inline-flex items-center gap-2 px-4 py-2 pill border ${borderClass} ${bgClass} ${textClass} text-sm font-medium`;
 
-      // Display confidence breakdown
-      displayConfidenceBreakdown(result);
+        // 3. Warnings
+        if (result.confidence?.warnings?.length > 0) {
+          document.getElementById('warningsSection').classList.remove('hidden');
+          const warningsList = document.getElementById('warningsList');
+          warningsList.innerHTML = result.confidence.warnings.map(w => 
+            `<li class="flex items-start gap-2">
+              <span class="text-amber-400 mt-0.5">⚠</span>
+              <span>${w}</span>
+            </li>`
+          ).join('');
+        }
 
-      // Display AI detection if available
-      if (result.aiDetection) {
-        displayAiDetection(result);
-      }
+        // 4. Quick stats
+        document.getElementById('fileType').textContent = result.filename?.split('.').pop()?.toUpperCase() || '-';
+        document.getElementById('fileSize').textContent = formatFileSize(result.size_bytes);
+        document.getElementById('mediaKind').textContent = result.kind?.toUpperCase() || '-';
+        document.getElementById('timesVerified').textContent = result.verification?.times_verified || 1;
+        document.getElementById('firstSeen').textContent = formatDate(result.verification?.first_seen);
 
-      // Display fingerprint details
-      document.getElementById('fileId').textContent = result.fileId || result.verification_id || 'N/A';
-      document.getElementById('sha256').textContent = result.fingerprint?.sha256 || result.sha256 || 'N/A';
+        // Cryptographic fingerprint
+        document.getElementById('sha256Hash').textContent = result.fingerprint?.hash || '-';
+        document.getElementById('pHash').textContent = result.phash || 'Not available';
 
-      // Display metadata (includes pHash handling)
-      displayMetadata(result);
+        // 5. AI Generator Detection
+        if (result.generator_detection) {
+          document.getElementById('aiAnalysisSection').classList.remove('hidden');
+          const gd = result.generator_detection;
+          
+          const likelyGen = gd.likelyGenerator || 'Unknown';
+          const genConf = gd.confidence || 0;
+          document.getElementById('likelyGenerator').textContent = 
+            `${likelyGen.charAt(0).toUpperCase() + likelyGen.slice(1)} (${genConf}%)`;
+          document.getElementById('generatorConfidence').textContent = `${genConf}%`;
+          document.getElementById('generatorConfidenceBar').style.width = `${genConf}%`;
 
-      // Display external verification if available
-      if (result.externalVerification) {
-        displayExternalVerification(result);
-      }
+          // Verdict text
+          if (genConf >= 60) {
+            document.getElementById('generatorVerdict').textContent = 
+              `Strong indicators of ${likelyGen} generation patterns detected.`;
+          } else if (genConf >= 30) {
+            document.getElementById('generatorVerdict').textContent = 
+              `Moderate indicators suggest possible ${likelyGen} origin.`;
+          } else {
+            document.getElementById('generatorVerdict').textContent = 
+              `Low AI generator indicators. Content appears to be authentic or heavily modified.`;
+          }
 
-      // Display video analysis if available
-      if (result.videoAnalysis) {
-        displayVideoAnalysis(result);
-      }
+          // Indicators
+          if (gd.indicators?.length > 0) {
+            document.getElementById('generatorIndicators').innerHTML = gd.indicators.map(ind => 
+              `<li class="flex items-start gap-2">
+                <span class="text-purple-400">•</span>
+                <span>${ind}</span>
+              </li>`
+            ).join('');
+          }
 
-      // Display audio analysis if available
-      if (result.audioAnalysis) {
-        displayAudioAnalysis(result);
-      }
+          // Probabilities
+          if (gd.probabilities) {
+            const sorted = Object.entries(gd.probabilities).sort((a, b) => b[1] - a[1]);
+            const colors = {
+              sora: 'bg-rose-400',
+              runway: 'bg-blue-400',
+              pika: 'bg-green-400',
+              kling: 'bg-amber-400',
+              midjourney: 'bg-purple-400',
+              dalle: 'bg-indigo-400',
+              stableDiffusion: 'bg-sky-400',
+              firefly: 'bg-orange-400'
+            };
 
-      // Display verification history
-      displayVerificationHistory(result);
-    }
+            document.getElementById('generatorProbabilities').innerHTML = sorted.slice(0, 6).map(([gen, prob]) => `
+              <div>
+                <div class="flex justify-between text-xs mb-0.5">
+                  <span class="capitalize">${gen.replace(/([A-Z])/g, ' $1').trim()}</span>
+                  <span>${prob}%</span>
+                </div>
+                <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                  <div class="h-full ${colors[gen] || 'bg-slate-400'} transition-all duration-1000" style="width:${prob}%"></div>
+                </div>
+              </div>
+            `).join('');
+          }
+        }
 
-    function displayConfidenceBreakdown(result) {
-      const container = document.getElementById('confidenceBreakdown');
-      
-      if (!result.confidenceBreakdown || Object.keys(result.confidenceBreakdown).length === 0) {
-        container.innerHTML = '<p class="text-sm text-slate-400">Confidence breakdown not available</p>';
-        return;
-      }
+        // AI Content Analysis
+        if (result.ai_detection) {
+          document.getElementById('aiAnalysisSection').classList.remove('hidden');
+          const ai = result.ai_detection;
+          
+          const aiConfDisplay = ai.ai_confidence || 0;
+          document.getElementById('aiConfidence').textContent = `${aiConfDisplay}%`;
+          document.getElementById('aiConfidenceBar').style.width = `${aiConfDisplay}%`;
+          document.getElementById('ensembleInfo').textContent = 
+            `Ensemble of ${ai.detector_count || 1} detectors`;
 
-      const breakdown = Object.entries(result.confidenceBreakdown)
-        .filter(([key, value]) => value > 0)
-        .map(([key, value]) => `
-          <div>
-            <div class="flex justify-between text-sm mb-1">
-              <span class="text-slate-400">${key}</span>
-              <span class="font-semibold">${Math.round(value)}%</span>
+          // AI verdict badge
+          const aiVerdictBadge = document.getElementById('aiVerdictBadge');
+          if (ai.likely_ai_generated) {
+            aiVerdictBadge.textContent = 'AI-GENERATED';
+            aiVerdictBadge.className = 'px-2.5 py-1 pill bg-red-500/15 text-red-300 text-[10px] font-semibold border border-red-500/30';
+          } else {
+            aiVerdictBadge.textContent = 'AUTHENTIC';
+            aiVerdictBadge.className = 'px-2.5 py-1 pill bg-emerald-500/15 text-emerald-300 text-[10px] font-semibold border border-emerald-500/30';
+          }
+
+          // Individual detector scores
+          if (ai.ensemble_results || ai.individual_results) {
+            const ir = ai.ensemble_results || ai.individual_results;
+            let scoresHtml = '';
+            if (ir.jpeg) {
+              scoresHtml += `
+                <div class="bg-slate-950/60 rounded-xl p-2.5 text-center">
+                  <p class="text-[10px] text-slate-400 mb-0.5">JPEG</p>
+                  <p class="text-sm font-semibold">${ir.jpeg.confidence}%</p>
+                </div>
+              `;
+            }
+            if (ir.local) {
+              scoresHtml += `
+                <div class="bg-slate-950/60 rounded-xl p-2.5 text-center">
+                  <p class="text-[10px] text-slate-400 mb-0.5">Local</p>
+                  <p class="text-sm font-semibold">${ir.local.confidence}%</p>
+                </div>
+              `;
+            }
+            if (ir.huggingface) {
+              scoresHtml += `
+                <div class="bg-slate-950/60 rounded-xl p-2.5 text-center">
+                  <p class="text-[10px] text-slate-400 mb-0.5">HF Model</p>
+                  <p class="text-sm font-semibold">${ir.huggingface.confidence}%</p>
+                </div>
+              `;
+            }
+            document.getElementById('detectorScores').innerHTML = scoresHtml;
+          }
+
+          // AI indicators
+          if (ai.indicators?.length > 0) {
+            document.getElementById('aiIndicators').innerHTML = ai.indicators.slice(0, 5).map(ind => 
+              `<li class="flex items-start gap-2">
+                <span class="text-red-300 mt-0.5">⚠</span>
+                <span>${ind}</span>
+              </li>`
+            ).join('');
+          }
+        }
+          // 3B. Screenshot Detection Alert
+if (result.screenshot_detection && result.screenshot_detection.is_screenshot) {
+  document.getElementById('screenshotAlertSection').classList.remove('hidden');
+  const sd = result.screenshot_detection;
+  
+  // Device name
+  document.getElementById('screenshotDevice').textContent = 
+    sd.detected_device ? `Detected: ${sd.detected_device}` : 'Screen capture detected';
+  
+  // Confidence badge
+  const confBadge = document.getElementById('screenshotConfidenceBadge');
+  confBadge.textContent = `${sd.confidence}% confidence`;
+  
+  // Color based on severity
+  if (sd.confidence >= 80) {
+    confBadge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-red-500/20 border border-red-500/40 text-red-300';
+  } else if (sd.confidence >= 60) {
+    confBadge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-amber-500/20 border border-amber-500/40 text-amber-300';
+  } else {
+    confBadge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-yellow-500/20 border border-yellow-500/40 text-yellow-300';
+  }
+  
+  // Indicators
+  if (sd.indicators && sd.indicators.length > 0) {
+    document.getElementById('screenshotIndicators').innerHTML = sd.indicators.map(ind => 
+      `<li class="flex items-start gap-2 text-[11px]">
+        <span class="text-amber-400">•</span>
+        <span>${ind}</span>
+      </li>`
+    ).join('');
+  }
+}
+
+        // 5C. Platform Detection
+        if (result.platform_detection && result.platform_detection.detected) {
+          document.getElementById('platformDetectionSection').classList.remove('hidden');
+          const pd = result.platform_detection;
+          
+          const platformNames = {
+            instagram: 'Instagram',
+            whatsapp: 'WhatsApp',
+            twitter: 'Twitter/X',
+            facebook: 'Facebook',
+            tiktok: 'TikTok'
+          };
+          
+          document.getElementById('platformName').textContent = platformNames[pd.platform] || pd.platform;
+          document.getElementById('platformConfidence').textContent = `${pd.confidence}%`;
+          document.getElementById('platformConfidenceBar').style.width = `${pd.confidence}%`;
+          
+          if (pd.indicators && pd.indicators.length > 0) {
+            document.getElementById('platformIndicators').innerHTML = pd.indicators.map(ind => 
+              `<span class="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-[10px]">${ind}</span>`
+            ).join('');
+          }
+        }
+        // 6. Video Analysis
+        if (result.kind === 'video' && result.video_analysis) {
+          document.getElementById('videoAnalysisSection').classList.remove('hidden');
+          const va = result.video_analysis.analysis || {};
+          const metadata = result.video_analysis.metadata || {};
+          
+          document.getElementById('framesAnalyzed').textContent = va.framesAnalyzed || 0;
+          document.getElementById('aiFrames').textContent = va.aiGeneratedFrames || 0;
+          document.getElementById('suspiciousFrames').textContent = `${va.suspiciousPercentage || 0}%`;
+          document.getElementById('aiPercentage').textContent = `${va.aiPercentage || 0}%`;
+          // Set verdict text and color dynamically
+          const verdictEl = document.getElementById('videoVerdict');
+          verdictEl.textContent = va.verdict || '-';
+          
+          // Update color based on verdict
+          if (va.verdict === 'AUTHENTIC') {
+            verdictEl.className = 'text-sm font-bold text-green-400';
+          } else if (va.verdict === 'LIKELY_AI_GENERATED' || va.verdict === 'AI_GENERATED') {
+            verdictEl.className = 'text-sm font-bold text-purple-300';
+          } else if (va.verdict === 'SUSPICIOUS' || va.verdict === 'POSSIBLY_MANIPULATED') {
+            verdictEl.className = 'text-sm font-bold text-amber-300';
+          } else {
+            verdictEl.className = 'text-sm font-bold text-slate-300';
+          }
+
+          if (va.temporalAnalysis) {
+            const ta = va.temporalAnalysis;
+            document.getElementById('temporalInconsistencies').textContent = 
+              ta.inconsistencies_detected ? 'Yes' : 'None';
+            document.getElementById('temporalInconsistencies').className = 
+              ta.inconsistencies_detected ? 'text-red-300' : 'text-emerald-300';
+            document.getElementById('temporalSeverity').textContent = ta.severity || 'Low';
+            document.getElementById('morphingDetected').textContent = 
+              ta.morphing_detected ? 'Yes' : 'No';
+          }
+
+          document.getElementById('videoDuration').textContent = metadata.duration ? 
+            `${Math.round(metadata.duration)}s` : '-';
+          document.getElementById('videoResolution').textContent = metadata.resolution || '-';
+          document.getElementById('videoFps').textContent = metadata.fps ? `${metadata.fps} fps` : '-';
+        }
+
+        // 7. Audio Analysis
+        if (result.kind === 'audio' && result.chromaprint) {
+          document.getElementById('audioAnalysisSection').classList.remove('hidden');
+          document.getElementById('audioDuration').textContent = result.audio_duration ? 
+            `${Math.round(result.audio_duration)}s` : '-';
+          document.getElementById('chromaprint').textContent = 
+            result.chromaprint.substring(0, 40) + '...';
+          document.getElementById('musicIdentified').textContent = 
+            result.music_identification?.found ? 
+              `${result.music_identification.title} - ${result.music_identification.artist}` : 
+              'No match';
+        }
+
+        // 8. Deepfake Detection
+        if (result.deepfake_detection) {
+          document.getElementById('deepfakeSection').classList.remove('hidden');
+          const df = result.deepfake_detection;
+          document.getElementById('deepfakeDetected').textContent = df.is_deepfake ? 'Yes' : 'No';
+          document.getElementById('deepfakeDetected').className = 
+            df.is_deepfake ? 'font-semibold text-red-300' : 'font-semibold text-emerald-300';
+          document.getElementById('deepfakeConfidence').textContent = `${df.confidence || 0}%`;
+          document.getElementById('facesDetected').textContent = df.faces_detected || 0;
+          document.getElementById('deepfakeMethod').textContent = df.method || 'Multi-factor';
+        }
+
+        // 9. Confidence Breakdown
+        if (result.confidence?.factors) {
+          const factorsHtml = result.confidence.factors.map(factor => `
+            <div class="bg-slate-950/50 p-4 rounded-xl">
+              <div class="flex justify-between items-center mb-2">
+                <span class="font-semibold">${factor.name}</span>
+                <span class="text-xs text-slate-400">${factor.score}/${factor.max}</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-slate-800 overflow-hidden mb-3">
+                <div class="h-full bg-gradient-to-r from-indigo-400 to-purple-400 transition-all duration-1000" 
+                     style="width: ${factor.percentage}%"></div>
+              </div>
+              <div class="space-y-1">
+                ${factor.details.map(d => `<p class="text-[10px] text-slate-400">• ${d}</p>`).join('')}
+              </div>
             </div>
-            <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden">
-              <div class="h-full bg-gradient-to-r from-blue-500 to-cyan-500 transition-all" style="width: ${value}%"></div>
-            </div>
-          </div>
-        `).join('');
+          `).join('');
+          document.getElementById('confidenceFactors').innerHTML = factorsHtml;
+        }
 
-      container.innerHTML = breakdown;
-    }
+        // 10. Duplicate Detection
+        if (result.verification?.times_verified > 1 || result.similar_images?.length > 0) {
+          document.getElementById('duplicateSection').classList.remove('hidden');
+          document.getElementById('exactMatches').textContent = 
+            result.verification?.times_verified > 1 ? result.verification.times_verified - 1 : 0;
+          document.getElementById('similarImagesCount').textContent = 
+            result.similar_images?.length || 0;
+          document.getElementById('totalVerifications').textContent = 
+            result.verification?.times_verified || 1;
 
-    function displayAiDetection(result) {
-      const card = document.getElementById('aiDetectionCard');
-      const content = document.getElementById('aiDetectionContent');
-      
-      card.classList.remove('hidden');
-      
-      const isAi = result.aiDetection.isAiGenerated || false;
-      const confidence = Math.round(result.aiDetection.confidence || 0);
-      const label = result.aiDetection.label || 'Unknown';
+          if (result.verification?.previous_uploads?.length > 0) {
+            document.getElementById('previousVerifications').classList.remove('hidden');
+            document.getElementById('verificationHistory').innerHTML = 
+              result.verification.previous_uploads.map(upload => `
+                <div class="flex justify-between text-[10px]">
+                  <span class="text-slate-400">${formatDate(upload.date)}</span>
+                  <span class="font-mono">${upload.verification_id}</span>
+                </div>
+              `).join('');
+          }
+        }
 
-      content.innerHTML = `
-        <div class="bg-slate-800/50 rounded-lg p-4">
-          <div class="flex items-center justify-between mb-3">
-            <h4 class="font-medium">Detection Result</h4>
-            <span class="text-sm ${isAi ? 'text-red-400' : 'text-green-400'}">
-              ${isAi ? 'AI-Generated' : 'Likely Authentic'}
-            </span>
-          </div>
-          <div class="space-y-2 text-sm">
-            <div class="flex justify-between">
-              <span class="text-slate-400">AI Confidence:</span>
-              <span class="font-semibold">${confidence}%</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-400">Classification:</span>
-              <span class="font-semibold">${label}</span>
-            </div>
-          </div>
-        </div>
-      `;
-    }
+        // 11. Forensic Analysis
+        if (result.shadow_physics) {
+          document.getElementById('shadowConsistency').textContent = 
+            result.shadow_physics.consistent ? 'Consistent' : 'Inconsistent';
+        }
+        if (result.camera_verification) {
+          const cv = result.camera_verification;
+          document.getElementById('cameraMake').textContent = cv.details?.make || 'Unknown';
+          document.getElementById('cameraModel').textContent = cv.details?.model || 'Unknown';
+          document.getElementById('cameraVerified').textContent = cv.is_valid ? 'Yes' : 'No';
+        }
 
-    function displayMetadata(result) {
-      const container = document.getElementById('metadataContainer');
-      const metadata = result.metadata || {};
-      
-      let html = '<div class="space-y-1 text-xs">';
-      
-      if (metadata.format) {
-        html += `<div><span class="text-slate-400">Format:</span> <span class="text-slate-300">${metadata.format}</span></div>`;
-      }
-      
-      if (metadata.size) {
-        html += `<div><span class="text-slate-400">Size:</span> <span class="text-slate-300">${metadata.size}</span></div>`;
-      }
-      
-      if (metadata.dimensions) {
-        html += `<div><span class="text-slate-400">Dimensions:</span> <span class="text-slate-300">${metadata.dimensions}</span></div>`;
-      }
-      
-      if (metadata.duration) {
-        html += `<div><span class="text-slate-400">Duration:</span> <span class="text-slate-300">${metadata.duration}</span></div>`;
-      }
-      
-      if (metadata.uploadDate) {
-        html += `<div><span class="text-slate-400">Upload Date:</span> <span class="text-slate-300">${new Date(metadata.uploadDate).toLocaleDateString()}</span></div>`;
-      }
-      
-      if (result.confidenceLevel) {
-        html += `<div><span class="text-slate-400">Confidence Level:</span> <span class="text-slate-300">${result.overallConfidence}% (${result.confidenceLevel})</span></div>`;
-      }
-      
-      html += '</div>';
-      
-      if (html === '<div class="space-y-1 text-xs"></div>') {
-        container.innerHTML = '<p class="text-sm text-slate-400">No metadata available</p>';
-      } else {
-        container.innerHTML = html;
-      }
-      
-      // Handle pHash display
-      if (result.fingerprint?.pHash || result.phash) {
-        document.getElementById('phash').textContent = result.fingerprint?.pHash || result.phash;
-      } else {
-        document.getElementById('phashContainer').style.display = 'none';
-      }
-    }
+        // 12. External Verification
+        if (result.google_vision) {
+          const webMatches = result.google_vision.results?.web_detection?.pages_with_matching_images?.length || 0;
+          document.getElementById('googleVisionStatus').textContent = 
+            webMatches > 0 ? `${webMatches} matches` : 'No matches';
+        }
+        if (result.c2pa_verification) {
+          document.getElementById('c2paStatus').textContent = 
+            result.c2pa_verification.has_c2pa_credentials ? 
+              (result.c2pa_verification.credentials_valid ? 'Valid' : 'Invalid') : 
+              'None found';
+        }
+        if (result.virustotal) {
+          document.getElementById('virusTotalStatus').textContent = 
+            result.virustotal.found ? 'Found in DB' : 'Clean';
+        }
+        if (result.weather_verification || result.landmark_verification) {
+          const weatherOk = result.weather_verification?.verified;
+          const landmarkOk = result.landmark_verification?.verified;
+          if (weatherOk || landmarkOk) {
+            document.getElementById('weatherLandmarkStatus').textContent = 'Verified';
+          } else {
+            document.getElementById('weatherLandmarkStatus').textContent = 'No data';
+          }
+        }
+// NEW: JPEG Forensics
+        if (result.ai_detection?.forensic_analysis) {
+          document.getElementById('jpegForensicsSection').classList.remove('hidden');
+          const fa = result.ai_detection.forensic_analysis;
+          
+          document.getElementById('manipulationConfidence').textContent = `${fa.manipulation_confidence || 0}%`;
+          document.getElementById('compressionQuality').textContent = fa.compression_quality || '-';
+          document.getElementById('noiseLevel').textContent = fa.noise_level || 'unknown';
+          document.getElementById('elaStatus').textContent = fa.ela_performed ? 'Performed' : 'Not performed';
+          document.getElementById('doubleCompressed').textContent = fa.double_compressed ? 'Yes' : 'No';
+          document.getElementById('doubleCompressed').className = fa.double_compressed ? 'text-red-300' : 'text-emerald-300';
+          document.getElementById('qualityEstimate').textContent = fa.compression_quality ? `${fa.compression_quality}%` : '-';
+          
+          if (result.ai_detection.indicators?.length > 0) {
+            document.getElementById('forensicIndicators').innerHTML = result.ai_detection.indicators.slice(0, 5).map(ind => 
+              `<li class="flex items-start gap-2">
+                <span class="text-cyan-300">•</span>
+                <span>${ind}</span>
+              </li>`
+            ).join('');
+          }
+        }
 
-    function displayExternalVerification(result) {
-      const card = document.getElementById('externalVerificationCard');
-      const content = document.getElementById('externalVerificationContent');
-      
-      const hasVirusTotal = result.externalVerification?.virusTotal;
-      const hasGoogleVision = result.externalVerification?.googleVision?.labels?.length > 0;
-      
-      if (!hasVirusTotal && !hasGoogleVision) return;
-      
-      card.classList.remove('hidden');
-      
-      let html = '<div class="space-y-4">';
-      
-      if (hasVirusTotal) {
-        const vt = result.externalVerification.virusTotal;
-        html += `
-          <div class="bg-slate-800/50 rounded-lg p-4">
-            <h4 class="font-medium mb-2">VirusTotal Scan</h4>
-            <div class="flex items-center justify-between">
-              <span class="text-sm text-slate-400">Detection Result:</span>
-              <span class="text-sm ${vt.malicious > 0 ? 'text-red-400' : 'text-green-400'}">
-                ${vt.malicious > 0 ? 'Threats Detected' : 'Clean'}
-              </span>
-            </div>
-            <div class="text-xs text-slate-500 mt-1">
-              ${vt.malicious} / ${vt.total} scanners flagged this file
-            </div>
-          </div>
-        `;
-      }
-      
-      if (hasGoogleVision) {
-        const labels = result.externalVerification.googleVision.labels;
-        html += `
-          <div class="bg-slate-800/50 rounded-lg p-4">
-            <h4 class="font-medium mb-2">Detected Labels</h4>
-            <div class="flex flex-wrap gap-2">
-              ${labels.map(label => `
-                <span class="px-2 py-1 bg-blue-500/20 text-blue-300 rounded text-xs">${label}</span>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      }
-      
-      html += '</div>';
-      content.innerHTML = html;
-    }
+        // NEW: TinEye Reverse Search
+        if (result.reverse_image_search?.tineye?.status === 'found') {
+          document.getElementById('reverseSearchSection').classList.remove('hidden');
+          const tineye = result.reverse_image_search.tineye;
+          
+          document.getElementById('tineyeMatches').textContent = tineye.total_results || 0;
+          document.getElementById('imageAge').textContent = tineye.first_appearance?.age?.human_readable || '-';
+          document.getElementById('topDomain').textContent = tineye.top_domains?.[0]?.domain || '-';
+          document.getElementById('newsCount').textContent = tineye.domain_breakdown?.news_sites || 0;
+          
+          if (tineye.first_appearance) {
+            const fa = tineye.first_appearance;
+            document.getElementById('firstAppearance').innerHTML = `
+              <div class="flex justify-between">
+                <span class="text-slate-400">Date</span>
+                <span>${fa.age?.human_readable || '-'}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Source</span>
+                <span class="truncate ml-2">${fa.source_domain || '-'}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Backlinks</span>
+                <span>${fa.backlinks?.length || 0}</span>
+              </div>
+            `;
+          }
+          
+          if (tineye.domain_breakdown) {
+            const db = tineye.domain_breakdown;
+            document.getElementById('domainBreakdown').innerHTML = `
+              <div class="flex justify-between"><span>News Sites</span><span>${db.news_sites || 0}</span></div>
+              <div class="flex justify-between"><span>Social Media</span><span>${db.social_media || 0}</span></div>
+              <div class="flex justify-between"><span>Stock Photos</span><span>${db.stock_photo_sites || 0}</span></div>
+              <div class="flex justify-between"><span>Blogs</span><span>${db.blogs || 0}</span></div>
+              <div class="flex justify-between"><span>Other</span><span>${db.other || 0}</span></div>
+            `;
+          }
+        }
+// NEW: Blockchain Verification Display
+        if (result.blockchain_verification) {
+          document.getElementById('blockchainSection').classList.remove('hidden');
 
-    function displayVideoAnalysis(result) {
-      const card = document.getElementById('videoAnalysisCard');
-      const content = document.getElementById('videoAnalysisContent');
-      
-      card.classList.remove('hidden');
-      
-      const va = result.videoAnalysis;
-      
-      content.innerHTML = `
-        <div class="space-y-2 text-sm">
-          <div class="flex justify-between">
-            <span class="text-slate-400">Frames Analyzed:</span>
-            <span>${va.totalFrames || 0}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-400">AI Frames Detected:</span>
-            <span class="${va.aiFrames > 0 ? 'text-red-400' : 'text-green-400'}">
-              ${va.aiFrames || 0}
-            </span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-400">Average Frame Score:</span>
-            <span>${Math.round(va.avgConfidence || 0)}%</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-400">AI Content Percentage:</span>
-            <span class="${va.aiPercentage > 30 ? 'text-red-400' : 'text-green-400'}">
-              ${Math.round(va.aiPercentage || 0)}%
-            </span>
-          </div>
-        </div>
-      `;
-    }
+          // Show top blockchain badge
+          const blockchainBadge = document.getElementById('blockchainBadge');
+          const blockchainChainName = document.getElementById('blockchainChainName');
+          const hasOTS = result.blockchain_verification.success && result.blockchain_verification.status;
+          const hasPolygon = result.polygon_verification && result.polygon_verification.success;
+          
+          if (hasOTS && hasPolygon) {
+            // Both blockchains
+            blockchainBadge.classList.remove('hidden');
+            blockchainChainName.textContent = '₿ Bitcoin + Polygon Verified';
+          } else if (hasPolygon) {
+            console.log('Polygon data:', result.polygon_verification);
+            // Polygon only (instant)
+            blockchainBadge.classList.remove('hidden');
+            blockchainChainName.innerHTML = '<svg class="w-3 h-3 inline" viewBox="0 0 38.4 33.5" fill="currentColor"><path d="M29,10.2c-0.7-0.4-1.6-0.4-2.4,0L21,13.5l-3.8,2.1l-5.5,3.3c-0.7,0.4-1.6,0.4-2.4,0L5,16.3c-0.7-0.4-1.2-1.2-1.2-2.1v-5c0-0.8,0.4-1.6,1.2-2.1l4.3-2.5c0.7-0.4,1.6-0.4,2.4,0L16,7.2c0.7,0.4,1.2,1.2,1.2,2.1v3.3l3.8-2.2V7c0-0.8-0.4-1.6-1.2-2.1l-8-4.7c-0.7-0.4-1.6-0.4-2.4,0L1.2,5C0.4,5.4,0,6.2,0,7v9.4c0,0.8,0.4,1.6,1.2,2.1l8.1,4.7c0.7,0.4,1.6,0.4,2.4,0l5.5-3.2l3.8-2.2l5.5-3.2c0.7-0.4,1.6-0.4,2.4,0l4.3,2.5c0.7,0.4,1.2,1.2,1.2,2.1v5c0,0.8-0.4,1.6-1.2,2.1L29,28.8c-0.7,0.4-1.6,0.4-2.4,0l-4.3-2.5c-0.7-0.4-1.2-1.2-1.2-2.1V21l-3.8,2.2v3.3c0,0.8,0.4,1.6,1.2,2.1l8.1,4.7c0.7,0.4,1.6,0.4,2.4,0l8.1-4.7c0.7-0.4,1.2-1.2,1.2-2.1V17c0-0.8-0.4-1.6-1.2-2.1L29,10.2z"/></svg> Polygon Verified';
+          } else if (hasOTS) {
+            // Bitcoin only (pending confirmation)
+            blockchainBadge.classList.remove('hidden');
+            blockchainChainName.textContent = '₿ Bitcoin Timestamp';
+          }
+          
+          if (!hasOTS && !hasPolygon) {
+            document.getElementById('noBlockchainCard').classList.remove('hidden');
+          } else {
+            document.getElementById('noBlockchainCard').classList.add('hidden');
+          }
+          
+          // OpenTimestamps (Bitcoin)
+          if (hasOTS) {
+            document.getElementById('opentimestampsCard').classList.remove('hidden');
+            const ots = result.blockchain_verification;
+            
+            // Status badge
+            const otsStatusBadge = document.getElementById('otsStatus');
+            if (ots.status === 'confirmed') {
+              otsStatusBadge.textContent = '✓ CONFIRMED';
+              otsStatusBadge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-emerald-500/10 border border-emerald-500/40 text-emerald-300';
+              document.getElementById('otsStatusText').textContent = 'Confirmed on Bitcoin';
+              document.getElementById('otsBlockRow').classList.remove('hidden');
+              document.getElementById('otsTimestampRow').classList.remove('hidden');
+              document.getElementById('otsBlock').textContent = ots.bitcoin_block || '-';
+              document.getElementById('otsTimestamp').textContent = formatDate(ots.timestamp);
+            } else if (ots.status === 'pending') {
+              otsStatusBadge.textContent = '⏳ PENDING';
+              otsStatusBadge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-amber-500/10 border border-amber-500/40 text-amber-300';
+              document.getElementById('otsStatusText').textContent = 'Bitcoin confirmation pending';
+            } else if (ots.status === 'previously_timestamped') {
+              otsStatusBadge.textContent = '✓ VERIFIED';
+              otsStatusBadge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-emerald-500/10 border border-emerald-500/40 text-emerald-300';
+              document.getElementById('otsStatusText').textContent = 'Previously timestamped';
+              if (ots.first_timestamped) {
+                document.getElementById('otsSubmitted').textContent = formatDate(ots.first_timestamped);
+              }
+            } else {
+              otsStatusBadge.textContent = 'SUBMITTED';
+              otsStatusBadge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-blue-500/10 border border-blue-500/40 text-blue-300';
+              document.getElementById('otsStatusText').textContent = 'Submitted to calendar servers';
+            }
+            
+            document.getElementById('otsSubmitted').textContent = formatDate(ots.submitted_at);
+            document.getElementById('otsVerifyLink').href = `https://opentimestamps.org`;
+          }
+          
+          // Polygon
+          if (hasPolygon) {
+            console.log('Polygon data:', result.polygon_verification);
+            document.getElementById('polygonCard').classList.remove('hidden');
+            const poly = result.polygon_verification;
+            
+            if (poly.status === 'previously_timestamped') {
+              // Show stored data if available, otherwise show "Previously verified"
+              if (poly.transaction_hash) {
+                const txShort = poly.transaction_hash.substring(0, 10) + '...' + poly.transaction_hash.substring(poly.transaction_hash.length - 8);
+                document.getElementById('polygonTxLink').textContent = txShort;
+                document.getElementById('polygonTxLink').href = 'https://polygonscan.com/tx/' + poly.transaction_hash;
+              } else {
+                document.getElementById('polygonTxLink').textContent = 'Previously verified';
+              }
+              document.getElementById('polygonBlock').textContent = poly.block_number || '-';
+              document.getElementById('polygonTimestamp').textContent = formatDate(poly.timestamp || poly.first_timestamped);
+              document.getElementById('polygonGasCost').textContent = '-';
+            } else {
+              const txShort = poly.transaction_hash ? 
+                poly.transaction_hash.substring(0, 10) + '...' + poly.transaction_hash.substring(poly.transaction_hash.length - 8) : 
+                '-';
+              
+              document.getElementById('polygonTxLink').textContent = txShort;
+              document.getElementById('polygonTxLink').href = poly.explorer_url || '#';
+              document.getElementById('polygonBlock').textContent = poly.block_number || '-';
+              document.getElementById('polygonTimestamp').textContent = formatDate(poly.timestamp);
+              document.getElementById('polygonGasCost').textContent = 
+                poly.gas_cost_usd ? '$' + poly.gas_cost_usd + ' (' + parseFloat(poly.gas_cost_matic).toFixed(4) + ' MATIC)' : '-';
+              document.getElementById('polygonExplorer').href = poly.explorer_url || '#';
+            }
+          }
+        }
+        // 13. Blockchain (future - hidden for now)
+        // Will be enabled when blockchain anchoring is implemented
 
-    function displayAudioAnalysis(result) {
-      const card = document.getElementById('audioAnalysisCard');
-      const content = document.getElementById('audioAnalysisContent');
-      
-      card.classList.remove('hidden');
-      
-      const aa = result.audioAnalysis;
-      
-      content.innerHTML = `
-        <div class="space-y-2 text-sm">
-          <div class="flex justify-between">
-            <span class="text-slate-400">Synthetic Voice Detection:</span>
-            <span class="${aa.syntheticVoice ? 'text-red-400' : 'text-green-400'}">
-              ${aa.syntheticVoice ? 'Detected' : 'Not Detected'}
-            </span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-slate-400">AI Confidence:</span>
-            <span>${Math.round(aa.aiConfidence || 0)}%</span>
-          </div>
-        </div>
-      `;
-    }
+        // 14. Recommendations
+        const recommendations = [];
+        if ((result.ai_detection?.ai_confidence || 0) >= 70) {
+          recommendations.push('High AI probability detected. Consider additional manual review.');
+          recommendations.push('Check for signs of manipulation or editing.');
+        }
+        if (result.confidence?.percentage < 50) {
+          recommendations.push('Low confidence score. Verify source and context before sharing.');
+        }
+        if (result.verification?.times_verified > 3) {
+          recommendations.push('This file has been verified multiple times. Check for duplicates.');
+        }
+        if (!result.camera_verification?.details?.make) {
+          recommendations.push('No camera metadata found. This could indicate screenshot or AI generation.');
+        }
+        if (recommendations.length === 0) {
+          recommendations.push('No immediate concerns detected. Content appears authentic.');
+        }
 
-    function displayVerificationHistory(result) {
-      const container = document.getElementById('verificationHistory');
-      const firstVerified = result.timestamps?.created || result.created_at;
-      const lastUpdated = result.timestamps?.updated || result.updated_at;
-      const count = result.verificationCount;
-      
-      let html = '<div class="space-y-1 text-xs">';
-      
-      if (firstVerified) {
-        html += `<div><span class="text-slate-400">First Verified:</span> <span class="text-slate-300">${new Date(firstVerified).toLocaleString()}</span></div>`;
-      }
-      
-      if (lastUpdated) {
-        html += `<div><span class="text-slate-400">Last Updated:</span> <span class="text-slate-300">${new Date(lastUpdated).toLocaleString()}</span></div>`;
-      }
-      
-      if (count) {
-        html += `<div><span class="text-slate-400">Times Verified:</span> <span class="text-slate-300">${count}</span></div>`;
-      }
-      
-      html += '</div>';
-      
-      if (html === '<div class="space-y-1 text-xs"></div>') {
-        container.innerHTML = '<p class="text-sm text-slate-400">No verification history available</p>';
-      } else {
-        container.innerHTML = html;
-      }
-    }
+        if (recommendations.length > 0) {
+          document.getElementById('recommendationsSection').classList.remove('hidden');
+          document.getElementById('recommendationsList').innerHTML = recommendations.map(r => 
+            `<li class="flex items-start gap-2">
+              <span class="text-blue-400 mt-0.5">→</span>
+              <span>${r}</span>
+            </li>`
+          ).join('');
+        }
 
-    function getStatusClass(result) {
-      const mediaType = result.metadata?.format?.toLowerCase() || '';
-      const isVideo = mediaType.includes('video') || mediaType.includes('mp4') || mediaType.includes('mov') || mediaType.includes('avi');
-      const isAudio = mediaType.includes('audio') || mediaType.includes('mp3') || mediaType.includes('wav') || mediaType.includes('ogg');
-      
-      if (isVideo) {
-        const aiPercent = result.videoAnalysis?.aiPercentage || 0;
-        const hasDeepfake = result.videoAnalysis?.deepfakeDetected || false;
-        if (hasDeepfake && aiPercent > 30) return 'status-deepfake';
-        if (aiPercent >= 70) return 'status-ai-video';
-        if (aiPercent >= 30) return 'status-mixed-content';
-        if (aiPercent >= 5) return 'status-ai-content';
-        return 'status-verified-video';
+        // 15. Timestamp
+        document.getElementById('reportTimestamp').textContent = 
+          `Report generated on ${new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })} at ${new Date().toLocaleTimeString()}`;
+          
+      } catch (error) {
+        console.error('Report error:', error);
+        alert('Error loading report: ' + error.message);
       }
-      
-      if (isAudio) {
-        const hasAiVoice = result.audioAnalysis?.syntheticVoice || false;
-        const aiConfidence = result.audioAnalysis?.aiConfidence || 0;
-        if (aiConfidence >= 90) return 'status-fully-ai-audio';
-        if (hasAiVoice) return 'status-synthetic-voice';
-        if (aiConfidence >= 30) return 'status-natural-voice';
-        return 'status-verified-audio';
-      }
-      
-      const confidence = result.overallConfidence || 0;
-      const hasAi = result.aiDetection?.isAiGenerated || false;
-      const isModified = result.duplicateDetection?.isDuplicate || false;
-      
-      if (hasAi) return 'status-ai-image';
-      if (confidence >= 75) return 'status-verified-photo';
-      if (confidence >= 50 && isModified) return 'status-modified';
-      if (confidence >= 50) return 'status-likely-camera';
-      if (confidence >= 25) return 'status-manipulation';
-      return 'status-heavily-manipulated';
-    }
-
-    function getStatusText(result) {
-      const mediaType = result.metadata?.format?.toLowerCase() || '';
-      const isVideo = mediaType.includes('video') || mediaType.includes('mp4') || mediaType.includes('mov') || mediaType.includes('avi');
-      const isAudio = mediaType.includes('audio') || mediaType.includes('mp3') || mediaType.includes('wav') || mediaType.includes('ogg');
-      
-      if (isVideo) {
-        const aiPercent = result.videoAnalysis?.aiPercentage || 0;
-        const hasDeepfake = result.videoAnalysis?.deepfakeDetected || false;
-        if (hasDeepfake && aiPercent > 30) return '🚨 DEEPFAKE INDICATORS DETECTED';
-        if (aiPercent >= 70) return '🤖 PRIMARILY AI-GENERATED VIDEO';
-        if (aiPercent >= 30) return '⚠️ SIGNIFICANT MIX OF VIDEO AND AI CONTENT';
-        if (aiPercent >= 5) return '⚡ AI-GENERATED CONTENT DETECTED';
-        return '✅ VERIFIED VIDEO';
-      }
-      
-      if (isAudio) {
-        const hasAiVoice = result.audioAnalysis?.syntheticVoice || false;
-        const aiConfidence = result.audioAnalysis?.aiConfidence || 0;
-        if (aiConfidence >= 90) return '🤖 FULLY AI-GENERATED AUDIO';
-        if (hasAiVoice) return '🎙️ SYNTHETIC VOICE DETECTED';
-        if (aiConfidence >= 30) return '🎵 NATURAL VOICE WITH AI AUDIO';
-        return '✅ VERIFIED AUDIO RECORDING';
-      }
-      
-      const confidence = result.overallConfidence || 0;
-      const hasAi = result.aiDetection?.isAiGenerated || false;
-      const isModified = result.duplicateDetection?.isDuplicate || false;
-      
-      if (hasAi) return '🤖 AI-GENERATED IMAGE';
-      if (confidence >= 75) return '✅ VERIFIED PHOTOGRAPH';
-      if (confidence >= 50 && isModified) return '📝 MODIFIED VERSION DETECTED';
-      if (confidence >= 50) return '📷 LIKELY CAMERA-CAPTURED';
-      if (confidence >= 25) return '⚠️ MANIPULATION DETECTED';
-      return '🚫 HEAVILY MANIPULATED';
-    }
-
-    // Load report on page load
-    window.addEventListener('DOMContentLoaded', loadReport);
+    });
   </script>
-
-</body>
-</html>
