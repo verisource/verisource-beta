@@ -1137,8 +1137,7 @@ if (!result.ai_detection && parsed.aiDetection) {
         document.getElementById('overallConfidence').className = `text-6xl font-bold ${trustColor} leading-none`;
 
         // Confidence level text
-        // document.getElementById('confidenceLevel').textContent = 
-          // `${result.confidence?.level || 'UNKNOWN'} CONFIDENCE`;
+        // if (document.getElementById('confidenceLevel')) document.getElementById('confidenceLevel').textContent = '';
 
         // 2. Verdict badge
         const verdictBadge = document.getElementById('verdictBadge');
@@ -1529,12 +1528,12 @@ if (result.screenshot_detection && result.screenshot_detection.is_screenshot) {
           const fa = result.ai_detection.forensic_analysis;
           
           document.getElementById('manipulationConfidence').textContent = `${fa.manipulation_confidence || 0}%`;
-          document.getElementById('compressionQuality').textContent = fa.compression_quality || '-';
+          // compressionQuality removed
           document.getElementById('noiseLevel').textContent = fa.noise_level || 'unknown';
-          document.getElementById('elaStatus').textContent = fa.ela_performed ? 'Performed' : 'Not performed';
+          // elaStatus removed
           document.getElementById('doubleCompressed').textContent = fa.double_compressed ? 'Yes' : 'No';
           document.getElementById('doubleCompressed').className = fa.double_compressed ? 'text-red-300' : 'text-emerald-300';
-          document.getElementById('qualityEstimate').textContent = fa.compression_quality ? `${fa.compression_quality}%` : '-';
+          // qualityEstimate removed
           
           if (result.ai_detection.indicators?.length > 0) {
             document.getElementById('forensicIndicators').innerHTML = ((result.ai_detection?.indicators) || []).slice(0, 5).map(ind => 
