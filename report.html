@@ -341,50 +341,95 @@
           </svg>
         </div>
         <div>
-          <h2 class="text-sm font-semibold">JPEG Forensic Analysis</h2>
-          <p class="text-[11px] text-slate-400">Error Level Analysis, compression artifacts, noise patterns</p>
+          <h2 class="text-sm font-semibold">Image Forensic Analysis</h2>
+          <p class="text-[11px] text-slate-400">Compression artifacts, editing detection, block analysis</p>
+        </div>
+        <div class="ml-auto">
+          <span id="forensicBadge" class="px-2 py-1 pill text-[10px] font-semibold bg-slate-500/10 border border-slate-500/40 text-slate-300">ANALYZING</span>
         </div>
       </header>
       
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
         <div class="bg-slate-950/50 p-4 rounded-xl text-center">
           <p id="manipulationConfidence" class="text-2xl font-bold text-cyan-300">0%</p>
           <p class="text-[10px] text-slate-400 mt-1">Manipulation Score</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="compressionQuality" class="text-2xl font-bold">-</p>
-          <p class="text-[10px] text-slate-400 mt-1">Compression Quality</p>
         </div>
         <div class="bg-slate-950/50 p-4 rounded-xl text-center">
           <p id="noiseLevel" class="text-sm font-bold capitalize">-</p>
           <p class="text-[10px] text-slate-400 mt-1">Noise Level</p>
         </div>
         <div class="bg-slate-950/50 p-4 rounded-xl text-center">
-          <p id="elaStatus" class="text-sm font-bold">-</p>
-          <p class="text-[10px] text-slate-400 mt-1">ELA Status</p>
+          <p id="blockSmoothnessDisplay" class="text-2xl font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Block Smooth %</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="imageDimensions" class="text-sm font-bold">-</p>
+          <p class="text-[10px] text-slate-400 mt-1">Dimensions</p>
+        </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl text-center">
+          <p id="doubleCompressedDisplay" class="text-sm font-bold text-emerald-300">No</p>
+          <p class="text-[10px] text-slate-400 mt-1">Double Compress</p>
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div id="editingSoftwareAlert" class="hidden bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-4">
+        <div class="flex items-start gap-3">
+          <span class="text-xl">🎨</span>
+          <div>
+            <h4 class="font-semibold text-amber-300 mb-1">Editing Software Detected</h4>
+            <p id="editingSoftwareName" class="text-amber-200/80 text-[11px]">-</p>
+            <span id="editingSoftwareType" class="mt-2 inline-block px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-300">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div class="bg-slate-950/50 p-4 rounded-xl">
-          <h4 class="font-semibold mb-3 text-slate-300">Compression Analysis</h4>
+          <h4 class="font-semibold mb-3 text-slate-300">Compression</h4>
           <div class="space-y-2">
             <div class="flex justify-between">
               <span class="text-slate-400">Double Compressed</span>
               <span id="doubleCompressed" class="text-emerald-300">No</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-slate-400">Quality Estimate</span>
-              <span id="qualityEstimate">-</span>
+              <span class="text-slate-400">Pattern</span>
+              <span id="compressionPattern">-</span>
             </div>
           </div>
         </div>
         <div class="bg-slate-950/50 p-4 rounded-xl">
-          <h4 class="font-semibold mb-3 text-slate-300">Forensic Indicators</h4>
-          <ul id="forensicIndicators" class="space-y-1 text-slate-400">
-            <li>• No forensic analysis performed</li>
-          </ul>
+          <h4 class="font-semibold mb-3 text-slate-300">Block Analysis</h4>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="text-slate-400">Discontinuity</span>
+              <span id="avgDiscontinuity">-</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Smooth Ratio</span>
+              <span id="smoothRatio">-</span>
+            </div>
+          </div>
         </div>
+        <div class="bg-slate-950/50 p-4 rounded-xl">
+          <h4 class="font-semibold mb-3 text-slate-300">Quantization</h4>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="text-slate-400">Q-Table</span>
+              <span id="qTableStatus">-</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Camera Sig</span>
+              <span id="cameraSignature">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-950/50 p-4 rounded-xl">
+        <h4 class="font-semibold mb-3 text-slate-300">Forensic Indicators</h4>
+        <ul id="forensicIndicators" class="space-y-1 text-slate-400">
+          <li>• No forensic analysis performed</li>
+        </ul>
       </div>
     </section>
     <!-- 6. VIDEO FRAME ANALYSIS (if video) -->
@@ -543,43 +588,6 @@
 
       <div id="confidenceFactors" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <!-- Populated by JS -->
-      </div>
-    </section>
-
-    <!-- 10. DUPLICATE/SIMILAR DETECTION -->
-    <section id="duplicateSection" class="hidden bg-slate-900/60 border border-slate-800 rounded-2xl p-6 text-xs fade-in">
-      <header class="flex items-center gap-2 mb-4">
-        <div class="h-8 w-8 rounded-xl bg-orange-500/15 flex items-center justify-center">
-          <svg class="w-4 h-4 text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-          </svg>
-        </div>
-        <div>
-          <h2 class="text-sm font-semibold">Duplicate & Similar Detection</h2>
-          <p class="text-[11px] text-slate-400">Previous verifications & perceptually similar content</p>
-        </div>
-      </header>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div class="bg-slate-950/50 p-4 rounded-xl">
-          <p class="text-slate-400 mb-1">Exact Matches</p>
-          <p id="exactMatches" class="font-semibold">0</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl">
-          <p class="text-slate-400 mb-1">Similar Images Found</p>
-          <p id="similarImagesCount" class="font-semibold">0</p>
-        </div>
-        <div class="bg-slate-950/50 p-4 rounded-xl">
-          <p class="text-slate-400 mb-1">Total Verifications</p>
-          <p id="totalVerifications" class="font-semibold">1</p>
-        </div>
-      </div>
-
-      <div id="previousVerifications" class="hidden bg-slate-950/50 p-4 rounded-xl">
-        <h4 class="font-semibold mb-3 text-slate-300">Previous Verifications</h4>
-        <div id="verificationHistory" class="space-y-2 max-h-40 overflow-y-auto">
-          <!-- Populated by JS -->
-        </div>
       </div>
     </section>
 
@@ -1476,28 +1484,6 @@ if (result.screenshot_detection && result.screenshot_detection.is_screenshot) {
             `;
           }
           document.getElementById('confidenceFactors').innerHTML = factorsHtml;
-        }
-
-        // 10. Duplicate Detection
-        if (result.verification?.times_verified > 1 || result.similar_images?.length > 0) {
-          document.getElementById('duplicateSection').classList.remove('hidden');
-          document.getElementById('exactMatches').textContent = 
-            result.verification?.times_verified > 1 ? result.verification.times_verified - 1 : 0;
-          document.getElementById('similarImagesCount').textContent = 
-            result.similar_images?.length || 0;
-          document.getElementById('totalVerifications').textContent = 
-            result.verification?.times_verified || 1;
-
-          if (result.verification?.previous_uploads?.length > 0) {
-            document.getElementById('previousVerifications').classList.remove('hidden');
-            document.getElementById('verificationHistory').innerHTML = 
-              result.verification.previous_uploads.map(upload => `
-                <div class="flex justify-between text-[10px]">
-                  <span class="text-slate-400">${formatDate(upload.date)}</span>
-                  <span class="font-mono">${upload.verification_id}</span>
-                </div>
-              `).join('');
-          }
         }
 
         // 11. Forensic Analysis
