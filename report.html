@@ -1528,12 +1528,65 @@ if (result.screenshot_detection && result.screenshot_detection.is_screenshot) {
           const fa = result.ai_detection.forensic_analysis;
           
           document.getElementById('manipulationConfidence').textContent = `${fa.manipulation_confidence || 0}%`;
-          // compressionQuality removed
           document.getElementById('noiseLevel').textContent = fa.noise_level || 'unknown';
-          // elaStatus removed
-          document.getElementById('doubleCompressed').textContent = fa.double_compressed ? 'Yes' : 'No';
-          document.getElementById('doubleCompressed').className = fa.double_compressed ? 'text-red-300' : 'text-emerald-300';
-          // qualityEstimate removed
+          
+          // Block smoothness
+          if (fa.block_analysis?.smoothRatio !== undefined) {
+            document.getElementById('blockSmoothnessDisplay').textContent = `${Math.round(fa.block_analysis.smoothRatio * 100)}%`;
+            document.getElementById('blockSmoothnessDisplay').className = fa.block_analysis.smoothRatio > 0.5 ? 
+              'text-2xl font-bold text-amber-300' : 'text-2xl font-bold text-emerald-300';
+          }
+          
+          // Dimensions
+          if (fa.image_dimensions) {
+            document.getElementById('imageDimensions').textContent = fa.image_dimensions;
+          }
+          
+          // Double compression
+          const isDoubleCompressed = fa.double_compressed || fa.compression_pattern?.doubleCompression;
+          document.getElementById('doubleCompressedDisplay').textContent = isDoubleCompressed ? 'Yes' : 'No';
+          document.getElementById('doubleCompressedDisplay').className = isDoubleCompressed ? 
+            'text-sm font-bold text-amber-300' : 'text-sm font-bold text-emerald-300';
+          document.getElementById('doubleCompressed').textContent = isDoubleCompressed ? 'Yes' : 'No';
+          document.getElementById('doubleCompressed').className = isDoubleCompressed ? 'text-amber-300' : 'text-emerald-300';
+          
+          // Compression pattern
+          if (fa.compression_pattern) {
+            document.getElementById('compressionPattern').textContent = 
+              fa.compression_pattern.doubleCompression ? 'Multiple saves' : 'Single compression';
+          }
+          
+          // Block analysis details
+          if (fa.block_analysis) {
+            document.getElementById('avgDiscontinuity').textContent = 
+              fa.block_analysis.avgDiscontinuity?.toFixed(2) || '-';
+            document.getElementById('smoothRatio').textContent = 
+              fa.block_analysis.smoothRatio ? `${Math.round(fa.block_analysis.smoothRatio * 100)}%` : '-';
+          }
+          
+          // Quantization analysis
+          if (fa.quantization_analysis) {
+            const qa = fa.quantization_analysis;
+            document.getElementById('qTableStatus').textContent = qa.reason || 
+              (qa.standardMatch > 0.8 ? 'Standard (AI)' : 'Custom');
+            document.getElementById('cameraSignature').textContent = 
+              qa.cameraMatch ? (qa.cameraManufacturer || 'Detected') : 'None';
+            document.getElementById('cameraSignature').className = 
+              qa.cameraMatch ? 'text-emerald-300' : 'text-slate-400';
+          }
+          
+          // Forensic badge
+          const badge = document.getElementById('forensicBadge');
+          if (fa.manipulation_confidence >= 70) {
+            badge.textContent = 'MANIPULATED';
+            badge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-red-500/10 border border-red-500/40 text-red-300';
+          } else if (fa.manipulation_confidence >= 40) {
+            badge.textContent = 'SUSPICIOUS';
+            badge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-amber-500/10 border border-amber-500/40 text-amber-300';
+          } else {
+            badge.textContent = 'AUTHENTIC';
+            badge.className = 'px-2 py-1 pill text-[10px] font-semibold bg-emerald-500/10 border border-emerald-500/40 text-emerald-300';
+          }
           
           if (result.ai_detection.indicators?.length > 0) {
             document.getElementById('forensicIndicators').innerHTML = ((result.ai_detection?.indicators) || []).slice(0, 5).map(ind => 
